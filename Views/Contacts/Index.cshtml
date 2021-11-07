@@ -1,10 +1,15 @@
-﻿@model IEnumerable<YTUsageViewer.Models.Contact>
+﻿@using PagedList.Mvc
+@using YTUsageViewer.Models
+@model PagedList.IPagedList<Contact>
 
 @{
     ViewBag.Title = "Contacts Browser";
-    var firstName = Html.DisplayNameFor(model => model.FirstName).ToHtmlString();
-    var lastName = @Html.DisplayNameFor(model => model.LastName).ToHtmlString();
-    var email = @Html.DisplayNameFor(model => model.Email).ToHtmlString();
+    //var firstName = Html.DisplayNameFor(model => model.FirstName).ToHtmlString();
+    //var lastName = @Html.DisplayNameFor(model => model.LastName).ToHtmlString();
+    //var email = @Html.DisplayNameFor(model => model.Email).ToHtmlString();
+    var firstName = "First Name";
+    var lastName = "Last Name";
+    var email = "Email";
     var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
 }
 
@@ -35,33 +40,34 @@
         Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
         @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
         @Html.Hidden("sortDir", ViewBag.SortDir as string)
+        @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
         <input type="submit" value="Search" />
     </p>
 }
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink(firstName, "Index", new { sortOrder = "firstName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter })
+            @Html.ActionLink(firstName, "Index", new { sortOrder = "firstName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
             <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>
         </th>
         <th>
-            @Html.ActionLink(lastName, "Index", new { sortOrder = "lastName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter })
+            @Html.ActionLink(lastName, "Index", new { sortOrder = "lastName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
             <span class="glyphicon @getSortDirIcon("lastName") pull-right"></span>
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PhoneMobile)
+           Mobile Phone
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PhoneWork)
+            Work Phone
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PhoneHome)
+            Home Phone
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PreferredPhone)
+            Preferred Phone
         </th>
         <th>
-            @Html.ActionLink(email, "Index", new { sortOrder = "email", sortDir = newSortDir, searchString = ViewBag.CurrentFilter })
+            @Html.ActionLink(email, "Index", new { sortOrder = "email", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
             <span class="glyphicon @getSortDirIcon("email") pull-right"></span>
         </th>
         <th></th>
@@ -100,3 +106,13 @@
     }
 
 </table>
+@*PAGED LIST*@
+<div class="pagedList">
+    @Html.PagedListPager(Model, pageNumber => Url.Action("Index", new
+    {
+        pageNumber,
+        searchString = ViewBag.CurrentFilter,
+        sortOrder = ViewBag.SortOrder,
+        sortDir = ViewBag.SortDir
+    }))
+</div>

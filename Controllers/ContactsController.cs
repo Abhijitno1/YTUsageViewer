@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PagedList;
+using PagedList.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -15,8 +17,11 @@ namespace YTUsageViewer.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Contacts
-        public ActionResult Index(string searchString, string sortOrder, string sortDir)
+        public ActionResult Index(string searchString, string sortOrder, string sortDir, int? pageNumber)
         {
+            const int PAGE_SIZE = 1;
+            ViewBag.CurrentPage = pageNumber ?? 1;
+
             var result = db.Contacts.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
@@ -45,8 +50,10 @@ namespace YTUsageViewer.Controllers
                 else if (sortOrder == "email" && sortDir == "DESC")
                     result = result.OrderByDescending(x => x.Email);
             }
+            else
+                result = result.OrderBy(x => x.ID);
 
-            return View(result.ToList());
+            return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
         // GET: Contacts/Details/5
