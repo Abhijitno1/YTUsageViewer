@@ -1,38 +1,52 @@
 ﻿@model IEnumerable<YTUsageViewer.Models.Contact>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Contacts Browser";
     var firstName = Html.DisplayNameFor(model => model.FirstName).ToHtmlString();
     var lastName = @Html.DisplayNameFor(model => model.LastName).ToHtmlString();
     var email = @Html.DisplayNameFor(model => model.Email).ToHtmlString();
     var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
 }
 
-<h2>Index</h2>
+@helper getSortDirIcon(string sortOrderCheck)
+{
+    switch (ViewBag.SortDir)
+    {
+        case null:
+            @String.Empty;
+            break;
+        case "ASC":
+            @(ViewBag.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes" : string.Empty);
+            break;
+        case "DESC":
+            @(ViewBag.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes-alt" : string.Empty);
+            break;
+    }
+}
+
+<h2>@ViewBag.Title</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 @using (Html.BeginForm("Index", "Contacts", FormMethod.Get))
 {
-<p>
-    Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
-    @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
-    @Html.Hidden("sortDir", ViewBag.SortDir as string)
-    <input type="submit" value="Search" />
-</p>
+    <p>
+        Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
+        @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
+        @Html.Hidden("sortDir", ViewBag.SortDir as string)
+        <input type="submit" value="Search" />
+    </p>
 }
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink(firstName, "Index", new { sortOrder = "firstName", sortDir=newSortDir, searchString = ViewBag.CurrentFilter })
-
-
+            @Html.ActionLink(firstName, "Index", new { sortOrder = "firstName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter })
+            <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>
         </th>
         <th>
             @Html.ActionLink(lastName, "Index", new { sortOrder = "lastName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter })
-
-
+            <span class="glyphicon @getSortDirIcon("lastName") pull-right"></span>
         </th>
         <th>
             @Html.DisplayNameFor(model => model.PhoneMobile)
@@ -47,7 +61,8 @@
             @Html.DisplayNameFor(model => model.PreferredPhone)
         </th>
         <th>
-            @Html.ActionLink(email, "Index", new { sortOrder = ViewBag.NameSortParm, sortDir = newSortDir, searchString = ViewBag.CurrentFilter })
+            @Html.ActionLink(email, "Index", new { sortOrder = "email", sortDir = newSortDir, searchString = ViewBag.CurrentFilter })
+            <span class="glyphicon @getSortDirIcon("email") pull-right"></span>
         </th>
         <th></th>
     </tr>
