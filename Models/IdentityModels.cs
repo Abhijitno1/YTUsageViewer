@@ -18,6 +18,13 @@ namespace YTUsageViewer.Models
         }
     }
 
+    public class ApplicationRole : IdentityRole
+    {
+        public ApplicationRole() : base() { }
+
+        public ApplicationRole(string roleName) : base(roleName) { }
+    }
+
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
@@ -34,5 +41,7 @@ namespace YTUsageViewer.Models
         }
 
         public DbSet<Contact> Contacts { get; set; }
+
+        //public System.Data.Entity.DbSet<YTUsageViewer.Models.RoleViewModel> RoleViewModels { get; set; }
     }
 }

@@ -83,4 +83,18 @@ namespace YTUsageViewer.Models
         public string SelectedProvider { get; set; }
         public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
     }
+
+    public class RoleViewModel
+    {
+        public RoleViewModel() { }
+
+        public RoleViewModel(ApplicationRole role)
+        {
+            this.Id = role.Id;
+            this.Name = role.Name;
+        }
+
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
 }
