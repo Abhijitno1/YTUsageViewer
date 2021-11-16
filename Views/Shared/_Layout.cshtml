@@ -1,6 +1,7 @@
 ﻿@{
     const string appName = "Personal Assistant";
-    var isAdminUser = Request.IsAuthenticated && User.Identity.Name == "ABHIJITNO1@YAHOO.COM";
+    var isAdminUser = Request.IsAuthenticated && User.IsInRole("Administrator");
+        //&& User.Identity.Name == "ABHIJITNO1@YAHOO.COM";
 }
 <!DOCTYPE html>
 <html>
@@ -28,11 +29,12 @@
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    @if (Request.IsAuthenticated)
+                    { <li>@Html.ActionLink("Contacts", "Index", "Contacts")</li> }
                     @if (isAdminUser)
-                    {
-                        <li>@Html.ActionLink("Contacts", "Index", "Contacts")</li>
-                        <li>@Html.ActionLink("Roles", "Index", "Role")</li>
-
+                    {                        
+                        <li>@Html.ActionLink("Users", "Index", "Users")</li>
+                        <li>@Html.ActionLink("Roles", "Index", "Roles")</li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")

@@ -42,6 +42,7 @@ namespace YTUsageViewer.Models
 
         public DbSet<Contact> Contacts { get; set; }
 
+        //public System.Data.Entity.DbSet<YTUsageViewer.Models.ApplicationUser> ApplicationUsers { get; set; }
         //public System.Data.Entity.DbSet<YTUsageViewer.Models.RoleViewModel> RoleViewModels { get; set; }
     }
 }

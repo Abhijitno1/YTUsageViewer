@@ -11,6 +11,7 @@ using YTUsageViewer.Models;
 
 namespace YTUsageViewer.Controllers
 {
+    [Authorize(Roles ="Administrator")]
     public class RolesController : Controller
     {
         private ApplicationRoleManager roleManager;
@@ -120,5 +121,17 @@ namespace YTUsageViewer.Controllers
                 return View();
             }
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && roleManager != null)
+            {
+                roleManager.Dispose();
+                roleManager = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
     }
 }
