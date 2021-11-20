@@ -10,8 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - @appName</title>
     @Styles.Render("~/Content/css")
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/bootstrap-datepicker3.min.css")" />
+   
     @Scripts.Render("~/bundles/modernizr")
-
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -30,9 +31,11 @@
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                     @if (Request.IsAuthenticated)
-                    { <li>@Html.ActionLink("Contacts", "Index", "Contacts")</li> }
+                    {
+                        <li>@Html.ActionLink("Contacts", "Index", "Contacts")</li>
+                    }
                     @if (isAdminUser)
-                    {                        
+                    {
                         <li>@Html.ActionLink("Users", "Index", "Users")</li>
                         <li>@Html.ActionLink("Roles", "Index", "Roles")</li>
                     }
@@ -51,6 +54,7 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    <script src="@Url.Content("~/Scripts/bootstrap-datepicker.js")" type="text/javascript"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>
