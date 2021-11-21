@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using YTUsageViewer.Models;
 
 namespace YTUsageViewer.Controllers
 {
@@ -22,9 +23,25 @@ namespace YTUsageViewer.Controllers
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
-
             return View();
         }
+
+        [HttpPost]
+        public ActionResult Contact(FormCollection collection)
+        {
+            var searchCriteria = new CommentsSearch
+            {
+                Subscription = collection["cboSubscription"],
+                Playlist = collection["txtPlaylist"],
+                Channel = collection["txtChannel"],
+                VideoName = collection["txtVideoName"],
+                FromDate = Convert.ToDateTime(collection["dtFromDate"]),
+                ToDate = Convert.ToDateTime(collection["dtToDate"]),
+                CommentText = collection["txtCommentText"]
+            };
+
+            return View(searchCriteria);
+        }
+
     }
 }
