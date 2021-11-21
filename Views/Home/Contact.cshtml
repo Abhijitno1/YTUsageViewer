@@ -8,7 +8,7 @@
         <div class="panel-heading">
             <h4 class="panel-title">
                 Search Criteria
-                <a class="pull-right" data-toggle="collapse" href="#criteriaItems"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a class="pull-right" data-toggle="collapse" href="#criteriaItems"><span class="glyphicon glyphicon-resize-vertical"></span></a>
             </h4>
         </div>
         <div id="criteriaItems" class="panel-collapse collapse in">
@@ -42,7 +42,14 @@
                     <div class="row form-row">
                         <label for="txtVideoName" class="col-sm-2 col-form-label">Video Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="txtVideoName" value="">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="txtVideoName" id="txtVideoName" value="">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-default" id="btnSearchVideo">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row form-row">
@@ -68,6 +75,12 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row form-row">
+                        <label for="txtCommentText" class="col-sm-2 col-form-label">Comment Text</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="txtCommentText" value="">
                         </div>
                     </div>
                     <div class="row form-row">
@@ -100,6 +113,11 @@
             $('.datepicker').datepicker({
                 orientation: 'top'
             });
+
+            $('#btnSearchVideo').click(function () {
+                var videoName = $('#txtVideoName').val();
+                alert('Video Name to search: ' + videoName);
+            })
         });
     </script>
 }

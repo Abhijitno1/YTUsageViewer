@@ -20,7 +20,7 @@ namespace YTUsageViewer.Controllers
         // GET: Contacts
         public ActionResult Index(string searchString, string sortOrder, string sortDir, int? pageNumber)
         {
-            const int PAGE_SIZE = 1;
+            const int PAGE_SIZE = 10;
             ViewBag.CurrentPage = pageNumber ?? 1;
 
             var result = db.Contacts.AsQueryable();

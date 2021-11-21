@@ -55,7 +55,7 @@
             <span class="glyphicon @getSortDirIcon("lastName") pull-right"></span>
         </th>
         <th>
-           Mobile Phone
+            Mobile Phone
         </th>
         <th>
             Work Phone
@@ -81,6 +81,10 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.LastName)
+                @if (!string.IsNullOrWhiteSpace(item.LastName))
+                {
+                    <a class="pull-right" href="#" data-toggle="popover" data-trigger="focus" data-content="@item.LastName"><span class="glyphicon glyphicon-zoom-in"></span></a>
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PhoneMobile)
@@ -116,3 +120,15 @@
         sortDir = ViewBag.SortDir
     }))
 </div>
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
+            $(document).ready(function () {
+                $('[data-toggle="popover"]').popover();
+            });
+        });
+    </script>
+}
