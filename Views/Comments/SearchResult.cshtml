@@ -1,0 +1,36 @@
+﻿@model YTUsageViewer.Models.CommentsSearch
+
+@if (Model != null)
+{
+    <table>
+        <tr>
+            <td>cboSubscription</td>
+            <td>@Model.Subscription</td>
+        </tr>
+        <tr>
+            <td>txtPlaylist</td>
+            <td>@Model.Playlist</td>
+        </tr>
+        <tr>
+            <td>txtChannel</td>
+            <td>@Model.Channel</td>
+        </tr>
+        <tr>
+            <td>txtVideoName</td>
+            <td>@Model.VideoName</td>
+        </tr>
+        <tr>
+            <td>dtFromDate</td>
+            <td>@Model.FromDate</td>
+        </tr>
+        <tr>
+            <td>dtToDate</td>
+            <td>@Model.ToDate</td>
+        </tr>
+        <tr>
+            <td>txtCommentText</td>
+            <td>@Model.CommentText</td>
+        </tr>
+    </table>
+}
+

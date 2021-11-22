@@ -108,40 +108,8 @@
             </h4>
         </div>
         <div id="resultItems" class="panel-body">
-            There will be results grid here instead of below
-            @if (Model != null)
-            {
-                <table>
-                    <tr>
-                        <td>cboSubscription</td>
-                        <td>@Model.Subscription</td>
-                    </tr>
-                    <tr>
-                        <td>txtPlaylist</td>
-                        <td>@Model.Playlist</td>
-                    </tr>
-                    <tr>
-                        <td>txtChannel</td>
-                        <td>@Model.Channel</td>
-                    </tr>
-                    <tr>
-                        <td>txtVideoName</td>
-                        <td>@Model.VideoName</td>
-                    </tr>
-                    <tr>
-                        <td>dtFromDate</td>
-                        <td>@Model.FromDate</td>
-                    </tr>
-                    <tr>
-                        <td>dtToDate</td>
-                        <td>@Model.ToDate</td>
-                    </tr>
-                    <tr>
-                        <td>txtCommentText</td>
-                        <td>@Model.CommentText</td>
-                    </tr>
-                </table>
-            }
+            <p>There will be results grid here instead of below.</p>
+            @Html.Partial("~/Views/Comments/SearchResult.cshtml")
         </div>
     </div>
 
@@ -160,27 +128,31 @@
                 alert('Video Name to search: ' + videoName);
             })
 
-            @*
-                //https://stackoverflow.com/questions/15625195/jquery-validator-plugin-ajax-submitting-not-working
+            //https://stackoverflow.com/questions/15625195/jquery-validator-plugin-ajax-submitting-not-working
             $("form").submit(function (e) {
                 e.preventDefault();
                 $.ajax({
                     type: "POST",
-                    url: @Url.Action("Search", "Comments"),
+                    url: '@Url.Action("Search", "Comments")',
                     data: $(this).serialize(),
-                    success: function () {
-
-                        $('#message').html("<h2>Your request is on the way!</h2>")
-                            .append("<p>someone</p>")
+                    success: function (data, status, jqXHR) {
+                        $('#resultItems').html(data);
+                            /*.append("<p>someone</p>")
                             .hide()
                             .fadeIn(1500, function () {
                                 $('#message').append("<img id='checkmark' src='images/ok.png' />");
-                            });
+                            });*/
+                    },
+                    beforeSend: function (xhr) {
+                        $("body").addClass("loading");
+                    },
+                    complete: function (xhr, status) {
+                        $("body").removeClass("loading");
                     }
                 });
                 return false;
             });
-            *@
+
         });
     </script>
 }
