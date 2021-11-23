@@ -113,6 +113,31 @@
         </div>
     </div>
 
+    <div id="dlgSearchVideo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Search Video</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="email">Video Name:</label>
+                            <input type="email" class="form-control" id="txtSrchVideoName">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnSrchVidOk">Ok</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 @section scripts {
@@ -125,8 +150,15 @@
 
             $('#btnSearchVideo').click(function () {
                 var videoName = $('#txtVideoName').val();
-                alert('Video Name to search: ' + videoName);
+                $('#txtSrchVideoName').val(videoName);
+                $("#dlgSearchVideo").modal()
             })
+
+            $('#btnSrchVidOk').click(function () {
+                var selVideoName = $('#txtSrchVideoName').val();
+                $('#txtVideoName').val(selVideoName);
+                $("#dlgSearchVideo").modal('hide')
+            });
 
             //https://stackoverflow.com/questions/15625195/jquery-validator-plugin-ajax-submitting-not-working
             $("form").submit(function (e) {
