@@ -112,32 +112,7 @@
             @Html.Partial("~/Views/Comments/SearchResult.cshtml")
         </div>
     </div>
-
-    <div id="dlgSearchVideo" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Search Video</h4>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="email">Video Name:</label>
-                            <input type="email" class="form-control" id="txtSrchVideoName">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="btnSrchVidOk">Ok</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
+    <div id="dlgContainer"></div>
 </div>
 
 @section scripts {
@@ -148,13 +123,23 @@
                 orientation: 'top'
             });
 
-            $('#btnSearchVideo').click(function () {
-                var videoName = $('#txtVideoName').val();
-                $('#txtSrchVideoName').val(videoName);
-                $("#dlgSearchVideo").modal()
+            $('#btnSearchVideo').click(function () {                             
+                $.ajax({
+                    url: '@Url.Action("SearchVideoDialog", "Home")',
+                    data: { videoName: $('#txtVideoName').val() },
+                    type: "GET",
+                    success: function (response) {
+                        $("#dlgContainer").html(response);
+                        $("#dlgSearchVideo").modal()
+                    },
+                    error: function (response) {
+                        $("#dlgContainer").html(response.responseText);
+                        $("#dlgSearchVideo").modal()
+                    }
+                });
             })
 
-            $('#btnSrchVidOk').click(function () {
+            $('#dlgContainer').on('click', '#btnSrchVidOk', function () {
                 var selVideoName = $('#txtSrchVideoName').val();
                 $('#txtVideoName').val(selVideoName);
                 $("#dlgSearchVideo").modal('hide')

@@ -26,5 +26,10 @@ namespace YTUsageViewer.Controllers
             return View(new CommentsSearch());
         }
 
+        public ActionResult SearchVideoDialog(SearchVideoParams srchParams)
+        {
+            return PartialView(srchParams);
+        }
+
     }
 }
