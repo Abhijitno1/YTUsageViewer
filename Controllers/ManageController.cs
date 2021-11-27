@@ -213,7 +213,7 @@ namespace YTUsageViewer.Controllers
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
 
-        public async Task<ActionResult> UserRoles()
+        public ActionResult UserRoles()
         {
             return View();
         }

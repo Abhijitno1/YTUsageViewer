@@ -6,13 +6,14 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using YTUsageViewer.Models;
 
 namespace YTUsageViewer.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class ContactsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -23,14 +24,20 @@ namespace YTUsageViewer.Controllers
             const int PAGE_SIZE = 10;
             ViewBag.CurrentPage = pageNumber ?? 1;
 
+            var result = GetSearchResults(searchString, sortOrder, sortDir);
+            return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
+        }
+
+        private IQueryable<Contact> GetSearchResults(string searchString, string sortOrder, string sortDir)
+        {
             var result = db.Contacts.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
                 ViewBag.CurrentFilter = searchString;
 
-                result = result.Where(x => (x.FirstName!=null && x.FirstName.ToLower().Contains(searchString.ToLower()))
-                    || (x.LastName!=null && x.LastName.ToLower().Contains(searchString.ToLower())));
+                result = result.Where(x => (x.FirstName != null && x.FirstName.ToLower().Contains(searchString.ToLower()))
+                    || (x.LastName != null && x.LastName.ToLower().Contains(searchString.ToLower())));
             }
 
             if (!string.IsNullOrEmpty(sortOrder))
@@ -54,7 +61,39 @@ namespace YTUsageViewer.Controllers
             else
                 result = result.OrderBy(x => x.ID);
 
-            return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
+            return result;
+        }
+
+        public ActionResult Export(string searchString, string sortOrder, string sortDir, int? pageNumber)
+        {
+            //Ref: https://stackoverflow.com/questions/1746701/export-datatable-to-excel-file
+            //Ref2: https://www.aspsnippets.com/Articles/Export-to-CSV-in-ASPNet-MVC.aspx
+            var result = GetSearchResults(searchString, sortOrder, sortDir);
+
+            string contentType = "application/vnd.ms-excel";
+            string attachmentName = "Contacts.xls";
+            StringBuilder content = new StringBuilder();
+
+            string tab = "";
+            var columnNames = new[] { "First Name", "Last Name", "Mobile Phone", "Work Phone", "Home Phone", "Preferred Phone", "Email" };
+            foreach (var dc in columnNames)
+            {
+                content.Append(tab + dc);
+                tab = "\t";
+            }
+            content.Append("\n");
+            foreach (var dr in result)
+            {
+                content.Append(dr.FirstName);
+                content.Append(tab + dr.LastName);
+                content.Append(tab + dr.PhoneMobile);
+                content.Append(tab + dr.PhoneWork);
+                content.Append(tab + dr.PhoneHome);
+                content.Append(tab + dr.PreferredPhone);
+                content.Append(tab + dr.Email);
+                content.Append("\n");
+            }
+            return File(Encoding.Default.GetBytes(content.ToString()), contentType, attachmentName);
         }
 
         // GET: Contacts/Details/5

@@ -31,9 +31,10 @@
 
 <h2>@ViewBag.Title</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<ul class="list-inline">
+    <li>@Html.ActionLink("Create New", "Create")</li>
+    <li>@Html.ActionLink("Export", "Export", new { sortOrder = ViewBag.SortOrder, sortDir = ViewBag.SortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })</li>
+</ul>
 @using (Html.BeginForm("Index", "Contacts", FormMethod.Get))
 {
     <p>
