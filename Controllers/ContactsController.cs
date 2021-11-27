@@ -13,7 +13,7 @@ using YTUsageViewer.Models;
 
 namespace YTUsageViewer.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class ContactsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
