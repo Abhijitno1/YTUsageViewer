@@ -49,7 +49,7 @@
             foreach (var item in Model.Roles)
             {
                 <dt>@item.RoleName</dt>
-                <dd><input type="checkbox" name="chkIsSelected" value="@item.RoleName" /></dd>
+                <dd><input type="checkbox" name="chkIsSelected" value="@item.RoleName" @if(item.IsSelected) { @Html.Raw("checked") } /></dd>
             }
         }
         else

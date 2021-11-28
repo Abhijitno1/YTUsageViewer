@@ -127,6 +127,7 @@ namespace YTUsageViewer.Controllers
 
         private UserViewModel BuildUserViewModel(ApplicationUser dbUser)
         {
+            var dbUserRoles = dbUser.Roles.ToList();
             var appUser = new UserViewModel
             {
                 Id = dbUser.Id,
@@ -137,10 +138,10 @@ namespace YTUsageViewer.Controllers
             var userRoles = RoleManager.Roles.Select(y => new UserRoleViewModel
             {
                 RoleId = y.Id,
-                RoleName = y.Name,
-                IsSelected = dbUser.Roles.Any(z => z.RoleId == y.Id)
-            });
-            appUser.Roles = userRoles.ToList();
+                RoleName = y.Name
+            }).ToList();
+            userRoles.ForEach(y => y.IsSelected = dbUserRoles.Any(z => z.RoleId == y.RoleId));
+            appUser.Roles = userRoles;
             return appUser;
         }
 
