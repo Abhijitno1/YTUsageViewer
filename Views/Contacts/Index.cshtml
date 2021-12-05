@@ -33,7 +33,12 @@
 
 <ul class="list-inline">
     <li>@Html.ActionLink("Create New", "Create")</li>
-    <li>@Html.ActionLink("Export", "Export2SpreadsheetML", new { sortOrder = ViewBag.SortOrder, sortDir = ViewBag.SortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })</li>
+    <li>
+        @Html.ActionLink("Export to Excel", "Export2SpreadsheetML", new { sortOrder = ViewBag.SortOrder, sortDir = ViewBag.SortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+    </li>
+    <li>
+        @Html.ActionLink("Import from CSV", null, null, new { onclick = "javascript: return importContactsFromCsv()" })        
+    </li>
 </ul>
 @using (Html.BeginForm("Index", "Contacts", FormMethod.Get))
 {
@@ -45,72 +50,74 @@
         <input type="submit" value="Search" />
     </p>
 }
-<table class="table">
-    <tr>
-        <th>
-            @Html.ActionLink(firstName, "Index", new { sortOrder = "firstName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-            <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>
-        </th>
-        <th>
-            @Html.ActionLink(lastName, "Index", new { sortOrder = "lastName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-            <span class="glyphicon @getSortDirIcon("lastName") pull-right"></span>
-        </th>
-        <th>
-            Mobile Phone
-        </th>
-        <th>
-            Work Phone
-        </th>
-        <th>
-            Home Phone
-        </th>
-        <th>
-            Preferred Phone
-        </th>
-        <th>
-            @Html.ActionLink(email, "Index", new { sortOrder = "email", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-            <span class="glyphicon @getSortDirIcon("email") pull-right"></span>
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
+<div id="resultItems">
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-                @if (!string.IsNullOrWhiteSpace(item.LastName))
-                {
-                    <a class="pull-right" href="#" data-toggle="popover" data-trigger="focus" data-content="@item.LastName"><span class="glyphicon glyphicon-zoom-in"></span></a>
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneMobile)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneWork)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneHome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PreferredPhone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-            </td>
+            <th>
+                @Html.ActionLink(firstName, "Index", new { sortOrder = "firstName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>
+            </th>
+            <th>
+                @Html.ActionLink(lastName, "Index", new { sortOrder = "lastName", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @getSortDirIcon("lastName") pull-right"></span>
+            </th>
+            <th>
+                Mobile Phone
+            </th>
+            <th>
+                Work Phone
+            </th>
+            <th>
+                Home Phone
+            </th>
+            <th>
+                Preferred Phone
+            </th>
+            <th>
+                @Html.ActionLink(email, "Index", new { sortOrder = "email", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @getSortDirIcon("email") pull-right"></span>
+            </th>
+            <th></th>
         </tr>
-    }
 
-</table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                    @if (!string.IsNullOrWhiteSpace(item.LastName))
+                    {
+                        <a class="pull-right" href="#" data-toggle="popover" data-trigger="focus" data-content="@item.LastName"><span class="glyphicon glyphicon-zoom-in"></span></a>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneMobile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneWork)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneHome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PreferredPhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
 @*PAGED LIST*@
 <div class="pagedList">
     @Html.PagedListPager(Model, pageNumber => Url.Action("Index", new
@@ -122,14 +129,63 @@
     }))
 </div>
 
-
+<div id="dlgContainer"></div>
 @section scripts {
     <script>
+        //Below function will be executed on View Load
         $(document).ready(function () {
             //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
-            $(document).ready(function () {
-                $('[data-toggle="popover"]').popover();
-            });
+            $('[data-toggle="popover"]').popover();
         });
+
+        function importContactsFromCsv () {
+            //alert('This worked');
+                $.ajax({
+                    url: '@Url.Action("Index", "BulkUpload")',
+                    type: "GET",
+                    success: function (response) {
+                        $("#dlgContainer").html(response);
+                        $("#dlgUpload").modal()
+                    },
+                    error: function (response) {
+                        $("#dlgContainer").html(response.responseText);
+                        $("#dlgUpload").modal()
+                    }
+                });
+
+            return false;
+        }
+
+        function handleUploadClientside() {
+            //alert('this worked');
+            var uploadControl = $('#uploadControl').get(0);
+            if (uploadControl.files.length == 0) {
+                alert('Please select a file to upload');
+                return false;
+            }
+            var formData = new FormData();
+            formData.append('fileUpload', uploadControl.files[0]);
+            $.ajax({
+                url: '@Url.Action("UploadCSV", "BulkUpload")',
+                method: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false
+            })
+            .done(function (response, status, jqXHR) {
+                if (response.Success == true) {
+                    $("#dlgUpload").modal('hide');
+                    alert('Contacts imported successfully');
+                    refreshGrid();
+                }
+            });
+        }
+
+        function refreshGrid() {
+            /*$.get("/Movie/List", function (response) {
+                $("#moviesList").html(response);
+            });*/
+            $("form").submit();
+        }
     </script>
 }
