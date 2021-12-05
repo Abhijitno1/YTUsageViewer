@@ -18,7 +18,7 @@ namespace YTUsageViewer.Controllers
 
         public UsersController()
         {
-
+            
         }
 
         public UsersController(ApplicationUserManager userManager, ApplicationRoleManager roleManager)

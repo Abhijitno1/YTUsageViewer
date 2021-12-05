@@ -183,6 +183,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ExcelExporter.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CommentsSearch.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -220,6 +221,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\LayoutScripts.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Templates\ContactsDataConverter.xsl" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

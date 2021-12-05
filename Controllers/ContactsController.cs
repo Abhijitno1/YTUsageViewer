@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using YTUsageViewer.Helpers;
 using YTUsageViewer.Models;
 
 namespace YTUsageViewer.Controllers
@@ -64,36 +65,32 @@ namespace YTUsageViewer.Controllers
             return result;
         }
 
-        public ActionResult Export(string searchString, string sortOrder, string sortDir, int? pageNumber)
+        public ActionResult Export2SpreadsheetML(string searchString, string sortOrder, string sortDir)
         {
-            //Ref: https://stackoverflow.com/questions/1746701/export-datatable-to-excel-file
-            //Ref2: https://www.aspsnippets.com/Articles/Export-to-CSV-in-ASPNet-MVC.aspx
+            try
+            {
+                var result = GetSearchResults(searchString, sortOrder, sortDir);
+                ExcelExporter xlXporter = new ExcelExporter();
+                var outputStream = xlXporter.ExportDataAsSpreadsheet(result);
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                string attachmentName = "Contacts-xls.xml";
+                return File(outputStream, contentType, attachmentName);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Success = false, Message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult ExportTabDelimted(string searchString, string sortOrder, string sortDir)
+        {
             var result = GetSearchResults(searchString, sortOrder, sortDir);
+            ExcelExporter xlXporter = new ExcelExporter();
+            var outputStream = xlXporter.ExportContactsTabDelimited(result);
 
             string contentType = "application/vnd.ms-excel";
             string attachmentName = "Contacts.xls";
-            StringBuilder content = new StringBuilder();
-
-            string tab = "";
-            var columnNames = new[] { "First Name", "Last Name", "Mobile Phone", "Work Phone", "Home Phone", "Preferred Phone", "Email" };
-            foreach (var dc in columnNames)
-            {
-                content.Append(tab + dc);
-                tab = "\t";
-            }
-            content.Append("\n");
-            foreach (var dr in result)
-            {
-                content.Append(dr.FirstName);
-                content.Append(tab + dr.LastName);
-                content.Append(tab + dr.PhoneMobile);
-                content.Append(tab + dr.PhoneWork);
-                content.Append(tab + dr.PhoneHome);
-                content.Append(tab + dr.PreferredPhone);
-                content.Append(tab + dr.Email);
-                content.Append("\n");
-            }
-            return File(Encoding.Default.GetBytes(content.ToString()), contentType, attachmentName);
+            return File(outputStream, contentType, attachmentName);
         }
 
         // GET: Contacts/Details/5

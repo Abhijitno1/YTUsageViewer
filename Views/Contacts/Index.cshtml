@@ -33,7 +33,7 @@
 
 <ul class="list-inline">
     <li>@Html.ActionLink("Create New", "Create")</li>
-    <li>@Html.ActionLink("Export", "Export", new { sortOrder = ViewBag.SortOrder, sortDir = ViewBag.SortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })</li>
+    <li>@Html.ActionLink("Export", "Export2SpreadsheetML", new { sortOrder = ViewBag.SortOrder, sortDir = ViewBag.SortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })</li>
 </ul>
 @using (Html.BeginForm("Index", "Contacts", FormMethod.Get))
 {
