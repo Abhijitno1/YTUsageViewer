@@ -2,13 +2,12 @@
     padding-top: 50px;
     padding-bottom: 20px;
 }
-
-/* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
+body-content {
+    margin-left:0 !important;
     padding-right: 15px;
+    margin-left:auto;
+    margin-right:auto;
 }
-
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
 */
@@ -50,3 +49,86 @@ textarea {
 .loading .overlay {
     display: block;
 }
+
+/* Begin styles related to side navigation bar */
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+#sidebar {
+    min-width: 220px;
+    max-width: 220px;
+    min-height: 100vh;
+}
+#sidebar.active {
+    margin-left: -220px;
+}
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -220px;
+    }
+
+    #sidebar.active {
+        margin-left: 0;
+    }
+}
+#sidebar a, #sidebar a:hover, #sidebar a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+#sidebar {
+    /* don't forget to add all the previously mentioned styles here too */
+    background: #7386D5;
+    color: #fff;
+    transition: all 0.3s;
+}
+#sidebar .sidebar-header {
+    padding: 5px 10px;
+    background: #6d7fcc;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #47748b;
+}
+
+#sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+    #sidebar ul li a {
+        font-size: 0.9em !important;
+        padding: 10px;
+        font-size: 1.1em;
+        display: block;
+    }
+
+#sidebar ul li a:hover {
+    color: #7386D5;
+    background: #fff;
+}
+
+#sidebar ul li.active > a {
+    color: #fff;
+    background: #6d7fcc;
+}
+
+    #sidebar li.nav-item span {
+        margin-left: 10px;
+    }
+
+    #content {
+        flex: 1;
+    }
+#content .navbar {
+    padding: 15px;
+    border-radius: 0;
+}
+#content .contentDetails {
+    padding: 0 15px;
+}
+/* End styles related to side navigation bar */

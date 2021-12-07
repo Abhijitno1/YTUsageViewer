@@ -276,6 +276,7 @@
     <Content Include="Views\Comments\SearchResult.cshtml" />
     <Content Include="Views\Shared\SearchVideoDialog.cshtml" />
     <Content Include="Views\BulkUpload\Index.cshtml" />
+    <Content Include="Views\Shared\_YTLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
