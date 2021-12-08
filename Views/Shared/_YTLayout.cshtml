@@ -62,15 +62,59 @@
     </div>
 </div>
 
-@section scripts {
+@section subLayoutScripts {
     <script>
-        $(document).ready(function () {
 
+        $(document).ready(function () {
             $('#sidebarCollapse').on('click', function () {
                 $('#sidebar').toggleClass('active');
             });
 
+            //SideBar.setSelectedNavItem('Comments');
+            //alert(SideBar.getSelectedNavItem());
         });
+
+        var SideBar = (function () {
+            var getSelectedNavItem = function () {
+                var selNavItem = $('#sidebar ul li.nav-item.active');
+                return selNavItem.find('span').text();
+            }
+
+            var setSelectedNavItem = function (newItem) {
+                var selNavItem;
+                $('#sidebar ul li a.nav-link span').each(function () {
+                    if ($(this).text() == newItem)
+                        selNavItem = $(this.closest('.nav-item'));
+                });
+                if (selNavItem) {
+                    selNavItem.siblings().removeClass('active');
+                    selNavItem.addClass('active');
+                }
+            };
+
+            return {
+                setSelectedNavItem: setSelectedNavItem,
+                getSelectedNavItem: getSelectedNavItem
+            };
+        })();
+
+        $('#sidebar ul li a.nav-link').click(function () {
+            var navItem = $(this).closest('.nav-item');
+            navItem.siblings().removeClass('active');
+            navItem.addClass('active');
+            var linkText = $(this).children('span').text();
+            var menuSelected = new CustomEvent('menuSelected', {
+                detail: {
+                    linkText: linkText,
+                }
+            });
+            document.dispatchEvent(menuSelected);
+        });
+
+        document.addEventListener('menuSelected', function (e) {
+            alert('You selected ' + e.detail.linkText);
+        });
+
     </script>
 }
 
