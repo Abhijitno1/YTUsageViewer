@@ -74,6 +74,8 @@
             //alert(SideBar.getSelectedNavItem());
         });
 
+        var eventTarget = document.getElementById('sidebar');
+
         var SideBar = (function () {
             var getSelectedNavItem = function () {
                 var selNavItem = $('#sidebar ul li.nav-item.active');
@@ -92,9 +94,14 @@
                 }
             };
 
+            var onNavItemSelect = function (eventHandler) {
+                eventTarget.addEventListener('menuSelected', eventHandler);
+            }
+
             return {
                 setSelectedNavItem: setSelectedNavItem,
-                getSelectedNavItem: getSelectedNavItem
+                getSelectedNavItem: getSelectedNavItem,
+                onNavItemSelect: onNavItemSelect
             };
         })();
 
@@ -102,20 +109,19 @@
             var navItem = $(this).closest('.nav-item');
             navItem.siblings().removeClass('active');
             navItem.addClass('active');
+
             var linkText = $(this).children('span').text();
             var menuSelected = new CustomEvent('menuSelected', {
                 detail: {
                     linkText: linkText,
                 }
             });
-            document.dispatchEvent(menuSelected);
-        });
-
-        document.addEventListener('menuSelected', function (e) {
-            alert('You selected ' + e.detail.linkText);
+            eventTarget.dispatchEvent(menuSelected);
         });
 
     </script>
+
+    @RenderSection("scripts", required: false)
 }
 
 
