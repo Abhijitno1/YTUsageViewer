@@ -1,5 +1,4 @@
-﻿using System.Data.Entity;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -23,26 +22,5 @@ namespace YTUsageViewer.Models
         public ApplicationRole() : base() { }
 
         public ApplicationRole(string roleName) : base(roleName) { }
-    }
-
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
-        public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
-        {
-            //https://stackoverflow.com/questions/9230053/stop-entity-framework-from-modifying-database
-            //Preventing the accidental creation of database
-            Database.SetInitializer<ApplicationDbContext>(null);
-        }
-
-        public static ApplicationDbContext Create()
-        {
-            return new ApplicationDbContext();
-        }
-
-        public DbSet<Contact> Contacts { get; set; }
-
-        //public System.Data.Entity.DbSet<YTUsageViewer.Models.ApplicationUser> ApplicationUsers { get; set; }
-        //public System.Data.Entity.DbSet<YTUsageViewer.Models.RoleViewModel> RoleViewModels { get; set; }
     }
 }

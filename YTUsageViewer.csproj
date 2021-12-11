@@ -181,18 +181,23 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
+    <Compile Include="Controllers\YTBrowserController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\CsvImporter.cs" />
     <Compile Include="Helpers\ExcelExporter.cs" />
+    <Compile Include="Helpers\StaticClasses.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CommentsSearch.cs" />
     <Compile Include="Models\Contact.cs" />
+    <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Playlist.cs" />
     <Compile Include="Models\SearchVideoParams.cs" />
+    <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -277,6 +282,8 @@
     <Content Include="Views\Shared\SearchVideoDialog.cshtml" />
     <Content Include="Views\BulkUpload\Index.cshtml" />
     <Content Include="Views\Shared\_YTLayout.cshtml" />
+    <Content Include="Views\YTBrowser\Subscriptions.cshtml" />
+    <Content Include="Views\YTBrowser\Playlists.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

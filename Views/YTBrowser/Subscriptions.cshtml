@@ -1,0 +1,64 @@
+﻿@using YTUsageViewer.Helpers;
+@model IEnumerable<YTUsageViewer.Models.Subscription>
+
+@{
+    ViewBag.Title = "Subscriptions List";
+    Layout = "~/Views/Shared/_YTLayout.cshtml";
+    ViewBag.CurrentYtMenu = YTBrowserMenu.Subscriptions;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CharId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ChannelTitle)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ChannelId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.InsertedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastUpdatedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsRemoved)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CharId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChannelTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChannelId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InsertedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsRemoved)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+
+</table>

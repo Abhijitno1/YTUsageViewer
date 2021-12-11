@@ -1,0 +1,73 @@
+﻿@using YTUsageViewer.Helpers;
+@model IEnumerable<YTUsageViewer.Models.Playlist>
+
+@{
+    ViewBag.Title = "Playlists list";
+    Layout = "~/Views/Shared/_YTLayout.cshtml";
+    ViewBag.CurrentYtMenu = YTBrowserMenu.Playlists;
+}
+
+<h2>Playlists</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CharId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PublishedAt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PrivacyStatus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.InsertedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastUpdatedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsRemoved)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CharId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PrivacyStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InsertedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsRemoved)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+
+</table>
