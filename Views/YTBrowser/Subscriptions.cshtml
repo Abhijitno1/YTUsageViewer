@@ -12,9 +12,6 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.CharId)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.ChannelTitle)
         </th>
         <th>
@@ -29,15 +26,11 @@
         <th>
             @Html.DisplayNameFor(model => model.IsRemoved)
         </th>
-        <th></th>
     </tr>
 
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CharId)
-            </td>
+        <tr rowKey="@item.CharId">
             <td>
                 @Html.DisplayFor(modelItem => item.ChannelTitle)
             </td>
@@ -52,11 +45,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsRemoved)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
             </td>
         </tr>
     }

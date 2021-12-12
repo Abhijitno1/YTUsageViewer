@@ -10,6 +10,7 @@ namespace YTUsageViewer.Helpers
         public const string Subscriptions = "Subscriptions";
         public const string Playlists = "Playlists";
         public const string Channels = "Channels";
+        public const string Videos = "Videos";
         public const string Comments = "Comments";
     }
 }

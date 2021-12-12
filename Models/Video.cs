@@ -6,16 +6,17 @@ using System.Web;
 
 namespace YTUsageViewer.Models
 {
-    public class Playlist
+    public class Video
     {
         [Key]
         public int ID { get; set; }
         public string CharId { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
+        public string ChannelId { get; set; }
+        public string Duration { get; set; }
         public DateTime PublishedAt { get; set; }
-        public string PrivacyStatus { get; set; }
         public DateTime InsertedDate { get; set; }
-        public DateTime LastUpdatedDate { get; set; }
-        public string IsRemoved { get; set; }
+        public string IsDeleted { get; set; }
     }
 }

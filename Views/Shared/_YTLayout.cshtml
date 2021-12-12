@@ -11,8 +11,8 @@
         </div>
 
         <ul class="list-unstyled components">
-            <li class="nav-item @if (ViewBag.CurrentYtMenu == YTBrowserMenu.Subscriptions) { 
-                @:active 
+            <li class="nav-item @if (ViewBag.CurrentYtMenu == YTBrowserMenu.Subscriptions) {
+                @:active
                 }">
                 <a class="nav-link" href="@Url.Action("Index")">
                     <i class="glyphicon glyphicon-book"></i>
@@ -25,13 +25,19 @@
                     <span>PlayLists</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
+            <li class="nav-item @if (ViewBag.CurrentYtMenu == YTBrowserMenu.Channels) { <text>active</text> }">
+                <a class="nav-link" href="@Url.Action("Channels")">
                     <i class="glyphicon glyphicon-film"></i>
                     <span>Channels</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item @if (ViewBag.CurrentYtMenu == YTBrowserMenu.Videos) { <text>active</text> }">
+                <a class="nav-link" href="@Url.Action("Videos")">
+                    <i class="glyphicon glyphicon-facetime-video"></i>
+                    <span>Videos</span>
+                </a>
+            </li>
+            <li class="nav-item @if (ViewBag.CurrentYtMenu == YTBrowserMenu.Comments) { <text>active</text> }">
                 <a class="nav-link" href="#">
                     <i class="glyphicon glyphicon-comment"></i>
                     <span>Comments</span>
@@ -73,53 +79,12 @@
                 $('#sidebar').toggleClass('active');
             });
 
-            //SideBar.setSelectedNavItem('Comments');
-            //alert(SideBar.getSelectedNavItem());
         });
-
-        var eventTarget = document.getElementById('sidebar');
-
-        var SideBar = (function () {
-            var getSelectedNavItem = function () {
-                var selNavItem = $('#sidebar ul li.nav-item.active');
-                return selNavItem.find('span').text();
-            }
-
-            var setSelectedNavItem = function (newItem) {
-                var selNavItem;
-                $('#sidebar ul li a.nav-link span').each(function () {
-                    if ($(this).text() == newItem)
-                        selNavItem = $(this.closest('.nav-item'));
-                });
-                if (selNavItem) {
-                    selNavItem.siblings().removeClass('active');
-                    selNavItem.addClass('active');
-                }
-            };
-
-            var onNavItemSelect = function (eventHandler) {
-                eventTarget.addEventListener('menuSelected', eventHandler);
-            }
-
-            return {
-                setSelectedNavItem: setSelectedNavItem,
-                getSelectedNavItem: getSelectedNavItem,
-                onNavItemSelect: onNavItemSelect
-            };
-        })();
 
         $('#sidebar ul li a.nav-link').click(function () {
             var navItem = $(this).closest('.nav-item');
             navItem.siblings().removeClass('active');
             navItem.addClass('active');
-
-            var linkText = $(this).children('span').text();
-            var menuSelected = new CustomEvent('menuSelected', {
-                detail: {
-                    linkText: linkText,
-                }
-            });
-            eventTarget.dispatchEvent(menuSelected);
         });
 
     </script>

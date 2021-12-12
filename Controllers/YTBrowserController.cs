@@ -19,7 +19,19 @@ namespace YTUsageViewer.Controllers
         public ActionResult Playlists()
         {
             var playlists = new List<Playlist>();
-            return View("Playlists", playlists);
+            return View(playlists);
+        }
+
+        public ActionResult Channels()
+        {
+            var channels = new List<Channel>();
+            return View(channels);
+        }
+
+        public ActionResult Videos()
+        {
+            var videos = new List<Video>();
+            return View(videos);
         }
 
         // GET: Subscriptions/Details/5
