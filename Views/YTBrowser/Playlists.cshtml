@@ -1,62 +1,113 @@
-﻿@using YTUsageViewer.Helpers;
-@model IEnumerable<YTUsageViewer.Models.Playlist>
+﻿@using PagedList.Mvc
+@using YTUsageViewer.Helpers
+@using YTUsageViewer.Models
+@model PagedList.IPagedList<Playlist>
 
 @{
     ViewBag.Title = "Playlists list";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Playlists;
+    var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
 }
-
-<h2>Playlists</h2>
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PublishedAt)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PrivacyStatus)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.InsertedDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LastUpdatedDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsRemoved)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
+@helper getSortDirIcon(string sortOrderCheck)
+{
+    switch (ViewBag.SortDir)
     {
-        <tr rowKey="@item.CharId">
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PublishedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrivacyStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InsertedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastUpdatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsRemoved)
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-            </td>
-        </tr>
+        case null:
+            @String.Empty;
+            break;
+        case "ASC":
+            @(ViewBag.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes" : string.Empty);
+            break;
+        case "DESC":
+            @(ViewBag.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes-alt" : string.Empty);
+            break;
     }
+}
+<h2>@ViewBag.Title</h2>
+<div id="resultItems">
+    @using (Html.BeginForm("Playlists", "YTBrowser", FormMethod.Get))
+    {
+        <p>
+            Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
+            @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
+            @Html.Hidden("sortDir", ViewBag.SortDir as string)
+            @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
+            <input type="submit" value="Search" />
+        </p>
+    }
+    <table class="table">
+        <tr>
+            <th>
+                @Html.ActionLink("Title", "Playlists", new { sortOrder = "title", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>                
+            </th>
+            <th>
+                @Html.ActionLink("Published At", "Playlists", new { sortOrder = "publishedAt", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>                
+            </th>
+            <th>
+                @Html.ActionLink("Privacy Status", "Playlists", new { sortOrder = "privacyStatus", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>                
+            </th>
+            <th>
+                @Html.ActionLink("Inserted Date", "Playlists", new { sortOrder = "insertedDate", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>                
+            </th>
+            <th>
+                Last Updated Date
+            </th>
+            <th>
+                @Html.ActionLink("Is Removed", "Playlists", new { sortOrder = "isRemoved", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @getSortDirIcon("firstName") pull-right"></span>                                
+            </th>
+            <th></th>
+        </tr>
 
-</table>
+        @foreach (var item in Model)
+        {
+            <tr rowKey="@item.CharId">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublishedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PrivacyStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InsertedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastUpdatedDate)
+                </td>
+                <td>
+                    @(item.IsRemoved == "Y"? "Yes" : "No")
+                </td>
+                <td>
+                    @Html.ActionLink("Details", "Details", new { id = item.ID })
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+@*PAGED LIST*@
+<div class="pagedList">
+    @Html.PagedListPager(Model, pageNumber => Url.Action("Playlists", new
+    {
+        pageNumber,
+        searchString = ViewBag.CurrentFilter,
+        sortOrder = ViewBag.SortOrder,
+        sortDir = ViewBag.SortDir
+    }))
+</div>
+
+@section scripts {
+    <script>
+        $('#btnExport').click(function () {
+            alert("Exporting Playlists (WIP)");
+        });
+    </script>
+}

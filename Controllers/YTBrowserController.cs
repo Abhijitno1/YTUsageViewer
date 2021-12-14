@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PagedList;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,6 +10,9 @@ namespace YTUsageViewer.Controllers
 {
     public class YTBrowserController : Controller
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
+        private const int PAGE_SIZE = 10;
+
         // GET: Subscriptions
         public ActionResult Index()
         {
@@ -16,10 +20,13 @@ namespace YTUsageViewer.Controllers
             return View("Subscriptions", subscriptions);
         }
 
-        public ActionResult Playlists()
+        public ActionResult Playlists(string searchString, string sortOrder, string sortDir, int? pageNumber)
         {
-            var playlists = new List<Playlist>();
-            return View(playlists);
+            ViewBag.CurrentPage = pageNumber ?? 1;
+
+            var result = GetPlaylistSearchResults(searchString, sortOrder, sortDir);
+            return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
+
         }
 
         public ActionResult Channels()
@@ -39,6 +46,49 @@ namespace YTUsageViewer.Controllers
         {
             return View();
         }
-     
+
+        private IQueryable<Playlist> GetPlaylistSearchResults(string searchString, string sortOrder, string sortDir)
+        {
+            var result = db.Playlists.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                ViewBag.CurrentFilter = searchString;
+
+                result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchString.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                ViewBag.SortOrder = sortOrder;
+                ViewBag.SortDir = sortDir;
+
+                if (sortOrder == "title" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.Title);
+                else if (sortOrder == "title" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.Title);
+                else if (sortOrder == "publishedAt" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.PublishedAt);
+                else if (sortOrder == "publishedAt" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.PublishedAt);
+                else if (sortOrder == "privacyStatus" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.PrivacyStatus);
+                else if (sortOrder == "privacyStatus" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.PrivacyStatus);
+                else if (sortOrder == "insertedDate" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.InsertedDate);
+                else if (sortOrder == "insertedDate" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.IsRemoved);
+                else if (sortOrder == "isRemoved" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.PrivacyStatus);
+                else if (sortOrder == "isRemoved" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.IsRemoved);
+            }
+            else
+                result = result.OrderBy(x => x.ID);
+
+            return result;
+        }
+
     }
 }
