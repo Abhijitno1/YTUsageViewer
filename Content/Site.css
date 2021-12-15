@@ -14,7 +14,12 @@ body-content {
 .dl-horizontal dt {
     white-space: normal;
 }
-
+hr#mainPageLimit {
+    margin: 0;
+}
+footer#mainPageFooter {
+    margin-left: 15px;
+}
 /* Set width on the form input elements since they're 100% wide by default 
 input,
 select,

@@ -14,10 +14,12 @@ namespace YTUsageViewer.Controllers
         private const int PAGE_SIZE = 10;
 
         // GET: Subscriptions
-        public ActionResult Index()
+        public ActionResult Index(string searchString, string sortOrder, string sortDir, int? pageNumber)
         {
-            var subscriptions = new List<Subscription>();
-            return View("Subscriptions", subscriptions);
+            ViewBag.CurrentPage = pageNumber ?? 1;
+
+            var result = GetSubscriptionSearchResults(searchString, sortOrder, sortDir);
+            return View("Subscriptions", result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
         public ActionResult Playlists(string searchString, string sortOrder, string sortDir, int? pageNumber)
@@ -26,7 +28,6 @@ namespace YTUsageViewer.Controllers
 
             var result = GetPlaylistSearchResults(searchString, sortOrder, sortDir);
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
-
         }
 
         public ActionResult Channels()
@@ -45,6 +46,45 @@ namespace YTUsageViewer.Controllers
         public ActionResult Details(int id)
         {
             return View();
+        }
+
+        private IQueryable<Subscription> GetSubscriptionSearchResults(string searchString, string sortOrder, string sortDir)
+        {
+            var result = db.Subscriptions.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                ViewBag.CurrentFilter = searchString;
+
+                result = result.Where(x => x.ChannelTitle != null && x.ChannelTitle.ToLower().Contains(searchString.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                ViewBag.SortOrder = sortOrder;
+                ViewBag.SortDir = sortDir;
+
+                if (sortOrder == "channelTitle" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.ChannelTitle);
+                else if (sortOrder == "channelTitle" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.ChannelTitle);
+                else if (sortOrder == "channelId" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.ChannelId);
+                else if (sortOrder == "channelId" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.ChannelId);
+                else if (sortOrder == "insertedDate" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.InsertedDate);
+                else if (sortOrder == "insertedDate" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.InsertedDate);
+                else if (sortOrder == "isRemoved" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.IsRemoved);
+                else if (sortOrder == "isRemoved" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.IsRemoved);
+            }
+            else
+                result = result.OrderBy(x => x.ID);
+
+            return result;
         }
 
         private IQueryable<Playlist> GetPlaylistSearchResults(string searchString, string sortOrder, string sortDir)

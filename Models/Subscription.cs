@@ -14,8 +14,8 @@ namespace YTUsageViewer.Models
         public string ChannelTitle { get; set; }
         public string ChannelId { get; set; }
         public DateTime InsertedDate { get; set; }
-        public DateTime LastUpdatedDate { get; set; }
-        public bool IsRemoved { get; set; }
+        public DateTime? LastUpdatedDate { get; set; }
+        public string IsRemoved { get; set; }
 
     }
 }

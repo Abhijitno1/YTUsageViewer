@@ -1,52 +1,73 @@
-﻿@using YTUsageViewer.Helpers;
-@model IEnumerable<YTUsageViewer.Models.Subscription>
+﻿@using YTUsageViewer.Helpers
+@using YTUsageViewer.Models
+@model PagedList.IPagedList<Subscription>
 
 @{
     ViewBag.Title = "Subscriptions List";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Subscriptions;
+    var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
 }
 
 <h2>@ViewBag.Title</h2>
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.ChannelTitle)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ChannelId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.InsertedDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LastUpdatedDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsRemoved)
-        </th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr rowKey="@item.CharId">
-            <td>
-                @Html.DisplayFor(modelItem => item.ChannelTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChannelId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InsertedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastUpdatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsRemoved)
-            </td>
+@using (Html.BeginForm("Index", "YTBrowser", FormMethod.Get))
+{
+    <p>
+        Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
+        @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
+        @Html.Hidden("sortDir", ViewBag.SortDir as string)
+        @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+<div id="resultItems">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.ActionLink("Channel Title", "Index", new { sortOrder = "channelTitle", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @Html.GetSortDirIcon("channelTitle") pull-right"></span>
+            </th>
+            <th>
+                @Html.ActionLink("Channel Id", "Index", new { sortOrder = "channelId", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @Html.GetSortDirIcon("channelId") pull-right"></span>
+            </th>
+            <th>
+                @Html.ActionLink("Inserted Date", "Index", new { sortOrder = "insertedDate", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @Html.GetSortDirIcon("insertedDate") pull-right"></span>
+            </th>
+            <th>
+                @Html.ActionLink("Is Removed", "Index", new { sortOrder = "isRemoved", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
+                <span class="glyphicon @Html.GetSortDirIcon("isRemoved") pull-right"></span>
+            </th>
         </tr>
-    }
 
-</table>
+        @foreach (var item in Model)
+        {
+            <tr rowKey="@item.CharId">
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChannelTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChannelId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InsertedDate)
+                </td>
+                <td>
+                    @(item.IsRemoved=="Y"? "Yes": "No")
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+@*PAGED LIST*@
+<div class="pagedList">
+    @Html.PagedListPager(Model, pageNumber => Url.Action("Index", new
+    {
+        pageNumber,
+        searchString = ViewBag.CurrentFilter,
+        sortOrder = ViewBag.SortOrder,
+        sortDir = ViewBag.SortDir
+    }))
+</div>
