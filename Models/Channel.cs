@@ -14,7 +14,8 @@ namespace YTUsageViewer.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string IsDeleted { get; set; }
-        public string InsertedDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy}")]
+        public DateTime? InsertedDate { get; set; }
 
     }
 }
