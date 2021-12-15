@@ -17,7 +17,7 @@
         @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
         @Html.Hidden("sortDir", ViewBag.SortDir as string)
         @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
-        <input type="submit" value="Search" />
+        <input type="submit" name="Search" value="Search" />
     </p>
 }
 <div id="resultItems">
@@ -82,8 +82,7 @@
             //Below function will be executed on View Load
             $(document).ready(function () {
                 //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
-                //var genericCloseBtnHtml = '<button onclick="$(this).closest(\'[data-toggle="popover"]\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</button>';
-                
+               
                 $('[data-toggle="popover"]').popover({
                     placement: 'auto left',
                     html: true,

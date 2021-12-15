@@ -26,6 +26,8 @@ namespace YTUsageViewer.Controllers
 
         public ActionResult Playlists(string searchString, string sortOrder, string sortDir, int? pageNumber)
         {
+            //Reset the page number if new search is initiated by user
+            if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
             ViewBag.CurrentPage = pageNumber ?? 1;
 
             var result = GetPlaylistSearchResults(searchString, sortOrder, sortDir);
