@@ -14,13 +14,13 @@ namespace YTUsageViewer.Helpers
 {
     public class ExcelExporter
     {
-        public Stream ExportDataAsSpreadsheet(IEnumerable<Contact> contacts)
+        public Stream ExportDataAsSpreadsheet<T>(IEnumerable<T> enumerableData)
         {
-            var dataSet = GetDataSet(contacts);
+            var dataSet = GetDataSet(enumerableData);
             var dataXml = "<?xml version=\"1.0\"?>";
             dataXml += dataSet.GetXml();
-            System.Diagnostics.Debug.Write("Input\n" + dataXml);
 
+            //System.Diagnostics.Debug.Write("Input\n" + dataXml);
             //var dataFilePath = Path.Combine(AppDomain.CurrentDomain.GetData("DataDirectory").ToString(), "ContactsData.xml");
             //var xmlReader = XmlReader.Create(dataFilePath);
             var reader = new StringReader(dataXml);
@@ -28,6 +28,17 @@ namespace YTUsageViewer.Helpers
 
             //return reader.BaseStream;
             return Transform2SpreadsheetMLUsingXSL(xmlReader);
+        }
+
+        private DataSet GetDataSet<T>(IEnumerable<T> myEnumerable)
+        {
+            DataSet ds = new DataSet();
+            Type type = myEnumerable.GetType().GetGenericArguments()[0];
+
+            if (type == typeof(Contact))
+                ds = GetDataSet((IEnumerable<Contact>)myEnumerable);
+
+            return ds;
         }
 
         private Stream Transform2SpreadsheetMLUsingXSL(XmlReader reader)
@@ -47,6 +58,12 @@ namespace YTUsageViewer.Helpers
             return GetStreamFromString(transformed);
         }
 
+        private Stream GetStreamFromString(string input)
+        {
+            return new MemoryStream(Encoding.Default.GetBytes(input));
+        }
+
+        #region Entity Collection specific code
         public Stream ExportContactsTabDelimited(IEnumerable<Contact> data)
         {
             //Ref: https://stackoverflow.com/questions/1746701/export-datatable-to-excel-file
@@ -75,11 +92,6 @@ namespace YTUsageViewer.Helpers
             return GetStreamFromString(content.ToString());
         }
 
-        private Stream GetStreamFromString(string input)
-        {
-            return new MemoryStream(Encoding.Default.GetBytes(input));
-        }
-
         private DataSet GetDataSet(IEnumerable<Contact> contacts)
         {
             var output = new DataSet();
@@ -106,6 +118,7 @@ namespace YTUsageViewer.Helpers
             }
             return output;
         }
+        #endregion Entity Collection specific code
     }
 
 }
