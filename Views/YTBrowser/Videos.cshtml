@@ -1,64 +1,119 @@
 ﻿@using YTUsageViewer.Helpers;
-@model IEnumerable<YTUsageViewer.Models.Video>
+@model PagedList.IPagedList<Video>
 
 @{
     ViewBag.Title = "Videos List";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Videos;
+    var actionName = "Videos";
+    var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
 }
 
 <h2>@ViewBag.Title</h2>
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ChannelId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Duration)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PublishedAt)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.InsertedDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsDeleted)
-        </th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr rowKey="@item.CharId">
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChannelId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Duration)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PublishedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InsertedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
+@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get))
+{
+    <p>
+        Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
+        @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
+        @Html.Hidden("sortDir", ViewBag.SortDir as string)
+        @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
+        <input type="submit" name="Search" value="Search" />
+    </p>
+}
+<div id="resultItems">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.GridColumnHeader("Title", actionName, "title", newSortDir)
+            </th>
+            <th>
+                @Html.GridColumnHeader("Description", actionName, "description", newSortDir)
+            </th>
+            <th>
+                @Html.GridColumnHeader("Channel Id", actionName, "channelId", newSortDir)
+            </th>
+            <th>
+                @Html.GridColumnHeader("Duration", actionName, "duration", newSortDir)
+            </th>
+            <th>
+                @Html.GridColumnHeader("Published At", actionName, "publishedAt", newSortDir)
+            </th>
+            <th>
+                @Html.GridColumnHeader("Inserted Date", actionName, "insertedDate", newSortDir)
+            </th>
+            <th>
+                @Html.GridColumnHeader("Is Deleted", actionName, "isDeleted", newSortDir)
+            </th>
         </tr>
-    }
 
-</table>
+        @foreach (var item in Model)
+        {
+            <tr rowKey="@item.CharId">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.TruncatedGridColumn(@item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChannelId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublishedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InsertedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDeleted)
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+@*PAGED LIST*@
+<div class="pagedList">
+    @Html.PagedListPager(Model, pageNumber => Url.Action(actionName, new
+    {
+        pageNumber,
+        searchString = ViewBag.CurrentFilter,
+        sortOrder = ViewBag.SortOrder,
+        sortDir = ViewBag.SortDir
+    }))
+</div>
+
+<div style="display:none;">
+    <div class="btn-row-popup-menu-head">
+        Description
+        <a class="btn-popover-close pull-right" href="#">
+            &times;
+        </a>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+            //Below function will be executed on View Load
+            $(document).ready(function () {
+                //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
+
+                $('[data-toggle="popover"]').popover({
+                    placement: 'auto left',
+                    html: true,
+                    title: function () { return $('.btn-row-popup-menu-head').html() },
+                    content: ''
+                });
+            });
+
+            $('[data-toggle="popover"]').on('shown.bs.popover', function () {
+                var popoverWindow = $(this);
+                $('.btn-popover-close').click(function () {
+                    popoverWindow.popover('hide');
+                });
+            });
+    </script>
+}

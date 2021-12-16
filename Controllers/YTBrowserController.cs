@@ -44,10 +44,14 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
-        public ActionResult Videos()
+        public ActionResult Videos(string searchString, string sortOrder, string sortDir, int? pageNumber)
         {
-            var videos = new List<Video>();
-            return View(videos);
+            //Reset the page number if new search is initiated by user
+            if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
+            ViewBag.CurrentPage = pageNumber ?? 1;
+
+            var result = GetVideoSearchResults(searchString, sortOrder, sortDir);
+            return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
         // GET: Subscriptions/Details/5
@@ -176,6 +180,59 @@ namespace YTUsageViewer.Controllers
                 result = result.OrderBy(x => x.ID);
 
             return result;
+        }
+
+        private IEnumerable<Video> GetVideoSearchResults(string searchString, string sortOrder, string sortDir)
+        {
+            var result = db.Videos.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                ViewBag.CurrentFilter = searchString;
+
+                result = result.Where(x => (x.Title != null && x.Title.ToLower().Contains(searchString.ToLower()))
+                    || (x.Description != null && x.Description.ToLower().Contains(searchString.ToLower())));
+            }
+
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                ViewBag.SortOrder = sortOrder;
+                ViewBag.SortDir = sortDir;
+
+                if (sortOrder == "title" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.Title);
+                else if (sortOrder == "title" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.Title);
+                else if (sortOrder == "description" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.Description);
+                else if (sortOrder == "description" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.Description);
+
+                if (sortOrder == "channelId" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.ChannelId);
+                else if (sortOrder == "channelId" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.ChannelId);
+                if (sortOrder == "duration" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.Duration);
+                else if (sortOrder == "duration" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.Duration);
+                if (sortOrder == "publishedAt" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.PublishedAt);
+                else if (sortOrder == "publishedAt" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.PublishedAt);
+                else if (sortOrder == "insertedDate" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.InsertedDate);
+                else if (sortOrder == "insertedDate" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.InsertedDate);
+                else if (sortOrder == "isDeleted" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.IsDeleted);
+                else if (sortOrder == "isDeleted" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.IsDeleted);
+            }
+            else
+                result = result.OrderBy(x => x.ID);
+
+            return result.ToList();
         }
     }
 }
