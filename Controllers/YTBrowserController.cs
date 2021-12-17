@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using YTUsageViewer.Helpers;
 using YTUsageViewer.Models;
 
 namespace YTUsageViewer.Controllers
@@ -12,6 +13,7 @@ namespace YTUsageViewer.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         private const int PAGE_SIZE = 10;
+        private const string EXPORT_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
         // GET: Subscriptions
         public ActionResult Index(string searchString, string sortOrder, string sortDir, int? pageNumber)
@@ -23,6 +25,24 @@ namespace YTUsageViewer.Controllers
             var result = GetSubscriptionSearchResults(searchString, sortOrder, sortDir);
             return View("Subscriptions", result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
+
+
+        public ActionResult ExportSubscriptions2SpreadsheetML(string searchString, string sortOrder, string sortDir)
+        {
+            try
+            {
+                var result = GetSubscriptionSearchResults(searchString, sortOrder, sortDir);
+                ExcelExporter xlXporter = new ExcelExporter();
+                var outputStream = xlXporter.ExportDataAsSpreadsheet(result);
+                string attachmentName = "Subscriptions-xls.xml";
+                return File(outputStream, EXPORT_CONTENT_TYPE, attachmentName);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Success = false, Message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
 
         public ActionResult Playlists(string searchString, string sortOrder, string sortDir, int? pageNumber)
         {

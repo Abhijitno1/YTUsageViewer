@@ -17,7 +17,7 @@
         @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
         @Html.Hidden("sortDir", ViewBag.SortDir as string)
         @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
-        <input type="submit" value="Search" name="Search"/>
+        <input type="submit" value="Search" name="Search" />
     </p>
 }
 <div id="resultItems">
@@ -71,3 +71,12 @@
         sortDir = ViewBag.SortDir
     }))
 </div>
+@section scripts {
+    <script>
+        $('#btnExport').click(function () {
+            //alert("Exporting Playlists (WIP)");
+            $('form').prop('action','@Url.Action("ExportSubscriptions2SpreadsheetML")');
+            $('form').submit();
+        });
+    </script>
+}

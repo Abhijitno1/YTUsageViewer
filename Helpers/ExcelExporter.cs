@@ -37,6 +37,8 @@ namespace YTUsageViewer.Helpers
 
             if (type == typeof(Contact))
                 ds = GetDataSet((IEnumerable<Contact>)myEnumerable);
+            else if (type == typeof(Subscription))
+                ds = GetDataSet((IEnumerable<Subscription>)myEnumerable);
 
             return ds;
         }
@@ -114,6 +116,29 @@ namespace YTUsageViewer.Helpers
                 newRow["PhoneHome"] = dr.PhoneHome;
                 newRow["PreferredPhone"] = dr.PreferredPhone;
                 newRow["Email"] = dr.Email;
+                dtTable.Rows.Add(newRow);
+            }
+            return output;
+        }
+
+        private DataSet GetDataSet(IEnumerable<Subscription> subscriptions)
+        {
+            var output = new DataSet();
+            var dtTable = new DataTable("Subscriptions");
+            dtTable.Columns.Add("CharId");
+            dtTable.Columns.Add("ChannelId");
+            dtTable.Columns.Add("ChannelTitle");
+            dtTable.Columns.Add("InsertedDate");
+            dtTable.Columns.Add("IsRemoved");
+            output.Tables.Add(dtTable);
+            foreach (var dr in subscriptions)
+            {
+                var newRow = dtTable.NewRow();
+                newRow["CharId"] = dr.CharId;
+                newRow["ChannelId"] = dr.ChannelId;
+                newRow["ChannelTitle"] = dr.ChannelTitle;
+                newRow["InsertedDate"] = dr.InsertedDate;
+                newRow["IsRemoved"] = dr.IsRemoved;
                 dtTable.Rows.Add(newRow);
             }
             return output;
