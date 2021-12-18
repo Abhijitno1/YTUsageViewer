@@ -9,7 +9,7 @@
     var playlistId = Request.QueryString["playlistId"];
     var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
 }
-<h2>@ViewBag.Title</h2>
+<h2>@ViewBag.Title for @ViewBag.PlaylistName</h2>
 @using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get))
 {
     <p>
@@ -25,6 +25,7 @@
     <table class="table">
         <tr>
             <th>
+                
                 @Html.GridColumnHeader("Video Title", actionName, new RouteValueDictionary {
                     {"playlistId", playlistId }, {"sortOrder", "title" }, {"sortDir", newSortDir } })
             </th>
@@ -33,12 +34,8 @@
                     {"playlistId", playlistId }, {"sortOrder", "publishedAt" }, {"sortDir", newSortDir } })
             </th>
             <th>
-                @Html.GridColumnHeader("Video Id", actionName, new RouteValueDictionary {
-                    {"playlistId", playlistId }, {"sortOrder", "videoId" }, {"sortDir", newSortDir } })
-            </th>
-            <th>
                 @Html.GridColumnHeader("Video Owner Channel Id", actionName, new RouteValueDictionary {
-                    {"playlistId", playlistId }, {"sortOrder", "videoOwnerChannelId" }, {"sortDir", newSortDir } })
+                    {"playlistId", playlistId }, {"sortOrder", "videoOwnerChannel" }, {"sortDir", newSortDir } })
             </th>
             <th>
                 @Html.GridColumnHeader("Inserted Date", actionName, new RouteValueDictionary {
@@ -54,16 +51,13 @@
         {
             <tr rowKey="@item.CharId">
                 <td>
-                    @Html.DisplayFor(modelItem => item.Title)
+                    <a href="https://www.youtube.com/watch?v=@item.VideoId" target="_blank">@item.Title</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.PublishedAt)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.VideoId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.VideoOwnerChannelId)
+                    <a href="https://www.youtube.com/channel/@item.VideoOwnerChannelId" target="_blank">@item.VideoOwnerChannelName</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.InsertedDate)

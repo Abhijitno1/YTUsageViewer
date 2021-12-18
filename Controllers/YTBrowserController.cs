@@ -60,6 +60,9 @@ namespace YTUsageViewer.Controllers
             if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
             ViewBag.CurrentPage = pageNumber ?? 1;
 
+            var playListName = db.Playlists.Where(x => x.CharId == playlistId).FirstOrDefault()?.Title;
+            ViewBag.PlaylistName = playListName;
+
             var result = GetPlaylistItemsSearchResults(playlistId, searchString, sortOrder, sortDir);
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
@@ -267,7 +270,14 @@ namespace YTUsageViewer.Controllers
 
         private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(string playlistId, string searchString, string sortOrder, string sortDir)
         {
-            var result = db.PlaylistItems.AsQueryable().Where(x => x.PlaylistId == playlistId);
+            var joinResult = from pl in db.PlaylistItems
+                      join ch in db.Channels on pl.VideoOwnerChannelId equals ch.CharId
+                      where pl.PlaylistId == playlistId
+                      select new { pl, ch };
+            joinResult.ToList().ForEach(x => x.pl.VideoOwnerChannelName = x.ch.Title);
+
+            //var result = db.PlaylistItems.AsQueryable().Where(x => x.PlaylistId == playlistId);
+            var result = joinResult.Select(x => x.pl);
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -289,14 +299,10 @@ namespace YTUsageViewer.Controllers
                     result = result.OrderBy(x => x.PublishedAt);
                 else if (sortOrder == "publishedAt" && sortDir == "DESC")
                     result = result.OrderByDescending(x => x.PublishedAt);
-                if (sortOrder == "videoId" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.VideoId);
-                else if (sortOrder == "videoId" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.VideoId);
-                if (sortOrder == "videoOwnerChannelId" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.VideoOwnerChannelId);
-                else if (sortOrder == "videoOwnerChannelId" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.VideoOwnerChannelId);
+                if (sortOrder == "videoOwnerChannel" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.VideoOwnerChannelName);
+                else if (sortOrder == "videoOwnerChannel" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.VideoOwnerChannelName);
                 else if (sortOrder == "insertedDate" && sortDir == "ASC")
                     result = result.OrderBy(x => x.InsertedDate);
                 else if (sortOrder == "insertedDate" && sortDir == "DESC")
