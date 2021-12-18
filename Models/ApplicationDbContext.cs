@@ -22,6 +22,7 @@ namespace YTUsageViewer.Models
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Playlist> Playlists { get; set; }
 
+        public DbSet<PlaylistItem> PlaylistItems { get; set; }
         public System.Data.Entity.DbSet<YTUsageViewer.Models.Channel> Channels { get; set; }
 
         public System.Data.Entity.DbSet<YTUsageViewer.Models.Video> Videos { get; set; }

@@ -197,6 +197,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Playlist.cs" />
+    <Compile Include="Models\PlaylistItem.cs" />
     <Compile Include="Models\SearchVideoParams.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\UserViewModel.cs" />
@@ -289,6 +290,7 @@
     <Content Include="Views\YTBrowser\Playlists.cshtml" />
     <Content Include="Views\YTBrowser\Channels.cshtml" />
     <Content Include="Views\YTBrowser\Videos.cshtml" />
+    <Content Include="Views\YTBrowser\PlaylistItems.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

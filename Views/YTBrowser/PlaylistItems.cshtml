@@ -1,0 +1,107 @@
+﻿@using YTUsageViewer.Helpers
+@model PagedList.IPagedList<PlaylistItem>
+
+@{
+    ViewBag.Title = "Playlist Items";
+    Layout = "~/Views/Shared/_YTLayout.cshtml";
+    ViewBag.CurrentYtMenu = YTBrowserMenu.Playlists;
+    var actionName = "PlaylistItems";
+    var playlistId = Request.QueryString["playlistId"];
+    var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
+}
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get))
+{
+    <p>
+        Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
+        @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
+        @Html.Hidden("sortDir", ViewBag.SortDir as string)
+        @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
+        @Html.Hidden("playlistId", playlistId)
+        <input type="submit" name="Search" value="Search" />
+    </p>
+}
+<div id="resultItems">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.GridColumnHeader("Video Title", actionName, new RouteValueDictionary {
+                    {"playlistId", playlistId }, {"sortOrder", "title" }, {"sortDir", newSortDir } })
+            </th>
+            <th>
+                @Html.GridColumnHeader("Published At", actionName, new RouteValueDictionary {
+                    {"playlistId", playlistId }, {"sortOrder", "publishedAt" }, {"sortDir", newSortDir } })
+            </th>
+            <th>
+                @Html.GridColumnHeader("Video Id", actionName, new RouteValueDictionary {
+                    {"playlistId", playlistId }, {"sortOrder", "videoId" }, {"sortDir", newSortDir } })
+            </th>
+            <th>
+                @Html.GridColumnHeader("Video Owner Channel Id", actionName, new RouteValueDictionary {
+                    {"playlistId", playlistId }, {"sortOrder", "videoOwnerChannelId" }, {"sortDir", newSortDir } })
+            </th>
+            <th>
+                @Html.GridColumnHeader("Inserted Date", actionName, new RouteValueDictionary {
+                    {"playlistId", playlistId }, {"sortOrder", "insertedDate" }, {"sortDir", newSortDir } })
+            </th>
+            <th>
+                @Html.GridColumnHeader("Is Removed", actionName, new RouteValueDictionary {
+                    {"playlistId", playlistId }, {"sortOrder", "isRemoved" }, {"sortDir", newSortDir } })               
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr rowKey="@item.CharId">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublishedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VideoId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VideoOwnerChannelId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InsertedDate)
+                </td>
+                <td>
+                    @(item.IsRemoved == "Y"? "Yes" : "No")
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+@*PAGED LIST*@
+<div class="pagedList">
+    @Html.PagedListPager(Model, pageNumber => Url.Action(actionName, new
+    {
+        pageNumber,
+        searchString = ViewBag.CurrentFilter,
+        sortOrder = ViewBag.SortOrder,
+        sortDir = ViewBag.SortDir,
+        playlistId = playlistId
+    }))
+</div>
+
+@section scripts {
+    <script>
+        $(function () {
+            var btnBack = $('<button type="button" class="btn btn-info" id="btnBack" title="Back to Playlists">\
+                                <i class="glyphicon glyphicon-backward" ></i>\
+                           </button>');
+            $('#pageToolbar').append(btnBack);
+            btnBack.click(function () {
+                var playlistViewUrl = '@Url.Action("Playlists")';
+                $(location).attr('href', playlistViewUrl);
+            });
+        });
+
+        $('#btnExport').click(function () {
+            alert("Exporting Playlists (WIP)");
+        });
+    </script>
+}
