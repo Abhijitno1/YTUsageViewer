@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using YTUsageViewer.Helpers;
 using YTUsageViewer.Models;
+using YTUsageViewer.ViewModels;
 
 namespace YTUsageViewer.Controllers
 {
@@ -54,17 +55,17 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
-        public ActionResult PlaylistItems(string playlistId, string searchString, string sortOrder, string sortDir, int? pageNumber)
+        public ActionResult PlaylistItems(string playlistId, string searchTitle, string searchChannel, string sortOrder, string sortDir, int? pageNumber)
         {
             //Reset the page number if new search is initiated by user
             if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
             ViewBag.CurrentPage = pageNumber ?? 1;
 
-            var result = GetPlaylistItemsSearchResults(playlistId, searchString, sortOrder, sortDir);
+            var result = GetPlaylistItemsSearchResults(playlistId, searchTitle, searchChannel, sortOrder, sortDir);
 
             var channelsList = result.Select(x => new { CharId = x.VideoOwnerChannelId, Title = x.VideoOwnerChannelName })
                     .Distinct().OrderBy(x => x.Title).ToList();           
-            channelsList.Insert(0, new { CharId = "-1", Title = "" });
+            channelsList.Insert(0, new { CharId = (string)null, Title = string.Empty });
             ViewBag.ChannelsList = new SelectList(channelsList, "CharId", "Title");
 
             var playListName = db.Playlists.Where(x => x.CharId == playlistId).FirstOrDefault()?.Title;
@@ -274,7 +275,8 @@ namespace YTUsageViewer.Controllers
             return result.ToList();
         }
 
-        private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(string playlistId, string searchString, string sortOrder, string sortDir)
+        private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(string playlistId, string searchTitle, string searchChannel,
+            string sortOrder, string sortDir)
         {
             var joinResult = from pl in db.PlaylistItems
                       join ch in db.Channels on pl.VideoOwnerChannelId equals ch.CharId
@@ -284,12 +286,17 @@ namespace YTUsageViewer.Controllers
 
             //var result = db.PlaylistItems.AsQueryable().Where(x => x.PlaylistId == playlistId);
             var result = joinResult.Select(x => x.pl);
+            ViewBag.CurrentFilter = new PlaylistItemSearchCriteria();
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchTitle))
             {
-                ViewBag.CurrentFilter = searchString;
-
-                result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchString.ToLower()));
+                ViewBag.CurrentFilter.Title = searchTitle;
+                result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchTitle.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(searchChannel))
+            {
+                ViewBag.CurrentFilter.ChannelId = searchChannel;
+                result = result.Where(x => x.VideoOwnerChannelId != null && x.VideoOwnerChannelId.Equals(searchChannel));
             }
 
             if (!string.IsNullOrEmpty(sortOrder))

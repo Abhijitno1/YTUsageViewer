@@ -40,8 +40,7 @@ namespace YTUsageViewer.Helpers
             var genLink = htmlHelper.ActionLink(linkText, actionName, routeValues);
             string newSortOrder = routeValues["sortOrder"] as string;
             //Additional routeValues
-            routeValues["searchString"] = htmlHelper.ViewBag.CurrentFilter;
-            routeValues["pageNumber"] = htmlHelper.ViewBag.CurrentPage;
+            //routeValues["searchString"] = htmlHelper.ViewBag.CurrentFilter;
 
             // Build sort image-link
             TagBuilder tb = new TagBuilder("span");
