@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using YTUsageViewer.Helpers;
@@ -66,7 +67,7 @@ namespace YTUsageViewer.Controllers
             var channelsList = result.Select(x => new { CharId = x.VideoOwnerChannelId, Title = x.VideoOwnerChannelName })
                     .Distinct().OrderBy(x => x.Title).ToList();           
             channelsList.Insert(0, new { CharId = (string)null, Title = string.Empty });
-            ViewBag.ChannelsList = new SelectList(channelsList, "CharId", "Title");
+            ViewBag.ChannelsList = new SelectList(channelsList, "CharId", "Title", searchChannel);
 
             var playListName = db.Playlists.Where(x => x.CharId == playlistId).FirstOrDefault()?.Title;
             ViewBag.PlaylistName = playListName;
@@ -84,13 +85,19 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
-        public ActionResult Videos(string searchString, string sortOrder, string sortDir, int? pageNumber)
+        public ActionResult Videos(string searchTitle, string searchChannel, string sortOrder, string sortDir, int? pageNumber)
         {
             //Reset the page number if new search is initiated by user
             if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
             ViewBag.CurrentPage = pageNumber ?? 1;
 
-            var result = GetVideoSearchResults(searchString, sortOrder, sortDir);
+            var result = GetVideoSearchResults(searchTitle, searchChannel, sortOrder, sortDir);
+
+            var channelsList = result.Select(x => new { x.ChannelId, x.ChannelName })
+                .Distinct().OrderBy(x => x.ChannelName).ToList();
+            channelsList.Insert(0, new { ChannelId = (string)null, ChannelName = string.Empty });
+            ViewBag.ChannelsList = new SelectList(channelsList, "ChannelId", "ChannelName", searchChannel);
+
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
@@ -222,16 +229,27 @@ namespace YTUsageViewer.Controllers
             return result;
         }
 
-        private IEnumerable<Video> GetVideoSearchResults(string searchString, string sortOrder, string sortDir)
+        private IEnumerable<Video> GetVideoSearchResults(string searchTitle, string searchChannel, string sortOrder, string sortDir)
         {
-            var result = db.Videos.AsQueryable();
+            IEnumerable<Video> result = db.Videos.AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchString))
+            ViewBag.CurrentFilter = new SearchVideoParams();
+            if (!string.IsNullOrEmpty(searchTitle))
             {
-                ViewBag.CurrentFilter = searchString;
+                ViewBag.CurrentFilter.VideoName = searchTitle;
+                result = result.Where(x => (x.Title != null && x.Title.ToLower().Contains(searchTitle.ToLower()))
+                    || (x.Description != null && x.Description.ToLower().Contains(searchTitle.ToLower())));
+            }
 
-                result = result.Where(x => (x.Title != null && x.Title.ToLower().Contains(searchString.ToLower()))
-                    || (x.Description != null && x.Description.ToLower().Contains(searchString.ToLower())));
+            if (!string.IsNullOrEmpty(searchChannel))
+            {
+                ViewBag.CurrentFilter.ChannelId = searchChannel;
+                result = result.Where(x => x.ChannelId != null && x.ChannelId.Contains(searchChannel));
+            }
+
+            foreach (var convertItm in result)
+            {
+                convertItm.DurationSpan = ConvertDuration2TimeSpan(convertItm.Duration);
             }
 
             if (!string.IsNullOrEmpty(sortOrder))
@@ -247,16 +265,15 @@ namespace YTUsageViewer.Controllers
                     result = result.OrderBy(x => x.Description);
                 else if (sortOrder == "description" && sortDir == "DESC")
                     result = result.OrderByDescending(x => x.Description);
-
-                if (sortOrder == "channelId" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.ChannelId);
-                else if (sortOrder == "channelId" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.ChannelId);
-                if (sortOrder == "duration" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.Duration);
+                else if (sortOrder == "channelName" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.ChannelName);
+                else if (sortOrder == "channelName" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.ChannelName);
+                else if (sortOrder == "duration" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.DurationSpan);
                 else if (sortOrder == "duration" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.Duration);
-                if (sortOrder == "publishedAt" && sortDir == "ASC")
+                    result = result.OrderByDescending(x => x.DurationSpan);
+                else if (sortOrder == "publishedAt" && sortDir == "ASC")
                     result = result.OrderBy(x => x.PublishedAt);
                 else if (sortOrder == "publishedAt" && sortDir == "DESC")
                     result = result.OrderByDescending(x => x.PublishedAt);
@@ -273,6 +290,43 @@ namespace YTUsageViewer.Controllers
                 result = result.OrderBy(x => x.ID);
 
             return result.ToList();
+        }
+
+        private TimeSpan? ConvertDuration2TimeSpan(string duration)
+        {
+            TimeSpan? result = null;
+            //var match = Regex.Match(duration, @"PT(\d*?H*)(\d+M)(\d*S*)");
+            int hours = 0, minutes = 0, seconds = 0;
+            var ptPos = duration.IndexOf("PT") + 2;
+            var hPos = duration.IndexOf("H");
+            var mPos = duration.IndexOf("M");
+            var sPos = duration.IndexOf("S");
+            
+            if (ptPos == 1) return result;  //Unsupported format
+
+            if (hPos > -1) { 
+                hours = int.Parse(duration.Substring(ptPos, hPos - ptPos));
+                if (mPos > -1) { 
+                    minutes = int.Parse(duration.Substring(hPos + 1, mPos - hPos - 1));
+                    if (sPos > -1) seconds = int.Parse(duration.Substring(mPos + 1, sPos - mPos - 1));
+                }
+            }
+            else
+            {
+                if (mPos > -1)
+                {
+                    minutes = int.Parse(duration.Substring(ptPos, mPos - ptPos));
+                    if (sPos > -1) seconds = int.Parse(duration.Substring(mPos + 1, sPos - mPos - 1));
+                }
+                else if (sPos > -1)
+                {
+                    seconds = int.Parse(duration.Substring(ptPos, sPos - ptPos));
+                }
+            }
+            if (hours > 0 || minutes > 0 || seconds > 0)
+                result = new TimeSpan(hours, minutes, seconds);
+
+            return result;
         }
 
         private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(string playlistId, string searchTitle, string searchChannel,

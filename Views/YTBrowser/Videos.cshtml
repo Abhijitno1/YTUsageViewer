@@ -1,25 +1,58 @@
 ﻿@using YTUsageViewer.Helpers;
+@using YTUsageViewer.ViewModels
 @model PagedList.IPagedList<Video>
+
+@functions
+{
+    private string newSortDir
+    {
+        get { return ViewBag.SortDir == "ASC" ? "DESC" : "ASC"; }
+    }
+    public RouteValueDictionary GenerateRootValueDictionaryForSort(string sortOrder)
+    {
+        return new RouteValueDictionary {
+            {"searchTitle", ViewBag.CurrentFilter.Title },
+            {"searchChannel", ViewBag.CurrentFilter.ChannelId },
+            {"pageNumber", ViewBag.CurrentPage },
+            {"sortOrder", sortOrder },
+            {"sortDir", newSortDir }
+        };
+    }
+}
 
 @{
     ViewBag.Title = "Videos List";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Videos;
     var actionName = "Videos";
-    var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
 }
 
 <h2>@ViewBag.Title</h2>
-@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get))
+@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get, new { @class = "form-inline" }))
 {
-    <p>
-        Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
-        @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
-        @Html.Hidden("sortDir", ViewBag.SortDir as string)
-        @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
-        <input type="submit" name="Search" value="Search" />
-    </p>
+    <div class="panel panel-default">
+        <div class="panel-body" style="padding:0 15px;">
+            <div class="row form-row">
+                <div class="form-group">
+                    <label for="searchTitle">Find by name</label>
+                    @Html.TextBox("searchTitle", ViewBag.CurrentFilter.VideoName as string, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label for="cboChannel">Channel</label>
+                    @Html.DropDownList("searchChannel", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
+                </div>
+                @*<div class="form-group checkbox">
+                        <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
+                    </div>*@
+                @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
+                @Html.Hidden("sortDir", ViewBag.SortDir as string)
+                @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
+                <input type="submit" name="Search" value="Search" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
 }
+
 <div id="resultItems">
     <table class="table">
         <tr>
@@ -30,7 +63,7 @@
                 @Html.GridColumnHeader("Description", actionName, "description", newSortDir)
             </th>
             <th>
-                @Html.GridColumnHeader("Channel Id", actionName, "channelId", newSortDir)
+                @Html.GridColumnHeader("Channel Name", actionName, "channelName", newSortDir)
             </th>
             <th>
                 @Html.GridColumnHeader("Duration", actionName, "duration", newSortDir)
@@ -50,16 +83,16 @@
         {
             <tr rowKey="@item.CharId">
                 <td>
-                    @Html.DisplayFor(modelItem => item.Title)
+                    <a href="https://www.youtube.com/watch?v=@item.CharId" target="_blank">@item.Title</a>
                 </td>
                 <td>
                     @Html.TruncatedGridColumn(@item.Description)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ChannelId)
+                    <a href="https://www.youtube.com/channel/@item.ChannelId" target="_blank">@item.ChannelName</a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Duration)
+                    @Html.DisplayFor(modelItem => item.DurationSpan)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.PublishedAt)
@@ -78,12 +111,13 @@
 @*PAGED LIST*@
 <div class="pagedList">
     @Html.PagedListPager(Model, pageNumber => Url.Action(actionName, new
-    {
-        pageNumber,
-        searchString = ViewBag.CurrentFilter,
-        sortOrder = ViewBag.SortOrder,
-        sortDir = ViewBag.SortDir
-    }))
+{
+    pageNumber,
+    searchTitle = ViewBag.CurrentFilter.VideoName,
+    searchChannel = ViewBag.CurrentFilter.ChannelId,
+    sortOrder = ViewBag.SortOrder,
+    sortDir = ViewBag.SortDir
+}))
 </div>
 
 <div style="display:none;">
@@ -97,23 +131,23 @@
 
 @section scripts {
     <script>
-            //Below function will be executed on View Load
-            $(document).ready(function () {
-                //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
+        //Below function will be executed on View Load
+        $(document).ready(function () {
+            //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
 
-                $('[data-toggle="popover"]').popover({
-                    placement: 'auto left',
-                    html: true,
-                    title: function () { return $('.btn-row-popup-menu-head').html() },
-                    content: ''
-                });
+            $('[data-toggle="popover"]').popover({
+                placement: 'auto left',
+                html: true,
+                title: function () { return $('.btn-row-popup-menu-head').html() },
+                content: ''
             });
+        });
 
-            $('[data-toggle="popover"]').on('shown.bs.popover', function () {
-                var popoverWindow = $(this);
-                $('.btn-popover-close').click(function () {
-                    popoverWindow.popover('hide');
-                });
+        $('[data-toggle="popover"]').on('shown.bs.popover', function () {
+            var popoverWindow = $(this);
+            $('.btn-popover-close').click(function () {
+                popoverWindow.popover('hide');
             });
+        });
     </script>
 }
