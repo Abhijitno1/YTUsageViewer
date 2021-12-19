@@ -60,10 +60,16 @@ namespace YTUsageViewer.Controllers
             if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
             ViewBag.CurrentPage = pageNumber ?? 1;
 
+            var result = GetPlaylistItemsSearchResults(playlistId, searchString, sortOrder, sortDir);
+
+            var channelsList = result.Select(x => new { CharId = x.VideoOwnerChannelId, Title = x.VideoOwnerChannelName })
+                    .Distinct().OrderBy(x => x.Title).ToList();           
+            channelsList.Insert(0, new { CharId = "-1", Title = "" });
+            ViewBag.ChannelsList = new SelectList(channelsList, "CharId", "Title");
+
             var playListName = db.Playlists.Where(x => x.CharId == playlistId).FirstOrDefault()?.Title;
             ViewBag.PlaylistName = playListName;
 
-            var result = GetPlaylistItemsSearchResults(playlistId, searchString, sortOrder, sortDir);
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
