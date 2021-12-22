@@ -396,6 +396,9 @@ namespace YTUsageViewer.Controllers
 
             if (!string.IsNullOrEmpty(sortOrder))
             {
+                ViewBag.SortOrder = sortOrder;
+                ViewBag.SortDir = sortDir;
+
                 if (sortOrder == "commentType" && sortDir == "ASC")
                     result = result.OrderBy(x => x.CommentType);
                 else if (sortOrder == "commentType" && sortDir == "DESC")
