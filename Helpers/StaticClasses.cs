@@ -102,4 +102,48 @@ namespace YTUsageViewer.Helpers
             return new MvcHtmlString(displayText + magnifier);
         }
     }
+
+    public static class HelperMethods
+    {
+        public static TimeSpan? ConvertDuration2TimeSpan(string duration)
+        {
+            TimeSpan? result = null;
+            //var match = Regex.Match(duration, @"PT(\d*?H*)(\d+M)(\d*S*)");
+            int hours = 0, minutes = 0, seconds = 0;
+            var ptPos = duration.IndexOf("PT") + 2;
+            var hPos = duration.IndexOf("H");
+            var mPos = duration.IndexOf("M");
+            var sPos = duration.IndexOf("S");
+
+            if (ptPos == 1) return result;  //Unsupported format
+
+            if (hPos > -1)
+            {
+                hours = int.Parse(duration.Substring(ptPos, hPos - ptPos));
+                if (mPos > -1)
+                {
+                    minutes = int.Parse(duration.Substring(hPos + 1, mPos - hPos - 1));
+                    if (sPos > -1) seconds = int.Parse(duration.Substring(mPos + 1, sPos - mPos - 1));
+                }
+            }
+            else
+            {
+                if (mPos > -1)
+                {
+                    minutes = int.Parse(duration.Substring(ptPos, mPos - ptPos));
+                    if (sPos > -1) seconds = int.Parse(duration.Substring(mPos + 1, sPos - mPos - 1));
+                }
+                else if (sPos > -1)
+                {
+                    seconds = int.Parse(duration.Substring(ptPos, sPos - ptPos));
+                }
+            }
+            if (hours > 0 || minutes > 0 || seconds > 0)
+                result = new TimeSpan(hours, minutes, seconds);
+
+            return result;
+        }
+
+
+    }
 }

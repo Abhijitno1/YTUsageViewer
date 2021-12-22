@@ -24,8 +24,8 @@ namespace YTUsageViewer.Models
 
         public DbSet<PlaylistItem> PlaylistItems { get; set; }
         public System.Data.Entity.DbSet<YTUsageViewer.Models.Channel> Channels { get; set; }
-
         public System.Data.Entity.DbSet<YTUsageViewer.Models.Video> Videos { get; set; }
+        public System.Data.Entity.DbSet<YTUsageViewer.Models.Comment> Comments { get; set; }
 
         //public System.Data.Entity.DbSet<YTUsageViewer.Models.ApplicationUser> ApplicationUsers { get; set; }
         //public System.Data.Entity.DbSet<YTUsageViewer.Models.RoleViewModel> RoleViewModels { get; set; }

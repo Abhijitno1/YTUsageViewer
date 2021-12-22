@@ -1,6 +1,6 @@
 ﻿@using YTUsageViewer.Helpers;
 @using YTUsageViewer.ViewModels
-@model PagedList.IPagedList<Video>
+@model PagedList.IPagedList<Comment>
 
 @functions
 {
@@ -8,23 +8,40 @@
     {
         get { return ViewBag.SortDir == "ASC" ? "DESC" : "ASC"; }
     }
-    public RouteValueDictionary GenerateRootValueDictionaryForSort(string sortOrder)
+    public RouteValueDictionary GenerateRootValueDictionaryForSort(string newSortOrder)
     {
         return new RouteValueDictionary {
-            {"searchTitle", ViewBag.CurrentFilter.VideoName },
+            {"searchTitle", ViewBag.CurrentFilter.CommentText },
+            {"searchVideo", ViewBag.CurrentFilter.VideoId },
             {"searchChannel", ViewBag.CurrentFilter.ChannelId },
             {"pageNumber", ViewBag.CurrentPage },
-            {"sortOrder", sortOrder },
+            {"sortOrder", newSortOrder },
             {"sortDir", newSortDir }
         };
+    }
+
+    public SelectList GenerateSelectlistForCommentTypes()
+    {
+        var selectListItems = new[] 
+        {
+            String.Empty,
+            "Comment to Video",
+            "Reply to video",
+            "Comment to post",
+            "Reply to post",
+            "Commented",
+            "Replied",
+            "Replied to a comment"
+        };
+        return new SelectList(selectListItems, ViewBag.CurrentFilter.CommentType);
     }
 }
 
 @{
     ViewBag.Title = "Videos List";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
-    ViewBag.CurrentYtMenu = YTBrowserMenu.Videos;
-    var actionName = "Videos";
+    ViewBag.CurrentYtMenu = YTBrowserMenu.Comments;
+    var actionName = "Comments";
 }
 
 <h2>@ViewBag.Title</h2>
@@ -34,16 +51,24 @@
         <div class="panel-body" style="padding:0 15px;">
             <div class="row form-row">
                 <div class="form-group">
-                    <label for="searchTitle">Find by name</label>
-                    @Html.TextBox("searchTitle", ViewBag.CurrentFilter.VideoName as string, new { @class = "form-control" })
+                    <label for="searchComment">Find by name</label>
+                    @Html.TextBox("searchComment", ViewBag.CurrentFilter.CommentText as string, new { @class = "form-control" })
                 </div>
                 <div class="form-group">
-                    <label for="cboChannel">Channel</label>
+                    <label for="searchCommentType">Comment Type</label>
+                    @Html.DropDownList("searchCommentType", GenerateSelectlistForCommentTypes(), new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label for="searchChannel">Channel</label>
                     @Html.DropDownList("searchChannel", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
                 </div>
+                <div class="form-group">
+                    <label for="searchVideo">Video</label>
+                    @Html.DropDownList("searchVideo", ViewBag.VideosList as SelectList, new { @class = "form-control" })
+                </div>
                 @*<div class="form-group checkbox">
-                        <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
-                    </div>*@
+            <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
+        </div>*@
                 @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
                 @Html.Hidden("sortDir", ViewBag.SortDir as string)
                 @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
@@ -57,51 +82,51 @@
     <table class="table">
         <tr>
             <th>
-                @Html.GridColumnHeader("Title", actionName, "title", newSortDir)
+                @Html.GridColumnHeader("Comment Type", actionName, "commentType", newSortDir)
             </th>
             <th>
-                @Html.GridColumnHeader("Description", actionName, "description", newSortDir)
+                @Html.GridColumnHeader("Video Name", actionName, "videoTitle", newSortDir)
             </th>
             <th>
-                @Html.GridColumnHeader("Channel Name", actionName, "channelName", newSortDir)
+                @Html.GridColumnHeader("Channel Name", actionName, "channelTitle", newSortDir)
             </th>
             <th>
-                @Html.GridColumnHeader("Duration", actionName, "duration", newSortDir)
+                @Html.GridColumnHeader("Comment Text", actionName, "commentText", newSortDir)
             </th>
             <th>
-                @Html.GridColumnHeader("Published At", actionName, "publishedAt", newSortDir)
+                @Html.GridColumnHeader("Published On", actionName, "createdWhen", newSortDir)
             </th>
-            <th>
+            @*<th>
                 @Html.GridColumnHeader("Inserted Date", actionName, "insertedDate", newSortDir)
-            </th>
+            </th>*@
             <th>
-                @Html.GridColumnHeader("Is Deleted", actionName, "isDeleted", newSortDir)
+                @Html.GridColumnHeader("Is Deleted", actionName, "isUnavailable", newSortDir)
             </th>
         </tr>
 
         @foreach (var item in Model)
         {
-            <tr rowKey="@item.CharId">
+            <tr rowKey="@item.CommentId">
                 <td>
-                    <a href="https://www.youtube.com/watch?v=@item.CharId" target="_blank">@item.Title</a>
+                    <a href="@item.CommentUrl" target="_blank">@item.CommentType</a>
                 </td>
                 <td>
-                    @Html.TruncatedGridColumn(@item.Description)
+                    <a href="https://www.youtube.com/watch?v=@item.VideoId" target="_blank">@item.VideoTitle</a>
                 </td>
                 <td>
-                    <a href="https://www.youtube.com/channel/@item.ChannelId" target="_blank">@item.ChannelName</a>
+                    <a href="https://www.youtube.com/channel/@item.ChannelId" target="_blank">@item.ChannelTitle</a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.DurationSpan)
+                    @Html.TruncatedGridColumn(@item.CommentText)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PublishedAt)
+                    @Html.DisplayFor(modelItem => item.CreatedWhen)
                 </td>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.InsertedDate)
-                </td>
+                </td>*@
                 <td>
-                    @Html.DisplayFor(modelItem => item.IsDeleted)
+                    @Html.DisplayFor(modelItem => item.IsUnavailable)
                 </td>
             </tr>
         }
@@ -113,8 +138,9 @@
     @Html.PagedListPager(Model, pageNumber => Url.Action(actionName, new
 {
     pageNumber,
-    searchTitle = ViewBag.CurrentFilter.VideoName,
+    searchTitle = ViewBag.CurrentFilter.CommentText,
     searchChannel = ViewBag.CurrentFilter.ChannelId,
+    searchVideo = ViewBag.CurrentFilter.VideoId,
     sortOrder = ViewBag.SortOrder,
     sortDir = ViewBag.SortDir
 }))

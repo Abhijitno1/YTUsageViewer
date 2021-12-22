@@ -191,6 +191,7 @@
     <Compile Include="Helpers\StaticClasses.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Channel.cs" />
+    <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\CommentsSearch.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Playlist.cs" />
     <Compile Include="Models\PlaylistItem.cs" />
+    <Compile Include="ViewModels\SearchCommentParams.cs" />
     <Compile Include="ViewModels\SearchVideoParams.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\UserViewModel.cs" />
@@ -292,6 +294,7 @@
     <Content Include="Views\YTBrowser\Channels.cshtml" />
     <Content Include="Views\YTBrowser\Videos.cshtml" />
     <Content Include="Views\YTBrowser\PlaylistItems.cshtml" />
+    <Content Include="Views\YTBrowser\Comments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

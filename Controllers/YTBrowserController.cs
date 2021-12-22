@@ -101,10 +101,34 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
-        // GET: Subscriptions/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Comments(string searchComment, string searchCommentType, string searchChannel, string searchVideo, 
+            string sortOrder, string sortDir, int? pageNumber)
         {
-            return View();
+            //Reset the page number if new search is initiated by user
+            if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
+            ViewBag.CurrentPage = pageNumber ?? 1;
+            var searchParams = new SearchCommentParams()
+            {
+                CommentText = searchComment,
+                CommentType = searchCommentType,
+                ChannelId = searchChannel,
+                VideoId = searchVideo
+            };
+
+            var result = GetCommentsSearchResult(searchParams, sortOrder, sortDir);
+
+            var channelsList = result.Select(x => new { x.ChannelId, x.ChannelTitle })
+                .Distinct().OrderBy(x => x.ChannelTitle).ToList();
+            channelsList.Insert(0, new { ChannelId = (string)null, ChannelTitle = string.Empty });
+            ViewBag.ChannelsList = new SelectList(channelsList, "ChannelId", "ChannelTitle", searchChannel);
+
+            var videosList = result.Select(x => new { x.VideoId, x.VideoTitle })
+                .Distinct().OrderBy(x => x.VideoTitle).ToList();
+            videosList.Insert(0, new { VideoId = (string)null, VideoTitle = string.Empty });
+            ViewBag.VideosList = new SelectList(videosList, "VideoId", "VideoTitle", searchVideo);
+
+
+            return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
         private IQueryable<Subscription> GetSubscriptionSearchResults(string searchString, string sortOrder, string sortDir)
@@ -244,12 +268,12 @@ namespace YTUsageViewer.Controllers
             if (!string.IsNullOrEmpty(searchChannel))
             {
                 ViewBag.CurrentFilter.ChannelId = searchChannel;
-                result = result.Where(x => x.ChannelId != null && x.ChannelId.Contains(searchChannel));
+                result = result.Where(x => x.ChannelId != null && x.ChannelId.Equals(searchChannel));
             }
 
             foreach (var convertItm in result)
             {
-                convertItm.DurationSpan = ConvertDuration2TimeSpan(convertItm.Duration);
+                convertItm.DurationSpan = HelperMethods.ConvertDuration2TimeSpan(convertItm.Duration);
             }
 
             if (!string.IsNullOrEmpty(sortOrder))
@@ -290,43 +314,6 @@ namespace YTUsageViewer.Controllers
                 result = result.OrderBy(x => x.ID);
 
             return result.ToList();
-        }
-
-        private TimeSpan? ConvertDuration2TimeSpan(string duration)
-        {
-            TimeSpan? result = null;
-            //var match = Regex.Match(duration, @"PT(\d*?H*)(\d+M)(\d*S*)");
-            int hours = 0, minutes = 0, seconds = 0;
-            var ptPos = duration.IndexOf("PT") + 2;
-            var hPos = duration.IndexOf("H");
-            var mPos = duration.IndexOf("M");
-            var sPos = duration.IndexOf("S");
-            
-            if (ptPos == 1) return result;  //Unsupported format
-
-            if (hPos > -1) { 
-                hours = int.Parse(duration.Substring(ptPos, hPos - ptPos));
-                if (mPos > -1) { 
-                    minutes = int.Parse(duration.Substring(hPos + 1, mPos - hPos - 1));
-                    if (sPos > -1) seconds = int.Parse(duration.Substring(mPos + 1, sPos - mPos - 1));
-                }
-            }
-            else
-            {
-                if (mPos > -1)
-                {
-                    minutes = int.Parse(duration.Substring(ptPos, mPos - ptPos));
-                    if (sPos > -1) seconds = int.Parse(duration.Substring(mPos + 1, sPos - mPos - 1));
-                }
-                else if (sPos > -1)
-                {
-                    seconds = int.Parse(duration.Substring(ptPos, sPos - ptPos));
-                }
-            }
-            if (hours > 0 || minutes > 0 || seconds > 0)
-                result = new TimeSpan(hours, minutes, seconds);
-
-            return result;
         }
 
         private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(string playlistId, string searchTitle, string searchChannel,
@@ -385,5 +372,65 @@ namespace YTUsageViewer.Controllers
             return result.ToList();
         }
 
+        private IEnumerable<Comment> GetCommentsSearchResult(SearchCommentParams searchParams, string sortOrder, string sortDir)
+        {
+            IEnumerable<Comment> result = db.Comments.AsQueryable();
+
+            ViewBag.CurrentFilter = searchParams;
+            if (!string.IsNullOrEmpty(searchParams.CommentText))
+            {
+                result = result.Where(x => x.CommentText != null && x.CommentText.ToLower().Contains(searchParams.CommentText.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(searchParams.CommentType))
+            {
+                result = result.Where(x => x.CommentType != null && x.CommentType.ToLower().Contains(searchParams.CommentType.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(searchParams.ChannelId))
+            {
+                result = result.Where(x => x.ChannelId != null && x.ChannelId.Equals(searchParams.ChannelId));
+            }
+            if (!string.IsNullOrEmpty(searchParams.VideoId))
+            {
+                result = result.Where(x => x.VideoId != null && x.VideoId.Equals(searchParams.VideoId));
+            }
+
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                if (sortOrder == "commentType" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.CommentType);
+                else if (sortOrder == "commentType" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.CommentType);
+                else if (sortOrder == "videoTitle" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.VideoTitle);
+                else if (sortOrder == "videoTitle" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.VideoTitle);
+                else if (sortOrder == "channelTitle" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.ChannelTitle);
+                else if (sortOrder == "channelTitle" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.ChannelTitle);
+                else if (sortOrder == "commentText" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.CommentText);
+                else if (sortOrder == "commentText" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.CommentText);
+                else if (sortOrder == "createdWhen" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.CreatedWhen);
+                else if (sortOrder == "createdWhen" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.CreatedWhen);
+                else if (sortOrder == "isUnavailable" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.IsUnavailable);
+                else if (sortOrder == "isUnavailable" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.IsUnavailable);
+                /* placeholder for sort on InstertedDate
+                else if (sortOrder == "isDeleted" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.IsDeleted);
+                else if (sortOrder == "isDeleted" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.IsDeleted);
+                */
+            }
+            else
+                result = result.OrderBy(x => x.Id);
+
+            return result.ToList();
+        }
     }
 }
