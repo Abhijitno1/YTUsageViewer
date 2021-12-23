@@ -11,7 +11,8 @@
     public RouteValueDictionary GenerateRootValueDictionaryForSort(string newSortOrder)
     {
         return new RouteValueDictionary {
-            {"searchTitle", ViewBag.CurrentFilter.CommentText },
+            {"searchComment", ViewBag.CurrentFilter.CommentText },
+            {"searchCommentType", ViewBag.CurrentFilter.CommentType },
             {"searchVideo", ViewBag.CurrentFilter.VideoId },
             {"searchChannel", ViewBag.CurrentFilter.ChannelId },
             {"pageNumber", ViewBag.CurrentPage },
@@ -85,25 +86,25 @@
     <table class="table">
         <tr>
             <th>
-                @Html.GridColumnHeader("Comment Type", actionName, "commentType", newSortDir)
+                @Html.GridColumnHeader("Comment Type", actionName, GenerateRootValueDictionaryForSort("commentType"))
             </th>
             <th>
-                @Html.GridColumnHeader("Video Name", actionName, "videoTitle", newSortDir)
+                @Html.GridColumnHeader("Video Name", actionName, GenerateRootValueDictionaryForSort("videoTitle"))
             </th>
             <th>
-                @Html.GridColumnHeader("Channel Name", actionName, "channelTitle", newSortDir)
+                @Html.GridColumnHeader("Channel Name", actionName, GenerateRootValueDictionaryForSort("channelTitle"))
             </th>
             <th>
-                @Html.GridColumnHeader("Comment Text", actionName, "commentText", newSortDir)
+                @Html.GridColumnHeader("Comment Text", actionName, GenerateRootValueDictionaryForSort("commentText"))
             </th>
             <th>
-                @Html.GridColumnHeader("Published On", actionName, "createdWhen", newSortDir)
+                @Html.GridColumnHeader("Published On", actionName, GenerateRootValueDictionaryForSort("createdWhen"))
             </th>
             @*<th>
                 @Html.GridColumnHeader("Inserted Date", actionName, "insertedDate", newSortDir)
             </th>*@
             <th>
-                @Html.GridColumnHeader("Is Deleted", actionName, "isUnavailable", newSortDir)
+                @Html.GridColumnHeader("Is Deleted", actionName, GenerateRootValueDictionaryForSort("isUnavailable"))
             </th>
         </tr>
 
@@ -141,7 +142,8 @@
     @Html.PagedListPager(Model, pageNumber => Url.Action(actionName, new
 {
     pageNumber,
-    searchTitle = ViewBag.CurrentFilter.CommentText,
+    searchComment = ViewBag.CurrentFilter.CommentText,
+    searchCommentType = ViewBag.CurrentFilter.CommentType,
     searchChannel = ViewBag.CurrentFilter.ChannelId,
     searchVideo = ViewBag.CurrentFilter.VideoId,
     sortOrder = ViewBag.SortOrder,
