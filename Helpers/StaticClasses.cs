@@ -52,6 +52,20 @@ namespace YTUsageViewer.Helpers
             return new MvcHtmlString(genLink.ToString() + linkImg);
         }
 
+        public static IHtmlString GridColumnHeader(this HtmlHelper htmlHelper, string linkText, string newSortOrder)
+        {
+            var genLink = @"<a href='Javascript:sortGrid(""" + newSortOrder + @""")'>" + linkText + "</a>";
+
+            // Build sort image-link
+            TagBuilder tb = new TagBuilder("span");
+            //tb.Attributes.Add("src", VirtualPathUtility.ToAbsolute(src));
+            tb.Attributes.Add("class", $"glyphicon { htmlHelper.GetSortDirIcon(newSortOrder).ToHtmlString() } pull-right");
+            var linkImg = tb.ToString(TagRenderMode.SelfClosing);
+
+            // return MvcHtmlString. This class implements IHtmlString interface. IHtmlStrings will not be html encoded.
+            return new MvcHtmlString(genLink + linkImg);
+        }
+
 
         public static IHtmlString GridColumnHeader(this HtmlHelper htmlHelper, string linkText, string actionName, string newSortOrder, string newSortDir)
         {
