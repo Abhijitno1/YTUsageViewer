@@ -100,7 +100,28 @@ namespace YTUsageViewer.Controllers
 
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
+        public ActionResult Comments()
+        {
+            var result= new List<Comment>();
+            //build empty search parameters list
+            ViewBag.CurrentFilter = new SearchCommentParams();
 
+            var channelsList = db.Comments.Select(x => new { x.ChannelId, x.ChannelTitle }).Distinct().OrderBy(x => x.ChannelTitle).ToList();
+            channelsList.Insert(0, new { ChannelId = (string)null, ChannelTitle = string.Empty });
+            ViewBag.ChannelsList = new SelectList(channelsList, "ChannelId", "ChannelTitle");
+
+            var videosList = db.Comments.Select(x => new { x.VideoId, x.VideoTitle}).Distinct().OrderBy(x => x.VideoTitle).ToList();
+            videosList.Insert(0, new { VideoId = (string)null, VideoTitle = string.Empty });
+            ViewBag.VideosList = new SelectList(videosList, "VideoId", "VideoTitle");
+
+            var commentTypesList = db.Comments.Select(x => x.CommentType).Distinct().OrderBy(x => x).ToList();
+            commentTypesList.Insert(0, string.Empty);
+            ViewBag.CommentTypesList = new SelectList(commentTypesList);
+
+            return View(result.ToPagedList(1, 1));
+        }
+
+        [HttpPost]
         public ActionResult Comments(string searchComment, string searchCommentType, string searchChannel, string searchVideo, 
             string sortOrder, string sortDir, int? pageNumber)
         {
@@ -127,6 +148,9 @@ namespace YTUsageViewer.Controllers
             videosList.Insert(0, new { VideoId = (string)null, VideoTitle = string.Empty });
             ViewBag.VideosList = new SelectList(videosList, "VideoId", "VideoTitle", searchVideo);
 
+            var commentTypesList = result.Select(x => x.CommentType).Distinct().OrderBy(x => x).ToList();
+            commentTypesList.Insert(0, string.Empty);
+            ViewBag.CommentTypesList = new SelectList(commentTypesList);
 
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }

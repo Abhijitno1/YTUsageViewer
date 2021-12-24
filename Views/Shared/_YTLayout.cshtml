@@ -60,8 +60,8 @@
                         <i class="glyphicon glyphicon-cloud-download"></i>
                     </button>
                     @*<button type="button" class="btn btn-info" id="btnImport" title="Import from CSV">
-                        <i class="glyphicon glyphicon-cloud-upload"></i>
-                    </button>*@
+                            <i class="glyphicon glyphicon-cloud-upload"></i>
+                        </button>*@
                 </div>
             </div>
         </nav>
@@ -72,22 +72,20 @@
 </div>
 
 @section subLayoutScripts {
-    <script>
+    @Scripts.Render("~/bundles/YTBrowser")
+<script>
+        function sortGrid(newSortOrder) {
+            var newSortDir
+            //Reverse the sortDir only if sortOrder is not changed
+            if (newSortOrder != '@ViewBag.SortOrder')
+                newSortDir = 'ASC';
+            else
+                newSortDir = '@(ViewBag.SortDir == "ASC" ? "DESC" : "ASC")';
 
-        $(document).ready(function () {
-            $('#sidebarCollapse').on('click', function () {
-                $('#sidebar').toggleClass('active');
-            });
+            sortGridInner(newSortOrder, newSortDir);
+        }
 
-        });
-
-        $('#sidebar ul li a.nav-link').click(function () {
-            var navItem = $(this).closest('.nav-item');
-            navItem.siblings().removeClass('active');
-            navItem.addClass('active');
-        });
-
-    </script>
+</script>
 
     @RenderSection("scripts", required: false)
 }

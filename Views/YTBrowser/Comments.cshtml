@@ -29,7 +29,7 @@
 }
 
 <h2>@ViewBag.Title</h2>
-@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get))
+@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Post))
 {
     <div class="panel panel-default">
         <div class="panel-body" style="padding:0 15px;">
@@ -40,7 +40,7 @@
                 </div>
                 <label for="searchCommentType" class="col-sm-2 col-form-label">Comment Type</label>
                 <div class="col-sm-3">
-                    @Html.DropDownList("searchCommentType", GenerateSelectlistForCommentTypes(), new { id = "searchCommentType", @class = "form-control" })
+                    @Html.DropDownList("searchCommentType", ViewBag.CommentTypesList as SelectList, new { id = "searchCommentType", @class = "form-control" })
                 </div>
             </div>
             <div class="row form-row">
@@ -133,44 +133,3 @@
         </a>
     </div>
 </div>
-
-@section scripts {
-    <script>
-        //Below function will be executed on View Load
-        $(document).ready(function () {
-            //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
-
-            $('[data-toggle="popover"]').popover({
-                placement: 'auto left',
-                html: true,
-                title: function () { return $('.btn-row-popup-menu-head').html() },
-                content: ''
-            });
-        });
-
-        $('[data-toggle="popover"]').on('shown.bs.popover', function () {
-            var popoverWindow = $(this);
-            $('.btn-popover-close').click(function () {
-                popoverWindow.popover('hide');
-            });
-        });
-
-        function pageGrid(pageNumber) {
-            $("#pageNumber").val(pageNumber);
-            $("form").submit();
-        }
-
-        function sortGrid(newSortOrder) {
-            $("#sortOrder").val(newSortOrder);
-            var newSortDir
-            //Reverse the sortDir only if sortOrder is not changed
-            if (newSortOrder != '@ViewBag.SortOrder')
-                newSortDir = 'ASC';
-            else
-                newSortDir = '@(ViewBag.SortDir == "ASC" ? "DESC" : "ASC")';
-
-            $("#sortDir").val(newSortDir);
-            $("form").submit();
-        }
-    </script>
-}
