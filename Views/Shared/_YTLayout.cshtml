@@ -70,10 +70,19 @@
         </div>
     </div>
 </div>
+@*Below div is used to display close button Truncated grid column popup*@
+<div style="display:none;">
+    <div class="btn-row-popup-menu-head">
+        Description
+        <a class="btn-popover-close pull-right" href="#">
+            &times;
+        </a>
+    </div>
+</div>
 
 @section subLayoutScripts {
     @Scripts.Render("~/bundles/YTBrowser")
-<script>
+    <script>
         function sortGrid(newSortOrder) {
             var newSortDir
             //Reverse the sortDir only if sortOrder is not changed
@@ -85,7 +94,7 @@
             sortGridInner(newSortOrder, newSortDir);
         }
 
-</script>
+    </script>
 
     @RenderSection("scripts", required: false)
 }

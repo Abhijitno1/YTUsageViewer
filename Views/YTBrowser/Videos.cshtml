@@ -28,7 +28,7 @@
 }
 
 <h2>@ViewBag.Title</h2>
-@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get, new { @class = "form-inline" }))
+@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Post, new { @class = "form-inline" }))
 {
     <div class="panel panel-default">
         <div class="panel-body" style="padding:0 15px;">
@@ -44,9 +44,9 @@
                 @*<div class="form-group checkbox">
                         <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
                     </div>*@
-                @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
-                @Html.Hidden("sortDir", ViewBag.SortDir as string)
-                @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
+                @Html.Hidden("sortOrder", ViewBag.SortOrder as string, new { id = "sortOrder" })
+                @Html.Hidden("sortDir", ViewBag.SortDir as string, new { id = "sortDir" })
+                @Html.Hidden("pageNumber", ViewBag.CurrentPage as string, new { id = "pageNumber" })
                 <input type="submit" name="Search" value="Search" class="btn btn-default" />
             </div>
         </div>
@@ -57,25 +57,25 @@
     <table class="table">
         <tr>
             <th>
-                @Html.GridColumnHeader("Title", actionName, "title", newSortDir)
+                @Html.GridColumnHeader("Title", "title")
             </th>
             <th>
-                @Html.GridColumnHeader("Description", actionName, "description", newSortDir)
+                @Html.GridColumnHeader("Description", "description")
             </th>
             <th>
-                @Html.GridColumnHeader("Channel Name", actionName, "channelName", newSortDir)
+                @Html.GridColumnHeader("Channel Name", "channelName")
             </th>
             <th>
-                @Html.GridColumnHeader("Duration", actionName, "duration", newSortDir)
+                @Html.GridColumnHeader("Duration", "duration")
             </th>
             <th>
-                @Html.GridColumnHeader("Published At", actionName, "publishedAt", newSortDir)
+                @Html.GridColumnHeader("Published At", "publishedAt")
             </th>
             <th>
-                @Html.GridColumnHeader("Inserted Date", actionName, "insertedDate", newSortDir)
+                @Html.GridColumnHeader("Inserted Date", "insertedDate")
             </th>
             <th>
-                @Html.GridColumnHeader("Is Deleted", actionName, "isDeleted", newSortDir)
+                @Html.GridColumnHeader("Is Deleted", "isDeleted")
             </th>
         </tr>
 
@@ -110,44 +110,6 @@
 </div>
 @*PAGED LIST*@
 <div class="pagedList">
-    @Html.PagedListPager(Model, pageNumber => Url.Action(actionName, new
-{
-    pageNumber,
-    searchTitle = ViewBag.CurrentFilter.VideoName,
-    searchChannel = ViewBag.CurrentFilter.ChannelId,
-    sortOrder = ViewBag.SortOrder,
-    sortDir = ViewBag.SortDir
-}))
+    @Html.PagedListPager(Model, pageNumber => "Javascript: pageGrid(" + pageNumber + ")")
 </div>
 
-<div style="display:none;">
-    <div class="btn-row-popup-menu-head">
-        Description
-        <a class="btn-popover-close pull-right" href="#">
-            &times;
-        </a>
-    </div>
-</div>
-
-@section scripts {
-    <script>
-        //Below function will be executed on View Load
-        $(document).ready(function () {
-            //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
-
-            $('[data-toggle="popover"]').popover({
-                placement: 'auto left',
-                html: true,
-                title: function () { return $('.btn-row-popup-menu-head').html() },
-                content: ''
-            });
-        });
-
-        $('[data-toggle="popover"]').on('shown.bs.popover', function () {
-            var popoverWindow = $(this);
-            $('.btn-popover-close').click(function () {
-                popoverWindow.popover('hide');
-            });
-        });
-    </script>
-}

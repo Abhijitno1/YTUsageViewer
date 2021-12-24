@@ -85,6 +85,21 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
+        public ActionResult Videos()
+        {
+            //build empty search parameters list
+            ViewBag.CurrentFilter = new SearchVideoParams();
+
+            var channelsList = db.Videos.Select(x => new { x.ChannelId, x.ChannelName })
+                .Distinct().OrderBy(x => x.ChannelName).ToList();
+            channelsList.Insert(0, new { ChannelId = (string)null, ChannelName = string.Empty });
+            ViewBag.ChannelsList = new SelectList(channelsList, "ChannelId", "ChannelName");
+
+            var result = new List<Video>();
+            return View(result.ToPagedList(1, 1));
+        }
+
+        [HttpPost]
         public ActionResult Videos(string searchTitle, string searchChannel, string sortOrder, string sortDir, int? pageNumber)
         {
             //Reset the page number if new search is initiated by user

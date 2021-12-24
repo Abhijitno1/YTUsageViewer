@@ -2,25 +2,6 @@
 @using YTUsageViewer.ViewModels
 @model PagedList.IPagedList<Comment>
 
-@functions
-{
-    public SelectList GenerateSelectlistForCommentTypes()
-    {
-        var selectListItems = new[] 
-        {
-            String.Empty,
-            "Comment to Video",
-            "Reply to video",
-            "Comment to post",
-            "Reply to post",
-            "Commented",
-            "Replied",
-            "Replied to a comment"
-        };
-        return new SelectList(selectListItems, ViewBag.CurrentFilter.CommentType);
-    }
-}
-
 @{
     ViewBag.Title = "Comments List";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
@@ -34,7 +15,7 @@
     <div class="panel panel-default">
         <div class="panel-body" style="padding:0 15px;">
             <div class="row form-row">
-                <label for="searchComment" class="col-sm-2 col-form-label">Find by name</label>
+                <label for="searchComment" class="col-sm-2 col-form-label">Find Comment Containing</label>
                 <div class="col-sm-5">
                     @Html.TextBox("searchComment", ViewBag.CurrentFilter.CommentText as string, new {id = "searchComment", @class = "form-control" })
                 </div>
@@ -123,13 +104,4 @@
 @*PAGED LIST*@
 <div class="pagedList">
     @Html.PagedListPager(Model, pageNumber => "Javascript: pageGrid(" + pageNumber + ")")
-</div>
-
-<div style="display:none;">
-    <div class="btn-row-popup-menu-head">
-        Description
-        <a class="btn-popover-close pull-right" href="#">
-            &times;
-        </a>
-    </div>
 </div>
