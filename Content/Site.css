@@ -137,3 +137,7 @@ textarea {
     padding: 0 15px;
 }
 /* End styles related to side navigation bar */
+/* Below style is for Dragable Modal Popup */
+.dragable_touch {
+    cursor: move;
+}

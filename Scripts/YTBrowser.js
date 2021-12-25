@@ -37,3 +37,25 @@ function sortGridInner(newSortOrder, newSortDir) {
     $("#sortDir").val(newSortDir);
     $("form").submit();
 }
+
+//Ref: https://bootstrapfriendly.com/blog/how-to-make-bootstrap-modal-draggable-and-resizable/
+function showDraggableModal(jqElm) {
+    $(jqElm).modal({
+        backdrop: false,
+        show: true,
+    });
+    /*
+    // reset modal if it isn't visible
+    if (!jqElm.hasClass(".in")) {
+        $jqElm.children(".modal-dialog").css({
+            top: 20,
+            left: 100,
+        });
+    }
+    */
+    $(jqElm).draggable({
+    //$(".modal-dialog").draggable({
+        cursor: "move",
+        handle: ".dragable_touch",
+    });
+}
