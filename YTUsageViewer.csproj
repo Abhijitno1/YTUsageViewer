@@ -295,6 +295,7 @@
     <Content Include="Views\YTBrowser\Videos.cshtml" />
     <Content Include="Views\YTBrowser\PlaylistItems.cshtml" />
     <Content Include="Views\YTBrowser\Comments.cshtml" />
+    <Content Include="Views\Shared\ClientModalDialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

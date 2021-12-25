@@ -2,24 +2,6 @@
 @using YTUsageViewer.ViewModels
 @model PagedList.IPagedList<Video>
 
-@functions
-{
-    private string newSortDir
-    {
-        get { return ViewBag.SortDir == "ASC" ? "DESC" : "ASC"; }
-    }
-    public RouteValueDictionary GenerateRootValueDictionaryForSort(string sortOrder)
-    {
-        return new RouteValueDictionary {
-            {"searchTitle", ViewBag.CurrentFilter.VideoName },
-            {"searchChannel", ViewBag.CurrentFilter.ChannelId },
-            {"pageNumber", ViewBag.CurrentPage },
-            {"sortOrder", sortOrder },
-            {"sortDir", newSortDir }
-        };
-    }
-}
-
 @{
     ViewBag.Title = "Videos List";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
@@ -31,85 +13,117 @@
 @using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Post, new { @class = "form-inline" }))
 {
     <div class="panel panel-default">
-        <div class="panel-body" style="padding:0 15px;">
-            <div class="row form-row">
-                <div class="form-group">
-                    <label for="searchTitle">Find by name</label>
-                    @Html.TextBox("searchTitle", ViewBag.CurrentFilter.VideoName as string, new { @class = "form-control" })
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                Search Criteria
+                <a class="pull-right" data-toggle="collapse" href="#criteriaItems"><span class="glyphicon glyphicon-resize-vertical"></span></a>
+            </h4>
+        </div>
+        <div id="criteriaItems" class="panel-collapse collapse in">
+            <div class="panel-body" style="padding:0 15px;">
+                <div class="row form-row">
+                    <div class="form-group">
+                        <label for="searchTitle">Find by name</label>
+                        @Html.TextBox("searchTitle", ViewBag.CurrentFilter.VideoName as string, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label for="cboChannel">Channel</label>
+                        @Html.DropDownList("searchChannel", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
+                    </div>
+                    @*<div class="form-group checkbox">
+                            <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
+                        </div>*@
+                    @Html.Hidden("sortOrder", ViewBag.SortOrder as string, new { id = "sortOrder" })
+                    @Html.Hidden("sortDir", ViewBag.SortDir as string, new { id = "sortDir" })
+                    @Html.Hidden("pageNumber", ViewBag.CurrentPage as string, new { id = "pageNumber" })
+                    <input type="submit" name="Search" value="Search" class="btn btn-default" />
                 </div>
-                <div class="form-group">
-                    <label for="cboChannel">Channel</label>
-                    @Html.DropDownList("searchChannel", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
-                </div>
-                @*<div class="form-group checkbox">
-                        <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
-                    </div>*@
-                @Html.Hidden("sortOrder", ViewBag.SortOrder as string, new { id = "sortOrder" })
-                @Html.Hidden("sortDir", ViewBag.SortDir as string, new { id = "sortDir" })
-                @Html.Hidden("pageNumber", ViewBag.CurrentPage as string, new { id = "pageNumber" })
-                <input type="submit" name="Search" value="Search" class="btn btn-default" />
             </div>
         </div>
     </div>
 }
-
-<div id="resultItems">
-    <table class="table">
-        <tr>
-            <th>
-                @Html.GridColumnHeader("Title", "title")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Description", "description")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Channel Name", "channelName")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Duration", "duration")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Published At", "publishedAt")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Inserted Date", "insertedDate")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Is Deleted", "isDeleted")
-            </th>
-        </tr>
-
-        @foreach (var item in Model)
-        {
-            <tr rowKey="@item.CharId">
-                <td>
-                    <a href="https://www.youtube.com/watch?v=@item.CharId" target="_blank">@item.Title</a>
-                </td>
-                <td>
-                    @Html.TruncatedGridColumn(@item.Description)
-                </td>
-                <td>
-                    <a href="https://www.youtube.com/channel/@item.ChannelId" target="_blank">@item.ChannelName</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DurationSpan)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PublishedAt)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.InsertedDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsDeleted)
-                </td>
+<div class="panel panel-default">
+    <div class="panel-heading" id="resultHeader">
+        <h4 class="panel-title">
+            Results
+        </h4>
+    </div>
+    <div id="resultItems" class="panel-body">
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.GridColumnHeader("Title", "title")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Description", "description")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Channel Name", "channelName")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Duration", "duration")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Published At", "publishedAt")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Inserted Date", "insertedDate")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Is Deleted", "isDeleted")
+                </th>
             </tr>
-        }
 
-    </table>
+            @foreach (var item in Model)
+            {
+                <tr rowKey="@item.CharId">
+                    <td>
+                        <a href="https://www.youtube.com/watch?v=@item.CharId" target="_blank">@item.Title</a>
+                    </td>
+                    <td>
+                        <a href="#" onclick="showVideoDescription(this);">
+                            <span class="hidden">@item.Description</span>
+                            <i class="glyphicon glyphicon-tasks"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="https://www.youtube.com/channel/@item.ChannelId" target="_blank">@item.ChannelName</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DurationSpan)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PublishedAt)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InsertedDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsDeleted)
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+    <div class="panel-footer">
+        @*PAGED LIST*@
+        <div class="pagedList">
+            @Html.PagedListPager(Model, pageNumber => "Javascript: pageGrid(" + pageNumber + ")")
+        </div>
+    </div>
 </div>
-@*PAGED LIST*@
-<div class="pagedList">
-    @Html.PagedListPager(Model, pageNumber => "Javascript: pageGrid(" + pageNumber + ")")
-</div>
+@Html.Partial("~/Views/Shared/ClientModalDialog.cshtml")
+@section scripts {
+    <script>
+        function showVideoDescription(srcElm) {
+            var videoDescr = $(srcElm).children('span.hidden').text();
+            //alert(videoDescr);
+            var dlgClientModal = $('#dlgClientModal');
+            dlgClientModal.find('.descr-display').html(videoDescr);
+            dlgClientModal.modal();
+        }
+    </script>
+
+}
 
