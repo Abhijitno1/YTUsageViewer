@@ -22,21 +22,23 @@
         <div id="criteriaItems" class="panel-collapse collapse in">
             <div class="panel-body" style="padding:0 15px;">
                 <div class="row form-row">
-                    <div class="form-group">
-                        <label for="searchTitle">Find by name</label>
+                    <label for="searchTitle" class="col-sm-2 col-form-label">Find by name</label>
+                    <div class="col-sm-3">
                         @Html.TextBox("searchTitle", ViewBag.CurrentFilter.VideoName as string, new { @class = "form-control" })
                     </div>
-                    <div class="form-group">
-                        <label for="cboChannel">Channel</label>
-                        @Html.DropDownList("searchChannel", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
+                    <label for="searchChannel" class="col-sm-2 col-form-label">Channel</label>
+                    <div class="col-sm-3">
+                        @Html.DropDownList("searchChannel", ViewBag.ChannelsList as SelectList, new { @class = "form-control"})
                     </div>
-                    @*<div class="form-group checkbox">
-                            <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
-                        </div>*@
-                    @Html.Hidden("sortOrder", ViewBag.SortOrder as string, new { id = "sortOrder" })
-                    @Html.Hidden("sortDir", ViewBag.SortDir as string, new { id = "sortDir" })
-                    @Html.Hidden("pageNumber", ViewBag.CurrentPage as string, new { id = "pageNumber" })
-                    <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                    <div class="col-sm-2">
+                        <div class="form-group checkbox">
+                            <label>@Html.CheckBox("isDeleted") Is Deleted</label>
+                        </div>
+                        @Html.Hidden("sortOrder", ViewBag.SortOrder as string, new { id = "sortOrder" })
+                        @Html.Hidden("sortDir", ViewBag.SortDir as string, new { id = "sortDir" })
+                        @Html.Hidden("pageNumber", ViewBag.CurrentPage as string, new { id = "pageNumber" })
+                        <input type="submit" name="Search" value="Search" class="btn btn-default search-btn" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -116,6 +118,11 @@
 @Html.Partial("~/Views/Shared/ClientModalDialog.cshtml")
 @section scripts {
     <script>
+        $(function () {
+            //On view load tasks
+            $("[name='searchChannel']").select2();
+        });
+
         function showVideoDescription(srcElm) {
             var videoDescr = $(srcElm).children('span.hidden').text();
             //alert(videoDescr);

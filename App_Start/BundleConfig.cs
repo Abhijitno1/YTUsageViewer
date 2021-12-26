@@ -21,7 +21,8 @@ namespace YTUsageViewer
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js"));
+                      "~/Scripts/bootstrap.js",
+                      "~/Scripts/select2.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/YTBrowser").Include(
                       "~/Scripts/YTBrowser.js"));
@@ -29,6 +30,7 @@ namespace YTUsageViewer
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/jquery-ui.css",
+                      "~/Content/Select2.css",
                       "~/Content/site.css"));
         }
     }
