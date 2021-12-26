@@ -86,10 +86,10 @@
         function sortGrid(newSortOrder) {
             var newSortDir
             //Reverse the sortDir only if sortOrder is not changed
-            if (newSortOrder != '@ViewBag.SortOrder')
+            if (newSortOrder != '@ViewBag.CurrentFilter.SortOrder')
                 newSortDir = 'ASC';
             else
-                newSortDir = '@(ViewBag.SortDir == "ASC" ? "DESC" : "ASC")';
+                newSortDir = '@(ViewBag.CurrentFilter.SortDir == "ASC" ? "DESC" : "ASC")';
 
             sortGridInner(newSortOrder, newSortDir);
         }

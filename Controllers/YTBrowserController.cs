@@ -100,18 +100,18 @@ namespace YTUsageViewer.Controllers
         }
 
         [HttpPost]
-        public ActionResult Videos(string searchTitle, string searchChannel, string sortOrder, string sortDir, int? pageNumber)
+        public ActionResult Videos(SearchVideoParams searchParams)
         {
             //Reset the page number if new search is initiated by user
-            if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
-            ViewBag.CurrentPage = pageNumber ?? 1;
+            if (!string.IsNullOrEmpty(Request.Params["Search"])) searchParams.PageNumber = 1;
+            ViewBag.CurrentPage = searchParams.PageNumber ?? 1;
 
-            var result = GetVideoSearchResults(searchTitle, searchChannel, sortOrder, sortDir);
+            var result = GetVideoSearchResults(searchParams);
 
             var channelsList = result.Select(x => new { x.ChannelId, x.ChannelName })
                 .Distinct().OrderBy(x => x.ChannelName).ToList();
             channelsList.Insert(0, new { ChannelId = (string)null, ChannelName = string.Empty });
-            ViewBag.ChannelsList = new SelectList(channelsList, "ChannelId", "ChannelName", searchChannel);
+            ViewBag.ChannelsList = new SelectList(channelsList, "ChannelId", "ChannelName", searchParams.ChannelId);
 
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
@@ -292,22 +292,25 @@ namespace YTUsageViewer.Controllers
             return result;
         }
 
-        private IEnumerable<Video> GetVideoSearchResults(string searchTitle, string searchChannel, string sortOrder, string sortDir)
+        private IEnumerable<Video> GetVideoSearchResults(SearchVideoParams searchParams)
         {
             IEnumerable<Video> result = db.Videos.AsQueryable();
 
-            ViewBag.CurrentFilter = new SearchVideoParams();
-            if (!string.IsNullOrEmpty(searchTitle))
+            ViewBag.CurrentFilter = searchParams;
+            if (!string.IsNullOrEmpty(searchParams.VideoName))
             {
-                ViewBag.CurrentFilter.VideoName = searchTitle;
-                result = result.Where(x => (x.Title != null && x.Title.ToLower().Contains(searchTitle.ToLower()))
-                    || (x.Description != null && x.Description.ToLower().Contains(searchTitle.ToLower())));
+                result = result.Where(x => (x.Title != null && x.Title.ToLower().Contains(searchParams.VideoName.ToLower()))
+                    || (x.Description != null && x.Description.ToLower().Contains(searchParams.VideoName.ToLower())));
             }
 
-            if (!string.IsNullOrEmpty(searchChannel))
+            if (!string.IsNullOrEmpty(searchParams.ChannelId))
             {
-                ViewBag.CurrentFilter.ChannelId = searchChannel;
-                result = result.Where(x => x.ChannelId != null && x.ChannelId.Equals(searchChannel));
+                result = result.Where(x => x.ChannelId != null && x.ChannelId.Equals(searchParams.ChannelId));
+            }
+
+            if (searchParams.IsDeleted)
+            {
+                result = result.Where(x => x.IsDeleted != null && x.IsDeleted.Equals("Y"));
             }
 
             foreach (var convertItm in result)
@@ -315,11 +318,9 @@ namespace YTUsageViewer.Controllers
                 convertItm.DurationSpan = HelperMethods.ConvertDuration2TimeSpan(convertItm.Duration);
             }
 
-            if (!string.IsNullOrEmpty(sortOrder))
+            if (!string.IsNullOrEmpty(searchParams.SortOrder))
             {
-                ViewBag.SortOrder = sortOrder;
-                ViewBag.SortDir = sortDir;
-
+                string sortOrder = searchParams.SortOrder, sortDir = searchParams.SortDir;
                 if (sortOrder == "title" && sortDir == "ASC")
                     result = result.OrderBy(x => x.Title);
                 else if (sortOrder == "title" && sortDir == "DESC")

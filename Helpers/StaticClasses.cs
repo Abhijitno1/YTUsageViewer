@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PagedList;
+using PMVC = PagedList.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -35,21 +37,20 @@ namespace YTUsageViewer.Helpers
             return new MvcHtmlString(retVal);
         }
 
-        public static IHtmlString GridColumnHeader(this HtmlHelper htmlHelper, string linkText, string actionName, RouteValueDictionary routeValues)
+        public static IHtmlString GetSortDirIconNew(this HtmlHelper helper, string sortOrderCheck)
         {
-            var genLink = htmlHelper.ActionLink(linkText, actionName, routeValues);
-            string newSortOrder = routeValues["sortOrder"] as string;
-            //Additional routeValues
-            //routeValues["searchString"] = htmlHelper.ViewBag.CurrentFilter;
-
-            // Build sort image-link
-            TagBuilder tb = new TagBuilder("span");
-            //tb.Attributes.Add("src", VirtualPathUtility.ToAbsolute(src));
-            tb.Attributes.Add("class", $"glyphicon { htmlHelper.GetSortDirIcon(newSortOrder).ToHtmlString() } pull-right");
-            var linkImg = tb.ToString(TagRenderMode.SelfClosing);
-
-            // return MvcHtmlString. This class implements IHtmlString interface. IHtmlStrings will not be html encoded.
-            return new MvcHtmlString(genLink.ToString() + linkImg);
+            //RefEx: https://dotnettutorials.net/lesson/custom-html-helpers-mvc/
+            var retVal = String.Empty;
+            switch (helper.ViewBag.CurrentFilter.SortDir)
+            {
+                case "ASC":
+                    retVal = helper.ViewBag.CurrentFilter.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes" : string.Empty;
+                    break;
+                case "DESC":
+                    retVal = helper.ViewBag.CurrentFilter.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes-alt" : string.Empty;
+                    break;
+            }
+            return new MvcHtmlString(retVal);
         }
 
         public static IHtmlString GridColumnHeader(this HtmlHelper htmlHelper, string linkText, string newSortOrder)
@@ -59,7 +60,7 @@ namespace YTUsageViewer.Helpers
             // Build sort image-link
             TagBuilder tb = new TagBuilder("span");
             //tb.Attributes.Add("src", VirtualPathUtility.ToAbsolute(src));
-            tb.Attributes.Add("class", $"glyphicon { htmlHelper.GetSortDirIcon(newSortOrder).ToHtmlString() } pull-right");
+            tb.Attributes.Add("class", $"glyphicon { htmlHelper.GetSortDirIconNew(newSortOrder).ToHtmlString() } pull-right");
             var linkImg = tb.ToString(TagRenderMode.SelfClosing);
 
             // return MvcHtmlString. This class implements IHtmlString interface. IHtmlStrings will not be html encoded.
@@ -114,6 +115,11 @@ namespace YTUsageViewer.Helpers
             }
 
             return new MvcHtmlString(displayText + magnifier);
+        }
+
+        public static IHtmlString JSPagedListPager(this HtmlHelper helper, IPagedList list)
+        {
+            return PMVC.HtmlHelper.PagedListPager(helper, list, pageNumber => "Javascript: pageGrid(" + pageNumber + ")");
         }
     }
 
