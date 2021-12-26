@@ -6,34 +6,34 @@
     ViewBag.Title = "Subscriptions List";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Subscriptions;
-    var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
+    var newSortDir = ViewBag.CurrentFilter.SortDir == "ASC" ? "DESC" : "ASC";
 }
 
 <h2>@ViewBag.Title</h2>
 @using (Html.BeginForm("Index", "YTBrowser", FormMethod.Get))
 {
     <p>
-        Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
-        @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
-        @Html.Hidden("sortDir", ViewBag.SortDir as string)
-        @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
-        <input type="submit" value="Search" name="Search" />
+        Find by name: @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string)
+        @Html.Hidden("SortOrder", ViewBag.CurrentFilter.SortOrder as string, new { id = "sortOrder" })
+        @Html.Hidden("SortDir", ViewBag.CurrentFilter.SortDir as string, new { id = "sortDir" })
+        @Html.Hidden("PageNumber", ViewBag.CurrentFilter.PageNumber as string, new { id = "pageNumber" })
+        <input type="submit" value="Search" name="Search" class=" search-btn" />
     </p>
 }
 <div id="resultItems">
     <table class="table">
         <tr>
             <th>
-                @Html.ActionLink("Channel Title", "Index", new { sortOrder = "channelTitle", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-                <span class="glyphicon @Html.GetSortDirIcon("channelTitle") pull-right"></span>
+                @Html.ActionLink("Channel Title", "Index", new { SortOrder = "channelTitle", SortDir = newSortDir, SearchString = ViewBag.CurrentFilter.ChannelName, PageNumber = ViewBag.CurrentFilter.PageNumber })
+                <span class="glyphicon @Html.GetSortDirIconNew("channelTitle") pull-right"></span>
             </th>
             <th>
-                @Html.ActionLink("Inserted Date", "Index", new { sortOrder = "insertedDate", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-                <span class="glyphicon @Html.GetSortDirIcon("insertedDate") pull-right"></span>
+                @Html.ActionLink("Inserted Date", "Index", new { SortOrder = "insertedDate", SortDir = newSortDir, SearchString = ViewBag.CurrentFilter.ChannelName, PageNumber = ViewBag.CurrentFilter.PageNumber })
+                <span class="glyphicon @Html.GetSortDirIconNew("insertedDate") pull-right"></span>
             </th>
             <th>
-                @Html.ActionLink("Is Removed", "Index", new { sortOrder = "isRemoved", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-                <span class="glyphicon @Html.GetSortDirIcon("isRemoved") pull-right"></span>
+                @Html.ActionLink("Is Removed", "Index", new { SortOrder = "isRemoved", SortDir = newSortDir, SearchString = ViewBag.CurrentFilter.ChannelName, PageNumber = ViewBag.CurrentFilter.PageNumber })
+                <span class="glyphicon @Html.GetSortDirIconNew("isRemoved") pull-right"></span>
             </th>
         </tr>
 
@@ -56,13 +56,7 @@
 </div>
 @*PAGED LIST*@
 <div class="pagedList">
-    @Html.PagedListPager(Model, pageNumber => Url.Action("Index", new
-    {
-        pageNumber,
-        searchString = ViewBag.CurrentFilter,
-        sortOrder = ViewBag.SortOrder,
-        sortDir = ViewBag.SortDir
-    }))
+    @Html.JSPagedListPager(Model)
 </div>
 @section scripts {
     <script>

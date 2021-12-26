@@ -18,14 +18,15 @@ namespace YTUsageViewer.Controllers
         private const string EXPORT_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
         // GET: Subscriptions
-        public ActionResult Index(string searchString, string sortOrder, string sortDir, int? pageNumber)
+        public ActionResult Index(SearchSubscriptionParams searchParams)
         {
             //Reset the page number if new search is initiated by user
-            if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
-            ViewBag.CurrentPage = pageNumber ?? 1;
+            if (!string.IsNullOrEmpty(Request.Params["Search"])) searchParams.PageNumber = 1;
+            ViewBag.CurrentFilter = searchParams;
+            searchParams.PageNumber = searchParams.PageNumber ?? 1;
 
-            var result = GetSubscriptionSearchResults(searchString, sortOrder, sortDir);
-            return View("Subscriptions", result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
+            var result = GetSubscriptionSearchResults(searchParams);
+            return View("Subscriptions", result.ToPagedList((int)ViewBag.CurrentFilter.PageNumber, PAGE_SIZE));
         }
 
 
@@ -33,7 +34,13 @@ namespace YTUsageViewer.Controllers
         {
             try
             {
-                var result = GetSubscriptionSearchResults(searchString, sortOrder, sortDir);
+                var searchParams = new SearchSubscriptionParams()
+                { 
+                    ChannelName = searchString,
+                    SortOrder = sortOrder,
+                    SortDir = sortDir
+                };
+                var result = GetSubscriptionSearchResults(searchParams);
                 ExcelExporter xlXporter = new ExcelExporter();
                 var outputStream = xlXporter.ExportDataAsSpreadsheet(result);
                 string attachmentName = "Subscriptions-xls.xml";
@@ -104,7 +111,8 @@ namespace YTUsageViewer.Controllers
         {
             //Reset the page number if new search is initiated by user
             if (!string.IsNullOrEmpty(Request.Params["Search"])) searchParams.PageNumber = 1;
-            ViewBag.CurrentPage = searchParams.PageNumber ?? 1;
+            ViewBag.CurrentFilter = searchParams;
+            searchParams.PageNumber = searchParams.PageNumber ?? 1;
 
             var result = GetVideoSearchResults(searchParams);
 
@@ -113,7 +121,7 @@ namespace YTUsageViewer.Controllers
             channelsList.Insert(0, new { ChannelId = (string)null, ChannelName = string.Empty });
             ViewBag.ChannelsList = new SelectList(channelsList, "ChannelId", "ChannelName", searchParams.ChannelId);
 
-            return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
+            return View(result.ToPagedList((int)ViewBag.CurrentFilter.PageNumber, PAGE_SIZE));
         }
         public ActionResult Comments()
         {
@@ -170,21 +178,19 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
         }
 
-        private IQueryable<Subscription> GetSubscriptionSearchResults(string searchString, string sortOrder, string sortDir)
+        private IQueryable<Subscription> GetSubscriptionSearchResults(SearchSubscriptionParams searchParams)
         {
             var result = db.Subscriptions.AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchParams.ChannelName))
             {
-                ViewBag.CurrentFilter = searchString;
-
-                result = result.Where(x => x.ChannelTitle != null && x.ChannelTitle.ToLower().Contains(searchString.ToLower()));
+                result = result.Where(x => x.ChannelTitle != null && x.ChannelTitle.ToLower().Contains(searchParams.ChannelName.ToLower()));
             }
 
-            if (!string.IsNullOrEmpty(sortOrder))
+            if (!string.IsNullOrEmpty(searchParams.SortOrder))
             {
-                ViewBag.SortOrder = sortOrder;
-                ViewBag.SortDir = sortDir;
+                var sortOrder = searchParams.SortOrder;
+                var sortDir = searchParams.SortDir;
 
                 if (sortOrder == "channelTitle" && sortDir == "ASC")
                     result = result.OrderBy(x => x.ChannelTitle);
@@ -296,7 +302,6 @@ namespace YTUsageViewer.Controllers
         {
             IEnumerable<Video> result = db.Videos.AsQueryable();
 
-            ViewBag.CurrentFilter = searchParams;
             if (!string.IsNullOrEmpty(searchParams.VideoName))
             {
                 result = result.Where(x => (x.Title != null && x.Title.ToLower().Contains(searchParams.VideoName.ToLower()))

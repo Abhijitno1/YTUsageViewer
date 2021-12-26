@@ -55,6 +55,7 @@ namespace YTUsageViewer.Helpers
 
         public static IHtmlString GridColumnHeader(this HtmlHelper htmlHelper, string linkText, string newSortOrder)
         {
+            //RefEx: https://stackoverflow.com/questions/25763232/create-a-custom-actionlink
             var genLink = @"<a href='Javascript:sortGrid(""" + newSortOrder + @""")'>" + linkText + "</a>";
 
             // Build sort image-link
@@ -70,7 +71,6 @@ namespace YTUsageViewer.Helpers
 
         public static IHtmlString GridColumnHeader(this HtmlHelper htmlHelper, string linkText, string actionName, string newSortOrder, string newSortDir)
         {
-            //RefEx: https://stackoverflow.com/questions/25763232/create-a-custom-actionlink
             var routeValues = new {
                 sortOrder = newSortOrder,
                 sortDir = newSortDir,
