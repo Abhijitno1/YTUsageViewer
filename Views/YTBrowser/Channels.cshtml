@@ -6,34 +6,32 @@
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Channels;
     var actionName = "Channels";
-    var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
+    var newSortDir = ViewBag.CurrentFilter.SortDir == "ASC" ? "DESC" : "ASC";
 }
 
 <h2>@ViewBag.Title</h2>
 @using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get))
 {
-    <p>
-        Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
-        @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
-        @Html.Hidden("sortDir", ViewBag.SortDir as string)
-        @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
-        <input type="submit" name="Search" value="Search" />
-    </p>
+<p>
+    Find by name: @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string)
+    @Html.Partial("_SortNPageInputs")
+    <input type="submit" name="Search" value="Search" class="search-btn" />
+</p>
 }
 <div id="resultItems">
     <table class="table">
         <tr>
             <th>
-                @Html.GridColumnHeader("Title", actionName, "title", newSortDir)
+                @Html.GridColumnHeader("Title", "title")
             </th>
             <th>
-                @Html.GridColumnHeader("Description", actionName, "description", newSortDir)
+                @Html.GridColumnHeader("Description", "description")
             </th>
             <th>
-                @Html.GridColumnHeader("Is Deleted", actionName, "isDeleted", newSortDir)
+                @Html.GridColumnHeader("Is Deleted", "isDeleted")
             </th>
             <th>
-                @Html.GridColumnHeader("Inserted Date", actionName, "insertedDate", newSortDir)
+                @Html.GridColumnHeader("Inserted Date", "insertedDate")
             </th>
         </tr>
 
@@ -59,13 +57,7 @@
 </div>
 @*PAGED LIST*@
 <div class="pagedList">
-    @Html.PagedListPager(Model, pageNumber => Url.Action(actionName, new
-    {
-        pageNumber,
-        searchString = ViewBag.CurrentFilter,
-        sortOrder = ViewBag.SortOrder,
-        sortDir = ViewBag.SortDir
-    }))
+    @Html.JSPagedListPager(Model)
 </div>
 
 <div style="display:none;">

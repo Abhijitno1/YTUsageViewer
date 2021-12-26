@@ -17,27 +17,25 @@
             <div class="row form-row">
                 <label for="searchComment" class="col-sm-2 col-form-label">Find Comment Containing</label>
                 <div class="col-sm-5">
-                    @Html.TextBox("searchComment", ViewBag.CurrentFilter.CommentText as string, new {id = "searchComment", @class = "form-control" })
+                    @Html.TextBox("CommentText", ViewBag.CurrentFilter.CommentText as string, new {id = "searchComment", @class = "form-control" })
                 </div>
                 <label for="searchCommentType" class="col-sm-2 col-form-label">Comment Type</label>
                 <div class="col-sm-3">
-                    @Html.DropDownList("searchCommentType", ViewBag.CommentTypesList as SelectList, new { id = "searchCommentType", @class = "form-control" })
+                    @Html.DropDownList("CommentType", ViewBag.CommentTypesList as SelectList, new { id = "searchCommentType", @class = "form-control" })
                 </div>
             </div>
             <div class="row form-row">
                 <label for="searchChannel" class="col-sm-2 col-form-label">Channel</label>
                 <div class="col-sm-3">
-                    @Html.DropDownList("searchChannel", ViewBag.ChannelsList as SelectList, new {id = "searchChannel", @class = "form-control" })
+                    @Html.DropDownList("ChannelId", ViewBag.ChannelsList as SelectList, new {id = "searchChannel", @class = "form-control" })
                 </div>
                 <label for="searchVideo" class="col-sm-2 col-form-label">Video</label>
                 <div class="col-sm-4">
-                    @Html.DropDownList("searchVideo", ViewBag.VideosList as SelectList, new {id = "searchVideo", @class = "form-control" })
+                    @Html.DropDownList("VideoId", ViewBag.VideosList as SelectList, new {id = "searchVideo", @class = "form-control" })
                 </div>
                 <div class="col-sm-1">
-                    @Html.Hidden("sortOrder", ViewBag.SortOrder as string, new { id= "sortOrder" })
-                    @Html.Hidden("sortDir", ViewBag.SortDir as string, new { id= "sortDir" })
-                    @Html.Hidden("pageNumber", ViewBag.CurrentPage as string, new { id= "pageNumber" })
-                    <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                    @Html.Partial("_SortNPageInputs")
+                    <input type="submit" name="Search" value="Search" class="btn btn-default search-btn" />
                 </div>
             </div>
             @*<div class="form-group checkbox">
@@ -103,5 +101,5 @@
 </div>
 @*PAGED LIST*@
 <div class="pagedList">
-    @Html.PagedListPager(Model, pageNumber => "Javascript: pageGrid(" + pageNumber + ")")
+    @Html.JSPagedListPager(Model)
 </div>

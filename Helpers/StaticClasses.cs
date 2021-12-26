@@ -25,22 +25,6 @@ namespace YTUsageViewer.Helpers
         {
             //RefEx: https://dotnettutorials.net/lesson/custom-html-helpers-mvc/
             var retVal = String.Empty;
-            switch (helper.ViewBag.SortDir)
-            {
-                case "ASC":
-                    retVal = helper.ViewBag.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes" : string.Empty;
-                    break;
-                case "DESC":
-                    retVal = helper.ViewBag.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes-alt" : string.Empty;
-                    break;
-            }
-            return new MvcHtmlString(retVal);
-        }
-
-        public static IHtmlString GetSortDirIconNew(this HtmlHelper helper, string sortOrderCheck)
-        {
-            //RefEx: https://dotnettutorials.net/lesson/custom-html-helpers-mvc/
-            var retVal = String.Empty;
             switch (helper.ViewBag.CurrentFilter.SortDir)
             {
                 case "ASC":
@@ -61,32 +45,11 @@ namespace YTUsageViewer.Helpers
             // Build sort image-link
             TagBuilder tb = new TagBuilder("span");
             //tb.Attributes.Add("src", VirtualPathUtility.ToAbsolute(src));
-            tb.Attributes.Add("class", $"glyphicon { htmlHelper.GetSortDirIconNew(newSortOrder).ToHtmlString() } pull-right");
-            var linkImg = tb.ToString(TagRenderMode.SelfClosing);
-
-            // return MvcHtmlString. This class implements IHtmlString interface. IHtmlStrings will not be html encoded.
-            return new MvcHtmlString(genLink + linkImg);
-        }
-
-
-        public static IHtmlString GridColumnHeader(this HtmlHelper htmlHelper, string linkText, string actionName, string newSortOrder, string newSortDir)
-        {
-            var routeValues = new {
-                sortOrder = newSortOrder,
-                sortDir = newSortDir,
-                searchString = htmlHelper.ViewBag.CurrentFilter,
-                pageNumber = htmlHelper.ViewBag.CurrentPage
-            };
-            //routeValues.Add("tabMenu", tabMenu);
-            var genLink = htmlHelper.ActionLink(linkText, actionName, routeValues);
-            // Build sort image-link
-            TagBuilder tb = new TagBuilder("span");
-            //tb.Attributes.Add("src", VirtualPathUtility.ToAbsolute(src));
             tb.Attributes.Add("class", $"glyphicon { htmlHelper.GetSortDirIcon(newSortOrder).ToHtmlString() } pull-right");
             var linkImg = tb.ToString(TagRenderMode.SelfClosing);
 
             // return MvcHtmlString. This class implements IHtmlString interface. IHtmlStrings will not be html encoded.
-            return new MvcHtmlString(genLink.ToString() + linkImg);
+            return new MvcHtmlString(genLink + linkImg);
         }
 
         public static IHtmlString TruncatedGridColumn(this HtmlHelper htmlHelper, string fullText, int maxColCharLength = 100)

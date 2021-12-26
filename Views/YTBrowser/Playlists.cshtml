@@ -7,56 +7,39 @@
     ViewBag.Title = "Playlists list";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Playlists;
-    var newSortDir = ViewBag.SortDir == "ASC" ? "DESC" : "ASC";
-}
-@helper getSortDirIcon(string sortOrderCheck)
-{
-    switch (ViewBag.SortDir)
-    {
-        case null:
-            @String.Empty;
-            break;
-        case "ASC":
-            @(ViewBag.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes" : string.Empty);
-            break;
-        case "DESC":
-            @(ViewBag.SortOrder == sortOrderCheck ? "glyphicon-sort-by-attributes-alt" : string.Empty);
-            break;
-    }
+    var newSortDir = ViewBag.CurrentFilter.SortDir == "ASC" ? "DESC" : "ASC";
 }
 <h2>@ViewBag.Title</h2>
 <div id="resultItems">
     @using (Html.BeginForm("Playlists", "YTBrowser", FormMethod.Get))
     {
         <p>
-            Find by name: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)
-            @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
-            @Html.Hidden("sortDir", ViewBag.SortDir as string)
-            @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
-            <input type="submit" name="Search" value="Search" />
+            Find by name: @Html.TextBox("PlaylistName", ViewBag.CurrentFilter.PlaylistName as string)
+            @Html.Partial("_SortNPageInputs")
+            <input type="submit" name="Search" value="Search" class="search-btn" />
         </p>
     }
     <table class="table">
         <tr>
             <th>
-                @Html.ActionLink("Title", "Playlists", new { sortOrder = "title", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-                <span class="glyphicon @getSortDirIcon("title") pull-right"></span>                
+                @Html.ActionLink("Title", "Playlists", new { SortOrder = "title", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
+                <span class="glyphicon @Html.GetSortDirIcon("title") pull-right"></span>                
             </th>
             <th>
-                @Html.ActionLink("Published At", "Playlists", new { sortOrder = "publishedAt", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-                <span class="glyphicon @getSortDirIcon("publishedAt") pull-right"></span>                
+                @Html.ActionLink("Published At", "Playlists", new { SortOrder = "publishedAt", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
+                <span class="glyphicon @Html.GetSortDirIcon("publishedAt") pull-right"></span>                
             </th>
             <th>
-                @Html.ActionLink("Privacy Status", "Playlists", new { sortOrder = "privacyStatus", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-                <span class="glyphicon @getSortDirIcon("privacyStatus") pull-right"></span>                
+                @Html.ActionLink("Privacy Status", "Playlists", new { SortOrder = "privacyStatus", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
+                <span class="glyphicon @Html.GetSortDirIcon("privacyStatus") pull-right"></span>                
             </th>
             <th>
-                @Html.ActionLink("Inserted Date", "Playlists", new { sortOrder = "insertedDate", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-                <span class="glyphicon @getSortDirIcon("insertedDate") pull-right"></span>                
+                @Html.ActionLink("Inserted Date", "Playlists", new { sortOrder = "insertedDate", sortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, pageNumber = ViewBag.CurrentFilter.PageNumber })
+                <span class="glyphicon @Html.GetSortDirIcon("insertedDate") pull-right"></span>                
             </th>
             <th>
-                @Html.ActionLink("Is Removed", "Playlists", new { sortOrder = "isRemoved", sortDir = newSortDir, searchString = ViewBag.CurrentFilter, pageNumber = ViewBag.CurrentPage })
-                <span class="glyphicon @getSortDirIcon("isRemoved") pull-right"></span>                                
+                @Html.ActionLink("Is Removed", "Playlists", new { sortOrder = "isRemoved", sortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, pageNumber = ViewBag.CurrentFilter.PageNumber })
+                <span class="glyphicon @Html.GetSortDirIcon("isRemoved") pull-right"></span>                                
             </th>
         </tr>
 
@@ -86,13 +69,7 @@
 </div>
 @*PAGED LIST*@
 <div class="pagedList">
-    @Html.PagedListPager(Model, pageNumber => Url.Action("Playlists", new
-    {
-        pageNumber,
-        searchString = ViewBag.CurrentFilter,
-        sortOrder = ViewBag.SortOrder,
-        sortDir = ViewBag.SortDir
-    }))
+    @Html.JSPagedListPager(Model)
 </div>
 
 @section scripts {
