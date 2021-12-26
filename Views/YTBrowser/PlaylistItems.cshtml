@@ -2,25 +2,6 @@
 @using YTUsageViewer.ViewModels
 @model PagedList.IPagedList<PlaylistItem>
 
-@functions
-{
-    private string newSortDir
-    {
-        get { return ViewBag.SortDir == "ASC" ? "DESC" : "ASC"; }
-    }
-    public RouteValueDictionary GenerateRootValueDictionaryForSort(string sortOrder)
-    {
-        return new RouteValueDictionary {
-            {"playlistId", Request.QueryString["playlistId"] },
-            {"searchTitle", ViewBag.CurrentFilter.Title },
-            {"searchChannel", ViewBag.CurrentFilter.ChannelId },
-            {"pageNumber", ViewBag.CurrentPage },
-            {"sortOrder", sortOrder },
-            {"sortDir", newSortDir }
-        };
-    }
-}
-
 @{
     ViewBag.Title = "Playlist Items";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
@@ -36,21 +17,19 @@
         <div class="panel-body" style="padding:0 15px;">
             <div class="row form-row">
                 <div class="form-group">
-                    <label for="searchTitle">Find by name</label>
-                    @Html.TextBox("searchTitle", ViewBag.CurrentFilter.Title as string, new { @class = "form-control" })
+                    <label for="Title">Find by name</label>
+                    @Html.TextBox("ItemName", ViewBag.CurrentFilter.ItemName as string, new { @class = "form-control" })
                 </div>
                 <div class="form-group">
                     <label for="cboChannel">Channel</label>
-                    @Html.DropDownList("searchChannel", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
+                    @Html.DropDownList("ChannelId", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
                 </div>
                 @*<div class="form-group checkbox">
                     <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
                 </div>*@
-                @Html.Hidden("sortOrder", ViewBag.SortOrder as string)
-                @Html.Hidden("sortDir", ViewBag.SortDir as string)
-                @Html.Hidden("pageNumber", ViewBag.CurrentPage as string)
+                @Html.Partial("_SortNPageInputs")
                 @Html.Hidden("playlistId", playlistId)
-                <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                <input type="submit" name="Search" value="Search" class="btn btn-default search-btn" />
             </div>
         </div>
     </div>
@@ -59,19 +38,19 @@
     <table class="table">
         <tr>
             <th>
-                @Html.GridColumnHeader("Video Title", actionName, GenerateRootValueDictionaryForSort("title"))
+                @Html.GridColumnHeader("Video Title","title")
             </th>
             <th>
-                @Html.GridColumnHeader("Published At", actionName, GenerateRootValueDictionaryForSort("publishedAt"))
+                @Html.GridColumnHeader("Published At", "publishedAt")
             </th>
             <th>
-                @Html.GridColumnHeader("Video Owner Channel Id", actionName, GenerateRootValueDictionaryForSort("videoOwnerChannel"))
+                @Html.GridColumnHeader("Video Owner Channel Id", "videoOwnerChannel")
             </th>
             <th>
-                @Html.GridColumnHeader("Inserted Date", actionName, GenerateRootValueDictionaryForSort("insertedDate"))
+                @Html.GridColumnHeader("Inserted Date", "insertedDate")
             </th>
             <th>
-                @Html.GridColumnHeader("Is Removed", actionName, GenerateRootValueDictionaryForSort("isRemoved"))
+                @Html.GridColumnHeader("Is Removed", "isRemoved")
             </th>
         </tr>
 
@@ -99,15 +78,7 @@
 </div>
 @*PAGED LIST*@
 <div class="pagedList">
-    @Html.PagedListPager(Model, pageNumber => Url.Action(actionName, new
-{
-    pageNumber,
-    searchTitle = ViewBag.CurrentFilter.Title,
-    searchChannel = ViewBag.CurrentFilter.ChannelId,
-    sortOrder = ViewBag.SortOrder,
-    sortDir = ViewBag.SortDir,
-    playlistId = playlistId
-}))
+    @Html.JSPagedListPager(Model)
 </div>
 
 @section scripts {

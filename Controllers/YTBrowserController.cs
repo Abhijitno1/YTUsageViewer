@@ -64,23 +64,24 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList((int)ViewBag.CurrentFilter.PageNumber, PAGE_SIZE));
         }
 
-        public ActionResult PlaylistItems(string playlistId, string searchTitle, string searchChannel, string sortOrder, string sortDir, int? pageNumber)
+        public ActionResult PlaylistItems(string playlistId, PlaylistItemSearchCriteria searchCriteria)
         {
             //Reset the page number if new search is initiated by user
-            if (!string.IsNullOrEmpty(Request.Params["Search"])) pageNumber = 1;
-            ViewBag.CurrentPage = pageNumber ?? 1;
+            if (!string.IsNullOrEmpty(Request.Params["Search"])) searchCriteria.PageNumber = 1;
+            searchCriteria.PageNumber = searchCriteria.PageNumber ?? 1;
+            ViewBag.CurrentFilter = searchCriteria;
 
-            var result = GetPlaylistItemsSearchResults(playlistId, searchTitle, searchChannel, sortOrder, sortDir);
+            var result = GetPlaylistItemsSearchResults(playlistId, searchCriteria);
 
             var channelsList = result.Select(x => new { CharId = x.VideoOwnerChannelId, Title = x.VideoOwnerChannelName })
                     .Distinct().OrderBy(x => x.Title).ToList();           
             channelsList.Insert(0, new { CharId = (string)null, Title = string.Empty });
-            ViewBag.ChannelsList = new SelectList(channelsList, "CharId", "Title", searchChannel);
+            ViewBag.ChannelsList = new SelectList(channelsList, "CharId", "Title", searchCriteria.ChannelId);
 
             var playListName = db.Playlists.Where(x => x.CharId == playlistId).FirstOrDefault()?.Title;
             ViewBag.PlaylistName = playListName;
 
-            return View(result.ToPagedList((int)ViewBag.CurrentPage, PAGE_SIZE));
+            return View(result.ToPagedList(searchCriteria.PageNumber.Value, PAGE_SIZE));
         }
 
         public ActionResult Channels(SearchSubscriptionParams searchParams)
@@ -353,8 +354,7 @@ namespace YTUsageViewer.Controllers
             return result.ToList();
         }
 
-        private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(string playlistId, string searchTitle, string searchChannel,
-            string sortOrder, string sortDir)
+        private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(string playlistId, PlaylistItemSearchCriteria searchCriteria)
         {
             var joinResult = from pl in db.PlaylistItems
                       join ch in db.Channels on pl.VideoOwnerChannelId equals ch.CharId
@@ -364,23 +364,20 @@ namespace YTUsageViewer.Controllers
 
             //var result = db.PlaylistItems.AsQueryable().Where(x => x.PlaylistId == playlistId);
             var result = joinResult.Select(x => x.pl);
-            ViewBag.CurrentFilter = new PlaylistItemSearchCriteria();
 
-            if (!string.IsNullOrEmpty(searchTitle))
+            if (!string.IsNullOrEmpty(searchCriteria.ItemName))
             {
-                ViewBag.CurrentFilter.Title = searchTitle;
-                result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchTitle.ToLower()));
+                result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchCriteria.ItemName.ToLower()));
             }
-            if (!string.IsNullOrEmpty(searchChannel))
+            if (!string.IsNullOrEmpty(searchCriteria.ChannelId))
             {
-                ViewBag.CurrentFilter.ChannelId = searchChannel;
-                result = result.Where(x => x.VideoOwnerChannelId != null && x.VideoOwnerChannelId.Equals(searchChannel));
+                result = result.Where(x => x.VideoOwnerChannelId != null && x.VideoOwnerChannelId.Equals(searchCriteria.ChannelId));
             }
 
-            if (!string.IsNullOrEmpty(sortOrder))
+            if (!string.IsNullOrEmpty(searchCriteria.SortOrder))
             {
-                ViewBag.SortOrder = sortOrder;
-                ViewBag.SortDir = sortDir;
+                var sortOrder = searchCriteria.SortOrder;
+                var sortDir = searchCriteria.SortDir;
 
                 if (sortOrder == "title" && sortDir == "ASC")
                     result = result.OrderBy(x => x.Title);

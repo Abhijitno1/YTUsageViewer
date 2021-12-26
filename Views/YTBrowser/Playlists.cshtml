@@ -1,4 +1,5 @@
-﻿@using PagedList.Mvc
+﻿@using System.Globalization;
+@using PagedList.Mvc
 @using YTUsageViewer.Helpers
 @using YTUsageViewer.Models
 @model PagedList.IPagedList<Playlist>
@@ -8,6 +9,8 @@
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Playlists;
     var newSortDir = ViewBag.CurrentFilter.SortDir == "ASC" ? "DESC" : "ASC";
+    var textInfo = new CultureInfo("en-US", false).TextInfo;
+    textInfo.ToTitleCase("abc");
 }
 <h2>@ViewBag.Title</h2>
 <div id="resultItems">
@@ -23,23 +26,23 @@
         <tr>
             <th>
                 @Html.ActionLink("Title", "Playlists", new { SortOrder = "title", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("title") pull-right"></span>                
+                <span class="glyphicon @Html.GetSortDirIcon("title") pull-right"></span>
             </th>
             <th>
                 @Html.ActionLink("Published At", "Playlists", new { SortOrder = "publishedAt", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("publishedAt") pull-right"></span>                
+                <span class="glyphicon @Html.GetSortDirIcon("publishedAt") pull-right"></span>
             </th>
             <th>
                 @Html.ActionLink("Privacy Status", "Playlists", new { SortOrder = "privacyStatus", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("privacyStatus") pull-right"></span>                
+                <span class="glyphicon @Html.GetSortDirIcon("privacyStatus") pull-right"></span>
             </th>
             <th>
                 @Html.ActionLink("Inserted Date", "Playlists", new { sortOrder = "insertedDate", sortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, pageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("insertedDate") pull-right"></span>                
+                <span class="glyphicon @Html.GetSortDirIcon("insertedDate") pull-right"></span>
             </th>
             <th>
                 @Html.ActionLink("Is Removed", "Playlists", new { sortOrder = "isRemoved", sortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, pageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("isRemoved") pull-right"></span>                                
+                <span class="glyphicon @Html.GetSortDirIcon("isRemoved") pull-right"></span>
             </th>
         </tr>
 
@@ -47,14 +50,14 @@
         {
             <tr rowKey="@item.CharId">
                 <td>
-                    @Html.ActionLink(@item.Title, "PlaylistItems", new { playlistId = item.CharId }, 
-                        new {title = "Click to view Playlist Items"})
+                    @Html.ActionLink(@item.Title, "PlaylistItems", new { playlistId = item.CharId },
+                        new { title = "Click to view Playlist Items" })
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.PublishedAt)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PrivacyStatus)
+                    @textInfo.ToTitleCase(item.PrivacyStatus)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.InsertedDate)
