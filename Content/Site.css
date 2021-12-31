@@ -144,7 +144,7 @@ textarea {
 /*Select2 render correction for Bootstrap layout */
 span.select2.select2-container {
     width: 100% !important;
-}
+} 
 
 .search-btn {
     margin-left: 20px;
