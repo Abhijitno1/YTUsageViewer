@@ -126,6 +126,24 @@ namespace YTUsageViewer.Controllers
 
             return View(result.ToPagedList((int)ViewBag.CurrentFilter.PageNumber, PAGE_SIZE));
         }
+
+        [HttpPost]
+        public ActionResult Playlists4VideoPopup(string videoId, string videoName)
+        {
+            var playlists = from pl in db.Playlists
+                            join plitm in db.PlaylistItems on pl.CharId equals plitm.PlaylistId
+                            where plitm.VideoId == videoId
+                            select pl.Title;
+
+            PlayList4VideoViewModel viewModel = new PlayList4VideoViewModel()
+            {
+                VideoId = videoId,
+                VideoName = videoName,
+                PlaylistNames = playlists.ToList()
+            };
+            return PartialView(viewModel);
+        }
+
         public ActionResult Comments()
         {
             var result= new List<Comment>();

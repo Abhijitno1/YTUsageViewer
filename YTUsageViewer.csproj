@@ -200,6 +200,7 @@
     <Compile Include="Models\Playlist.cs" />
     <Compile Include="Models\PlaylistItem.cs" />
     <Compile Include="ViewModels\CommonSearchParams.cs" />
+    <Compile Include="ViewModels\PlayList4VideoViewModel.cs" />
     <Compile Include="ViewModels\SearchCommentParams.cs" />
     <Compile Include="ViewModels\SearchPlaylistParams.cs" />
     <Compile Include="ViewModels\SearchSubscriptionParams.cs" />
@@ -308,6 +309,7 @@
     <Content Include="Views\YTBrowser\Comments.cshtml" />
     <Content Include="Views\Shared\ClientModalDialog.cshtml" />
     <Content Include="Views\Shared\_SortNPageInputs.cshtml" />
+    <Content Include="Views\YTBrowser\Playlists4VideoPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

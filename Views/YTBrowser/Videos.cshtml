@@ -28,15 +28,13 @@
                     </div>
                     <label for="ChannelID" class="col-sm-2 col-form-label">Channel</label>
                     <div class="col-sm-3">
-                        @Html.DropDownList("ChannelID", ViewBag.ChannelsList as SelectList, new { @class = "form-control"})
+                        @Html.DropDownList("ChannelID", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group checkbox">
                             <label>@Html.CheckBox("isDeleted", (bool)ViewBag.CurrentFilter.IsDeleted) Is Deleted</label>
                         </div>
-                        @Html.Hidden("SortOrder", ViewBag.CurrentFilter.SortOrder as string, new { id = "sortOrder" })
-                        @Html.Hidden("SortDir", ViewBag.CurrentFilter.SortDir as string, new { id = "sortDir" })
-                        @Html.Hidden("PageNumber", ViewBag.CurrentFilter.PageNumber as string, new { id = "pageNumber" })
+                        @Html.Partial("_SortNPageInputs")
                         <input type="submit" name="Search" value="Search" class="btn btn-default search-btn" />
                     </div>
                 </div>
@@ -57,7 +55,7 @@
                     @Html.GridColumnHeader("Title", "title")
                 </th>
                 <th>
-                    @Html.GridColumnHeader("Description", "description")
+                    Description
                 </th>
                 <th>
                     @Html.GridColumnHeader("Channel Name", "channelName")
@@ -74,12 +72,15 @@
                 <th>
                     @Html.GridColumnHeader("Is Deleted", "isDeleted")
                 </th>
+                <th>
+                    In Playlists
+                </th>
             </tr>
 
             @foreach (var item in Model)
             {
                 <tr rowKey="@item.CharId">
-                    <td>
+                    <td fieldKey="title">
                         <a href="https://www.youtube.com/watch?v=@item.CharId" target="_blank">@item.Title</a>
                     </td>
                     <td>
@@ -103,6 +104,11 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.IsDeleted)
                     </td>
+                    <td>
+                        <a href="#" onclick="showPlaylists4Video(this);">
+                            <i class="glyphicon glyphicon-bookmark"></i>
+                        </a>
+                    </td>
                 </tr>
             }
 
@@ -116,6 +122,7 @@
     </div>
 </div>
 @Html.Partial("~/Views/Shared/ClientModalDialog.cshtml")
+<div id="srvDlgContainer"></div>
 @section scripts {
     <script>
         $(function () {
@@ -129,6 +136,27 @@
             var dlgClientModal = $('#dlgClientModal');
             dlgClientModal.find('.descr-display').html(videoDescr);
             showDraggableModal(dlgClientModal);
+        }
+
+        function showPlaylists4Video(srcElm) {
+            var parentRow = $(srcElm).closest('tr');
+            var videoId = parentRow.attr('rowKey');
+            var videoName = parentRow.children('td[fieldKey=title]').find('a').text();
+            //alert('Will show playlists for video id: ' + videoId + ' | Video Name: ' + videoName);
+            $.ajax({
+                url: '@Url.Action("Playlists4VideoPopup")',
+                data: { videoId: videoId, videoName: videoName },
+                type: "POST",
+                success: function (response) {
+                    $("#srvDlgContainer").html(response);
+                    showDraggableModal($("#dlgPlaylist4Video"))
+                    //$("#dlgPlaylist4Video").modal();
+                },
+                error: function (response) {
+                    $("#srvDlgContainer").html(response.responseText);
+                    showDraggableModal($("#dlgPlaylist4Video"))
+                }
+            });
         }
     </script>
 

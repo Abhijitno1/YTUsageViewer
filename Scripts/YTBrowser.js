@@ -56,6 +56,6 @@ function showDraggableModal(jqElm) {
     $(jqElm).draggable({
     //$(".modal-dialog").draggable({
         cursor: "move",
-        handle: ".dragable_touch",
+        handle: ".modal-header",
     });
 }
