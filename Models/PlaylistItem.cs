@@ -16,6 +16,8 @@ namespace YTUsageViewer.Models
         [DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy HH:mm}")]
         public DateTime? PublishedAt { get; set; }
         public string PlaylistId { get; set; }
+        [NotMapped]
+        public string PlaylistName { get; set; }
         public string VideoId { get; set; }
         public string VideoOwnerChannelId { get; set; }
         [NotMapped]

@@ -6,12 +6,11 @@
     ViewBag.Title = "Playlist Items";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Playlists;
-    var actionName = "PlaylistItems";
-    var playlistId = Request.QueryString["playlistId"];
+    var searchMode = ViewBag.CurrentFilter.SearchMode as string;
 }
 
-<h2>@ViewBag.Title for @ViewBag.PlaylistName</h2>
-@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get, new { @class = "form-inline" }))
+<h2>@ViewBag.Title for "@ViewBag.MainFilter"</h2>
+@using (Html.BeginForm("PlaylistItems", "YTBrowser", FormMethod.Get, new { @class = "form-inline" }))
 {
     <div class="panel panel-default">
         <div class="panel-body" style="padding:0 15px;">
@@ -22,14 +21,25 @@
                 </div>
                 <label for="cboChannel" class="col-sm-1">Channel</label>
                 <div class="col-sm-4">
-                    @Html.DropDownList("ChannelId", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
-                    @*<div class="form-group checkbox">
+                    @if (searchMode == PlaylistItemSearchMode.ForPlaylist)
+                    {
+                        @Html.DropDownList("ChannelId", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
+                        @Html.Hidden("PlaylistId", ViewBag.CurrentFilter.PlaylistId as string)
+                    }
+                    else if (searchMode == PlaylistItemSearchMode.ForChannel)
+                    {
+                        @Html.DropDownList("PlaylistId", ViewBag.PlaylistList as SelectList, new { @class = "form-control" })
+                        @Html.Hidden("ChannelId", ViewBag.CurrentFilter.ChannelId as string)
+                    }
+                    @*
+                    <div class="form-group checkbox">
                         <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
-                    </div>*@
+                    </div>
+                    *@
                 </div>
                 <div class="col-sm-1">
                     @Html.Partial("_SortNPageInputs")
-                    @Html.Hidden("playlistId", playlistId)
+                    @Html.Hidden("SearchMode", searchMode)
                     <input type="submit" name="Search" value="Search" class="btn btn-default" />
                 </div>
             </div>
@@ -46,7 +56,7 @@
                 @Html.GridColumnHeader("Published At", "publishedAt")
             </th>
             <th>
-                @Html.GridColumnHeader("Video Owner Channel Id", "videoOwnerChannel")
+                @Html.GridColumnHeader("Video Owner Channel", "videoOwnerChannel")
             </th>
             <th>
                 @Html.GridColumnHeader("Inserted Date", "insertedDate")

@@ -59,7 +59,7 @@
         {
             <tr rowKey="@item.CharId">
                 <td>
-                    @Html.ActionLink(@item.Title, "PlaylistItems", new { playlistId = item.CharId },
+                    @Html.ActionLink(@item.Title, "PlaylistItems", new { SearchMode= PlaylistItemSearchMode.ForPlaylist, PlaylistId = item.CharId },
                         new { title = "Click to view Playlist Items" })
                 </td>
                 <td>

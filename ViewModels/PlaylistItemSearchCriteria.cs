@@ -9,6 +9,8 @@ namespace YTUsageViewer.ViewModels
 {
     public class PlaylistItemSearchCriteria : CommonSearchParams
     {
+        public string SearchMode { get; set; }
+        public string PlaylistId { get; set; }
         public string ItemName { get; set; }
         public string ChannelId { get; set; }
     }

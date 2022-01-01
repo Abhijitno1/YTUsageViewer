@@ -19,6 +19,12 @@ namespace YTUsageViewer.Helpers
         public const string Comments = "Comments";
     }
 
+    public class PlaylistItemSearchMode
+    {
+        public const string ForPlaylist = "ForPlaylist";
+        public const string ForChannel = "ForChannel";
+    }
+
     public static class CustomHelpers
     {
         public static IHtmlString GetSortDirIcon(this HtmlHelper helper, string sortOrderCheck)

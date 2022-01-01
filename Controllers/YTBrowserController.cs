@@ -64,22 +64,35 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList((int)ViewBag.CurrentFilter.PageNumber, PAGE_SIZE));
         }
 
-        public ActionResult PlaylistItems(string playlistId, PlaylistItemSearchCriteria searchCriteria)
+        public ActionResult PlaylistItems(PlaylistItemSearchCriteria searchCriteria)
         {
             //Reset the page number if new search is initiated by user
             if (!string.IsNullOrEmpty(Request.Params["Search"])) searchCriteria.PageNumber = 1;
             searchCriteria.PageNumber = searchCriteria.PageNumber ?? 1;
             ViewBag.CurrentFilter = searchCriteria;
 
-            var result = GetPlaylistItemsSearchResults(playlistId, searchCriteria);
+            var result = GetPlaylistItemsSearchResults(searchCriteria);
 
-            var channelsList = result.Select(x => new { CharId = x.VideoOwnerChannelId, Title = x.VideoOwnerChannelName })
-                    .Distinct().OrderBy(x => x.Title).ToList();           
-            channelsList.Insert(0, new { CharId = (string)null, Title = string.Empty });
-            ViewBag.ChannelsList = new SelectList(channelsList, "CharId", "Title", searchCriteria.ChannelId);
+            if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForPlaylist)
+            {
+                var channelsList = result.Select(x => new { CharId = x.VideoOwnerChannelId, Title = x.VideoOwnerChannelName })
+                        .Distinct().OrderBy(x => x.Title).ToList();
+                channelsList.Insert(0, new { CharId = (string)null, Title = string.Empty });
+                ViewBag.ChannelsList = new SelectList(channelsList, "CharId", "Title", searchCriteria.ChannelId);
 
-            var playListName = db.Playlists.Where(x => x.CharId == playlistId).FirstOrDefault()?.Title;
-            ViewBag.PlaylistName = playListName;
+                var playListName = db.Playlists.Where(x => x.CharId == searchCriteria.PlaylistId).FirstOrDefault()?.Title;
+                ViewBag.MainFilter = playListName;
+            }
+            else if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForChannel)
+            {
+                var playlistsList = result.Select(x => new { CharId = x.PlaylistId, Title = x.PlaylistName })
+                        .Distinct().OrderBy(x => x.Title).ToList();
+                playlistsList.Insert(0, new { CharId = (string)null, Title = string.Empty });
+                ViewBag.PlaylistsList = new SelectList(playlistsList, "CharId", "Title", searchCriteria.PlaylistId);
+
+                var channelName = db.Channels.Where(x => x.CharId == searchCriteria.ChannelId).FirstOrDefault()?.Title;
+                ViewBag.MainFilter = channelName;
+            }
 
             return View(result.ToPagedList(searchCriteria.PageNumber.Value, PAGE_SIZE));
         }
@@ -372,24 +385,41 @@ namespace YTUsageViewer.Controllers
             return result.ToList();
         }
 
-        private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(string playlistId, PlaylistItemSearchCriteria searchCriteria)
+        private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(PlaylistItemSearchCriteria searchCriteria)
         {
-            var joinResult = from pl in db.PlaylistItems
-                      join ch in db.Channels on pl.VideoOwnerChannelId equals ch.CharId
-                      where pl.PlaylistId == playlistId
-                      select new { pl, ch };
-            joinResult.ToList().ForEach(x => x.pl.VideoOwnerChannelName = x.ch.Title);
+            IEnumerable<PlaylistItem> result = new List<PlaylistItem>();
 
-            //var result = db.PlaylistItems.AsQueryable().Where(x => x.PlaylistId == playlistId);
-            var result = joinResult.Select(x => x.pl);
+            if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForPlaylist)
+            {
+                var joinResult = from pli in db.PlaylistItems
+                                 join ch in db.Channels on pli.VideoOwnerChannelId equals ch.CharId
+                                 select new { pli, ch };
+                joinResult = joinResult.Where(x => x.pli.PlaylistId == searchCriteria.PlaylistId);
+                if (!string.IsNullOrEmpty(searchCriteria.ChannelId))
+                {
+                    joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId != null && x.pli.VideoOwnerChannelId.Equals(searchCriteria.ChannelId));
+                }
+                joinResult.ToList().ForEach(x => x.pli.VideoOwnerChannelName = x.ch.Title);
+                result = joinResult.Select(x => x.pli);
+            }
+            else if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForChannel)
+            {
+                var joinResult = from pli in db.PlaylistItems
+                                 join pl in db.Playlists on pli.PlaylistId equals pl.CharId
+                                 select new { pli, pl };
+                joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId == searchCriteria.ChannelId);
+                if (!string.IsNullOrEmpty(searchCriteria.PlaylistId))
+                {
+                    joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId != null && x.pli.VideoOwnerChannelId.Equals(searchCriteria.ChannelId));
+                }
+                joinResult.ToList().ForEach(x => x.pli.PlaylistName = x.pl.Title);
+                result = joinResult.Select(x => x.pli);
+            }
+
 
             if (!string.IsNullOrEmpty(searchCriteria.ItemName))
             {
                 result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchCriteria.ItemName.ToLower()));
-            }
-            if (!string.IsNullOrEmpty(searchCriteria.ChannelId))
-            {
-                result = result.Where(x => x.VideoOwnerChannelId != null && x.VideoOwnerChannelId.Equals(searchCriteria.ChannelId));
             }
 
             if (!string.IsNullOrEmpty(searchCriteria.SortOrder))
