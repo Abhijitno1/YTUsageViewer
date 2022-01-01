@@ -11,11 +11,20 @@
 <h2>@ViewBag.Title</h2>
 @using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get))
 {
-<p>
-    Find by name: @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string)
-    @Html.Partial("_SortNPageInputs")
-    <input type="submit" name="Search" value="Search" class="search-btn" />
-</p>
+    <div class="panel panel-default">
+        <div class="panel-body" style="padding:0 15px;">
+            <div class="row form-row">
+                <label for="Title" class="col-sm-2">Find by name</label>
+                <div class="col-sm-4">
+                    @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-1">
+                    @Html.Partial("_SortNPageInputs")
+                    <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </div>
 }
 <div id="resultItems">
     <table class="table">
@@ -68,25 +77,25 @@
     </div>
 </div>
 
-    @section scripts {
-        <script>
-            //Below function will be executed on View Load
-            $(document).ready(function () {
-                //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
-               
-                $('[data-toggle="popover"]').popover({
-                    placement: 'auto left',
-                    html: true,
-                    title: function () { return $('.btn-row-popup-menu-head').html() },
-                    content: ''
-                });
-            });
+@section scripts {
+    <script>
+        //Below function will be executed on View Load
+        $(document).ready(function () {
+            //https://www.w3schools.com/bootstrap/bootstrap_popover.asp
 
-            $('[data-toggle="popover"]').on('shown.bs.popover', function () {
-                var popoverWindow = $(this);
-                $('.btn-popover-close').click(function () {
-                    popoverWindow.popover('hide');
-                });
+            $('[data-toggle="popover"]').popover({
+                placement: 'auto left',
+                html: true,
+                title: function () { return $('.btn-row-popup-menu-head').html() },
+                content: ''
             });
-        </script>
-    }
+        });
+
+        $('[data-toggle="popover"]').on('shown.bs.popover', function () {
+            var popoverWindow = $(this);
+            $('.btn-popover-close').click(function () {
+                popoverWindow.popover('hide');
+            });
+        });
+    </script>
+}
