@@ -19,24 +19,27 @@
                 <div class="col-sm-4">
                     @Html.TextBox("ItemName", ViewBag.CurrentFilter.ItemName as string, new { @class = "form-control" })
                 </div>
-                <label for="cboChannel" class="col-sm-1">Channel</label>
-                <div class="col-sm-4">
-                    @if (searchMode == PlaylistItemSearchMode.ForPlaylist)
-                    {
+                @if (searchMode == PlaylistItemSearchMode.ForPlaylist)
+                {
+                    <label for="ChannelId" class="col-sm-1">Channel</label>
+                    <div class="col-sm-4">
                         @Html.DropDownList("ChannelId", ViewBag.ChannelsList as SelectList, new { @class = "form-control" })
                         @Html.Hidden("PlaylistId", ViewBag.CurrentFilter.PlaylistId as string)
-                    }
-                    else if (searchMode == PlaylistItemSearchMode.ForChannel)
-                    {
-                        @Html.DropDownList("PlaylistId", ViewBag.PlaylistList as SelectList, new { @class = "form-control" })
-                        @Html.Hidden("ChannelId", ViewBag.CurrentFilter.ChannelId as string)
-                    }
-                    @*
-                    <div class="form-group checkbox">
-                        <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
                     </div>
-                    *@
+                }
+                else if (searchMode == PlaylistItemSearchMode.ForChannel)
+                {
+                    <label for="PlaylistId" class="col-sm-1">Playlist</label>
+                    <div class="col-sm-4">
+                        @Html.DropDownList("PlaylistId", ViewBag.PlaylistsList as SelectList, new { @class = "form-control" })
+                        @Html.Hidden("ChannelId", ViewBag.CurrentFilter.ChannelId as string)
+                    </div>
+                }
+                @*
+                <div class="form-group checkbox">
+                    <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
                 </div>
+                *@
                 <div class="col-sm-1">
                     @Html.Partial("_SortNPageInputs")
                     @Html.Hidden("SearchMode", searchMode)
@@ -50,13 +53,20 @@
     <table class="table">
         <tr>
             <th>
-                @Html.GridColumnHeader("Video Title","title")
+                @Html.GridColumnHeader("Video Title", "title")
             </th>
             <th>
                 @Html.GridColumnHeader("Published At", "publishedAt")
             </th>
             <th>
-                @Html.GridColumnHeader("Video Owner Channel", "videoOwnerChannel")
+                @if (searchMode.Equals(PlaylistItemSearchMode.ForPlaylist))
+                {
+                    @Html.GridColumnHeader("Video Owner Channel", "videoOwnerChannel")
+                }
+                else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel))
+                {
+                    @Html.GridColumnHeader("Playlist", "playlist")
+                }
             </th>
             <th>
                 @Html.GridColumnHeader("Inserted Date", "insertedDate")
@@ -76,7 +86,14 @@
                     @Html.DisplayFor(modelItem => item.PublishedAt)
                 </td>
                 <td>
-                    <a href="https://www.youtube.com/channel/@item.VideoOwnerChannelId" target="_blank">@item.VideoOwnerChannelName</a>
+                    @if (searchMode.Equals(PlaylistItemSearchMode.ForPlaylist))
+                    {
+                        <a href="https://www.youtube.com/channel/@item.VideoOwnerChannelId" target="_blank">@item.VideoOwnerChannelName</a>
+                    }
+                    else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel))
+                    {
+                        @item.PlaylistName
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.InsertedDate)
@@ -94,22 +111,46 @@
 </div>
 
 @section scripts {
-    <script>
+    @if (searchMode.Equals(PlaylistItemSearchMode.ForPlaylist))
+    {
+<script>
         $(function () {
-            var btnBack = $('<button type="button" class="btn btn-info" id="btnBack" title="Back to Playlists">\
-                                <i class="glyphicon glyphicon-backward" ></i>\
+            var btnBack = $('<button type="button" class="btn btn-info" id="btnBack" title="Back to Channels">\
+                                    <i class="glyphicon glyphicon-backward"></i>\
                            </button>');
             $('#pageToolbar').append(btnBack);
             btnBack.click(function () {
-                var playlistViewUrl = '@Url.Action("Playlists")';
+                var playlistViewUrl = '@Url.Action("Channels")';
                 $(location).attr('href', playlistViewUrl);
             });
-
             $("[name='ChannelId']").select2();
         });
 
         $('#btnExport').click(function () {
             alert("Exporting Playlists (WIP)");
         });
-    </script>
+</script>
+    }
+    else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel))
+    {
+        <script>
+        $(function () {
+            var btnBack = $('<button type="button" class="btn btn-info" id="btnBack" title="Back to Channels">\
+                                    <i class="glyphicon glyphicon-backward"></i>\
+                           </button>');
+            $('#pageToolbar').append(btnBack);
+            btnBack.click(function () {
+                var playlistViewUrl = '@Url.Action("Channels")';
+                $(location).attr('href', playlistViewUrl);
+            });
+
+            $("[name='PlaylistId']").select2();
+        });
+
+        $('#btnExport').click(function () {
+            alert("Exporting Playlists (WIP)");
+        });
+        </script>
+    }
+
 }

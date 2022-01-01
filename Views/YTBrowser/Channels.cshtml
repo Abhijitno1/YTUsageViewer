@@ -47,7 +47,8 @@
         {
             <tr rowKey="@item.CharId">
                 <td>
-                    @Html.DisplayFor(modelItem => item.Title)
+                    @Html.ActionLink(@item.Title, "PlaylistItems", new { SearchMode = PlaylistItemSearchMode.ForChannel, ChannelId = item.CharId },
+                        new { title = "Click to view Playlist Items for this channel" })
                 </td>
                 <td>
                     @Html.TruncatedGridColumn(@item.Description)

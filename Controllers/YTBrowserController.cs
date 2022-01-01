@@ -410,7 +410,7 @@ namespace YTUsageViewer.Controllers
                 joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId == searchCriteria.ChannelId);
                 if (!string.IsNullOrEmpty(searchCriteria.PlaylistId))
                 {
-                    joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId != null && x.pli.VideoOwnerChannelId.Equals(searchCriteria.ChannelId));
+                    joinResult = joinResult.Where(x => x.pli.PlaylistId != null && x.pli.PlaylistId.Equals(searchCriteria.PlaylistId));
                 }
                 joinResult.ToList().ForEach(x => x.pli.PlaylistName = x.pl.Title);
                 result = joinResult.Select(x => x.pli);
@@ -439,6 +439,10 @@ namespace YTUsageViewer.Controllers
                     result = result.OrderBy(x => x.VideoOwnerChannelName);
                 else if (sortOrder == "videoOwnerChannel" && sortDir == "DESC")
                     result = result.OrderByDescending(x => x.VideoOwnerChannelName);
+                else if (sortOrder == "playlist" && sortDir == "ASC")
+                    result = result.OrderBy(x => x.PlaylistName);
+                else if (sortOrder == "playlist" && sortDir == "DESC")
+                    result = result.OrderByDescending(x => x.PlaylistName);
                 else if (sortOrder == "insertedDate" && sortDir == "ASC")
                     result = result.OrderBy(x => x.InsertedDate);
                 else if (sortOrder == "insertedDate" && sortDir == "DESC")
