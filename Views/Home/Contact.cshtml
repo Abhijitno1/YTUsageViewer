@@ -64,7 +64,7 @@
                                 <div class="row">
                                     <label for="dtFromDate" class="col-sm-1 col-form-label">From</label>
                                     <div class="col-sm-5">
-                                        <div class="input-group date" data-provide="datepicker">
+                                        <div class="input-group date">
                                             <input type="text" class="form-control datepicker" name="dtFromDate">
                                             <div class="input-group-addon">
                                                 <span class="glyphicon glyphicon-th"></span>
@@ -73,7 +73,7 @@
                                     </div>
                                     <label for="dtToDate" class="col-sm-1 col-form-label">To</label>
                                     <div class="col-sm-5">
-                                        <div class="input-group date" data-provide="datepicker">
+                                        <div class="input-group date">
                                             <input type="text" class="form-control datepicker" name="dtToDate">
                                             <div class="input-group-addon">
                                                 <span class="glyphicon glyphicon-th"></span>
@@ -119,8 +119,10 @@
     <script>
         $(document).ready(function () {
             //https://bootstrap-datepicker.readthedocs.io/en/latest/options.html
-            $('.datepicker').datepicker({
-                orientation: 'top'
+            $('.date').datepicker({
+                //orientation: 'top',
+                todayBtn: 'linked',
+                autoclose: true
             });
 
             $('#btnSearchVideo').click(function () {                             

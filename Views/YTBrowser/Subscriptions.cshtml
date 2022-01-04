@@ -12,11 +12,20 @@
 <h2>@ViewBag.Title</h2>
 @using (Html.BeginForm("Index", "YTBrowser", FormMethod.Get))
 {
-<p>
-    Find by name: @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string)
-    @Html.Partial("_SortNPageInputs")
-    <input type="submit" value="Search" name="Search" class="search-btn" />
-</p>
+    <div class="panel panel-default">
+        <div class="panel-body" style="padding:0 15px;">
+            <div class="row form-row">
+                <label for="Title" class="col-sm-2">Find by name</label>
+                <div class="col-sm-4">
+                    @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-1">
+                    @Html.Partial("_SortNPageInputs")
+                    <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </div>
 }
 <div id="resultItems">
     <table class="table">
