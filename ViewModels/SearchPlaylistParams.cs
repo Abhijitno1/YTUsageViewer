@@ -13,5 +13,7 @@ namespace YTUsageViewer.ViewModels
         public bool IsRemoved { get; set; }
         public DateTime? PublishedDateFrom { get; set; }
         public DateTime? PublishedDateTo { get; set; }
+        public DateTime? InsertedDateFrom { get; set; }
+        public DateTime? InsertedDateTo { get; set; }
     }
 }

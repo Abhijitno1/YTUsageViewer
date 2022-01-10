@@ -26,6 +26,8 @@
     var textInfo = new CultureInfo("en-US", false).TextInfo;
     var publishedDateFrom = new DatePickerModel { InputName = "PublishedDateFrom", DisplayName="From", SelectedDate = ViewBag.CurrentFilter.PublishedDateFrom };
     var publishedDateTo = new DatePickerModel { InputName = "PublishedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.PublishedDateTo };
+    var insertedDateFrom = new DatePickerModel { InputName = "InsertedDateFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.InsertedDateFrom };
+    var insertedDateTo = new DatePickerModel { InputName = "InsertedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.InsertedDateTo };
 }
 <h2>@ViewBag.Title</h2>
 <div id="resultItems">
@@ -53,15 +55,20 @@
                     </div>
                 </div>
                 <div class="row form-row">
-                    <div class="form-group">
-                        <span class="col-sm-2"><strong>Published Date Range</strong></span>
-                        <div class="col-sm-5">
+                        <span class="col-sm-2"><strong>Published Date</strong></span>
+                        <div class="col-sm-2">
                             @Html.Partial("_DatePicker", publishedDateFrom)
                         </div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-2">
                             @Html.Partial("_DatePicker", publishedDateTo)
                         </div>
-                    </div>
+                        <span class="col-sm-2"><strong>Inserted Date</strong></span>
+                        <div class="col-sm-2">
+                            @Html.Partial("_DatePicker", insertedDateFrom)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.Partial("_DatePicker", insertedDateTo)
+                        </div>
                 </div>
             </div>
         </div>

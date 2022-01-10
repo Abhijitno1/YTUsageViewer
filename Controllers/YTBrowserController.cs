@@ -263,6 +263,11 @@ namespace YTUsageViewer.Controllers
                 result = result.Where(x => x.PublishedAt >= searchParams.PublishedDateFrom.Value 
                     && x.PublishedAt <= searchParams.PublishedDateTo.Value);
             }
+            if (searchParams.InsertedDateFrom.HasValue && searchParams.InsertedDateTo.HasValue)
+            {
+                result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value
+                    && x.InsertedDate <= searchParams.InsertedDateTo.Value);
+            }
 
             if (!string.IsNullOrEmpty(searchParams.SortOrder))
             {
