@@ -2,7 +2,21 @@
 @using PagedList.Mvc
 @using YTUsageViewer.Helpers
 @using YTUsageViewer.Models
+@using YTUsageViewer.ViewModels
 @model PagedList.IPagedList<Playlist>
+@functions
+{
+    public SelectList GenerateSelectlistForPrivacyStatus()
+    {
+        var selectListItems = new SelectListItem[]
+        {
+            new SelectListItem{ Text=String.Empty, Value=null },
+            new SelectListItem{ Text="Public", Value="public" },
+            new SelectListItem{ Text="Private", Value="private" }
+            };
+        return new SelectList(selectListItems, "Value", "Text", ViewBag.CurrentFilter.PrivacyStatus);
+    }
+}
 
 @{
     ViewBag.Title = "Playlists list";
@@ -10,48 +24,64 @@
     ViewBag.CurrentYtMenu = YTBrowserMenu.Playlists;
     var newSortDir = ViewBag.CurrentFilter.SortDir == "ASC" ? "DESC" : "ASC";
     var textInfo = new CultureInfo("en-US", false).TextInfo;
-    textInfo.ToTitleCase("abc");
+    var publishedDateFrom = new DatePickerModel { InputName = "PublishedDateFrom", DisplayName="From", SelectedDate = ViewBag.CurrentFilter.PublishedDateFrom };
+    var publishedDateTo = new DatePickerModel { InputName = "PublishedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.PublishedDateTo };
 }
 <h2>@ViewBag.Title</h2>
 <div id="resultItems">
-    @using (Html.BeginForm("Playlists", "YTBrowser", FormMethod.Get))
+    @using (Html.BeginForm("Playlists", "YTBrowser", FormMethod.Post))
     {
         <div class="panel panel-default">
             <div class="panel-body" style="padding:0 15px;">
                 <div class="row form-row">
-                    <label for="Title" class="col-sm-2">Find by name</label>
-                    <div class="col-sm-4">
+                    <label for="PlaylistName" class="col-sm-2">Find by name</label>
+                    <div class="col-sm-3">
                         @Html.TextBox("PlaylistName", ViewBag.CurrentFilter.PlaylistName as string, new { @class = "form-control" })
+                    </div>
+                    <label for="PrivacyStatus" class="col-sm-2">Privacy Status</label>
+                    <div class="col-sm-2">
+                        @Html.DropDownList("PrivacyStatus", GenerateSelectlistForPrivacyStatus(), new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group checkbox">
+                            <label>@Html.CheckBox("IsRemoved", (bool)ViewBag.CurrentFilter.IsRemoved) Is Removed</label>
+                        </div>
                     </div>
                     <div class="col-sm-1">
                         @Html.Partial("_SortNPageInputs")
                         <input type="submit" name="Search" value="Search" class="btn btn-default" />
                     </div>
                 </div>
+                <div class="row form-row">
+                    <div class="form-group">
+                        <span class="col-sm-2"><strong>Published Date Range</strong></span>
+                        <div class="col-sm-5">
+                            @Html.Partial("_DatePicker", publishedDateFrom)
+                        </div>
+                        <div class="col-sm-5">
+                            @Html.Partial("_DatePicker", publishedDateTo)
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>    
+        </div>
     }
     <table class="table">
         <tr>
             <th>
-                @Html.ActionLink("Title", "Playlists", new { SortOrder = "title", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("title") pull-right"></span>
+                @Html.GridColumnHeader("Title", "title")
             </th>
             <th>
-                @Html.ActionLink("Published At", "Playlists", new { SortOrder = "publishedAt", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("publishedAt") pull-right"></span>
+                @Html.GridColumnHeader("Published At", "publishedAt")
             </th>
             <th>
-                @Html.ActionLink("Privacy Status", "Playlists", new { SortOrder = "privacyStatus", SortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, PageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("privacyStatus") pull-right"></span>
+                @Html.GridColumnHeader("Privacy Status", "privacyStatus")
             </th>
             <th>
-                @Html.ActionLink("Inserted Date", "Playlists", new { sortOrder = "insertedDate", sortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, pageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("insertedDate") pull-right"></span>
+                @Html.GridColumnHeader("Inserted Date", "insertedDate")
             </th>
             <th>
-                @Html.ActionLink("Is Removed", "Playlists", new { sortOrder = "isRemoved", sortDir = newSortDir, PlaylistName = ViewBag.CurrentFilter.PlaylistName, pageNumber = ViewBag.CurrentFilter.PageNumber })
-                <span class="glyphicon @Html.GetSortDirIcon("isRemoved") pull-right"></span>
+                @Html.GridColumnHeader("Is Removed", "isRemoved")
             </th>
         </tr>
 
@@ -59,7 +89,7 @@
         {
             <tr rowKey="@item.CharId">
                 <td>
-                    @Html.ActionLink(@item.Title, "PlaylistItems", new { SearchMode= PlaylistItemSearchMode.ForPlaylist, PlaylistId = item.CharId },
+                    @Html.ActionLink(@item.Title, "PlaylistItems", new { SearchMode = PlaylistItemSearchMode.ForPlaylist, PlaylistId = item.CharId },
                         new { title = "Click to view Playlist Items" })
                 </td>
                 <td>

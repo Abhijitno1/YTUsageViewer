@@ -122,13 +122,13 @@ textarea {
     background: #6d7fcc;
 }
 
-    #sidebar li.nav-item span {
-        margin-left: 10px;
-    }
+#sidebar li.nav-item span {
+    margin-left: 10px;
+}
 
-    #content {
-        flex: 1;
-    }
+#content {
+    flex: 1;
+}
 #content .navbar {
     padding: 15px;
     border-radius: 0;
@@ -152,4 +152,9 @@ span.select2.select2-container {
 
 .panel-footer.paged-footer {
     padding: 0 15px;
+}
+
+.datepicker-label {
+    float: left;
+    margin-right: 10px;
 }

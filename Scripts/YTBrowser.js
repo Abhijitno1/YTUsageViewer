@@ -8,6 +8,12 @@ $(document).ready(function () {
         title: function () { return $('.btn-row-popup-menu-head').html() },
         content: ''
     });
+    //https://bootstrap-datepicker.readthedocs.io/en/latest/options.html
+    $('.date').datepicker({
+        //orientation: 'top',
+        todayBtn: 'linked',
+        autoclose: true
+    });
 });
 
 $('#sidebarCollapse').on('click', function () {

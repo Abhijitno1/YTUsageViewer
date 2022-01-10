@@ -1,0 +1,21 @@
+﻿@using YTUsageViewer.ViewModels
+@model DatePickerModel
+
+@helper FormatDate(DateTime? input)
+{
+    if (input.HasValue)
+    {
+        @input.Value.ToString("mm/dd/yyyy");
+    }
+    else
+    {
+        @:
+    }
+}
+<label class="col-form-label datepicker-label" for="@Model.InputName">@Model.DisplayName</label>
+<div class="input-group date">
+    @Html.TextBox(Model.InputName, FormatDate(Model.SelectedDate), new { @class = "form-control datepicker", placeholder = "MM/dd/yyyy" })
+    <div class="input-group-addon">
+        <span class="glyphicon glyphicon-th"></span>
+    </div>
+</div>

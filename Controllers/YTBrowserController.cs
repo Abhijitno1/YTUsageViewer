@@ -248,8 +248,20 @@ namespace YTUsageViewer.Controllers
 
             if (!string.IsNullOrEmpty(searchParams.PlaylistName))
             {
-
                 result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchParams.PlaylistName.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(searchParams.PrivacyStatus))
+            {
+                result = result.Where(x => x.PrivacyStatus.Equals(searchParams.PrivacyStatus));
+            }
+            if (searchParams.IsRemoved)
+            {
+                result = result.Where(x => x.IsRemoved.Equals("Y"));
+            }
+            if (searchParams.PublishedDateFrom.HasValue && searchParams.PublishedDateTo.HasValue)
+            {
+                result = result.Where(x => x.PublishedAt >= searchParams.PublishedDateFrom.Value 
+                    && x.PublishedAt <= searchParams.PublishedDateTo.Value);
             }
 
             if (!string.IsNullOrEmpty(searchParams.SortOrder))
