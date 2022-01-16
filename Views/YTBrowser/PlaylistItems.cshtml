@@ -3,13 +3,12 @@
 @model PagedList.IPagedList<PlaylistItem>
 
 @{
-    ViewBag.Title = "Playlist Items";
+    ViewBag.Title = "Playlist Items for \"" + ViewBag.MainFilter + "\"";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Playlists;
     var searchMode = ViewBag.CurrentFilter.SearchMode as string;
 }
 
-<h2>@ViewBag.Title for "@ViewBag.MainFilter"</h2>
 @using (Html.BeginForm("PlaylistItems", "YTBrowser", FormMethod.Get, new { @class = "form-inline" }))
 {
     <div class="panel panel-default">

@@ -51,17 +51,19 @@
             <div style="width:100%">
                 <div style="float:left">
                     <button type="button" id="sidebarCollapse" class="btn btn-info">
-                        <i class="glyphicon glyphicon-align-left"></i>
-                        <span>Toggle Sidebar</span>
+                        <i class="glyphicon glyphicon-align-left" title="Toggle Sidebar"></i>
                     </button>
+                </div>
+                <div class="page-title">
+                    @ViewBag.Title
                 </div>
                 <div id="pageToolbar" style="float:right">
                     <button type="button" class="btn btn-info" id="btnExport" title="Export to Excel">
                         <i class="glyphicon glyphicon-cloud-download"></i>
                     </button>
                     @*<button type="button" class="btn btn-info" id="btnImport" title="Import from CSV">
-                            <i class="glyphicon glyphicon-cloud-upload"></i>
-                        </button>*@
+                <i class="glyphicon glyphicon-cloud-upload"></i>
+            </button>*@
                 </div>
             </div>
         </nav>

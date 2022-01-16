@@ -27,7 +27,13 @@ textarea {
     max-width: 280px;
 }
 */
-
+.page-title {
+    float: left;
+    margin-left: 20px;
+    font-size: 30px;
+    color: #466687;
+    line-height: 1
+}
 .form-row {
     margin: 10px 0;
 }

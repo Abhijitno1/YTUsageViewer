@@ -29,7 +29,6 @@
     var insertedDateFrom = new DatePickerModel { InputName = "InsertedDateFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.InsertedDateFrom };
     var insertedDateTo = new DatePickerModel { InputName = "InsertedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.InsertedDateTo };
 }
-<h2>@ViewBag.Title</h2>
 <div id="resultItems">
     @using (Html.BeginForm("Playlists", "YTBrowser", FormMethod.Post))
     {
