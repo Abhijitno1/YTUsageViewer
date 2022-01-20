@@ -7,6 +7,10 @@
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Videos;
     var actionName = "Videos";
+    var publishedDateFrom = new DatePickerModel { InputName = "PublishedDateFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.PublishedDateFrom };
+    var publishedDateTo = new DatePickerModel { InputName = "PublishedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.PublishedDateTo };
+    var insertedDateFrom = new DatePickerModel { InputName = "InsertedDateFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.InsertedDateFrom };
+    var insertedDateTo = new DatePickerModel { InputName = "InsertedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.InsertedDateTo };
 }
 
 @using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Post, new { @class = "form-inline" }))
@@ -39,6 +43,34 @@
                         <input type="submit" name="Search" value="Search" class="btn btn-default" />
                     </div>
                 </div>
+                <div class="row form-row">
+                    <span class="col-sm-2"><strong>Publised Date</strong></span>
+                    <div class="col-sm-2">
+                        @Html.Partial("_DatePicker", publishedDateFrom)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.Partial("_DatePicker", publishedDateTo)
+                    </div>
+                    <span class="col-sm-2"><strong>Duration (Minutes)</strong></span>
+                    <div class="col-sm-2">
+                        <label class="col-form-label datepicker-label" for="DurationGE">Between</label>
+                        @Html.TextBox("DurationGE", ViewBag.CurrentFilter.DurationGE as string, new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-2">
+                        <label class="col-form-label datepicker-label" for="DurationLE">And</label>
+                        @Html.TextBox("DurationLE", ViewBag.CurrentFilter.DurationGE as string, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row form-row">
+                    <span class="col-sm-2"><strong>Inserted Date</strong></span>
+                    <div class="col-sm-4">
+                        @Html.Partial("_DatePicker", insertedDateFrom)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.Partial("_DatePicker", insertedDateTo)
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

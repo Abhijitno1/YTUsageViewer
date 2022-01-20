@@ -9,7 +9,7 @@
     var searchMode = ViewBag.CurrentFilter.SearchMode as string;
 }
 
-@using (Html.BeginForm("PlaylistItems", "YTBrowser", FormMethod.Get, new { @class = "form-inline" }))
+@using (Html.BeginForm("PlaylistItems", "YTBrowser", FormMethod.Post, new { @class = "form-inline" }))
 {
     <div class="panel panel-default">
         <div class="panel-body" style="padding:0 15px;">
@@ -119,7 +119,7 @@
                            </button>');
             $('#pageToolbar').append(btnBack);
             btnBack.click(function () {
-                var playlistViewUrl = '@Url.Action("Channels")';
+                var playlistViewUrl = '@Url.Action("Playlists")';
                 $(location).attr('href', playlistViewUrl);
             });
             $("[name='ChannelId']").select2();

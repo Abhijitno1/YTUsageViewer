@@ -7,6 +7,8 @@
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Subscriptions;
     var newSortDir = ViewBag.CurrentFilter.SortDir == "ASC" ? "DESC" : "ASC";
+    var insertedDateFrom = new DatePickerModel { InputName = "InsertedDateFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.InsertedDateFrom }; 
+    var insertedDateTo = new DatePickerModel { InputName = "InsertedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.InsertedDateTo }; 
 }
 
 
@@ -19,9 +21,23 @@
                 <div class="col-sm-4">
                     @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string, new { @class = "form-control" })
                 </div>
+                <div class="col-sm-2">
+                    <div class="form-group checkbox">
+                        <label>@Html.CheckBox("IsRemoved", (bool)ViewBag.CurrentFilter.IsRemoved) Is Removed</label>
+                    </div>
+                </div>
                 <div class="col-sm-1">
                     @Html.Partial("_SortNPageInputs")
                     <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                </div>
+            </div>
+            <div class="row form-row">
+                <span class="col-sm-2"><strong>Inserted Date</strong></span>
+                <div class="col-sm-3">
+                    @Html.Partial("_DatePicker", insertedDateFrom)
+                </div>
+                <div class="col-sm-3">
+                    @Html.Partial("_DatePicker", insertedDateTo)
                 </div>
             </div>
         </div>

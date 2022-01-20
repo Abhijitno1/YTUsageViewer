@@ -213,7 +213,15 @@ namespace YTUsageViewer.Controllers
             {
                 result = result.Where(x => x.ChannelTitle != null && x.ChannelTitle.ToLower().Contains(searchParams.ChannelName.ToLower()));
             }
-
+            if (searchParams.IsRemoved)
+            {
+                result = result.Where(x => x.IsRemoved == "Y");
+            }
+            if (searchParams.InsertedDateFrom.HasValue && searchParams.InsertedDateTo.HasValue)
+            {
+                result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value
+                    && x.InsertedDate <= searchParams.InsertedDateTo.Value);
+            }
             if (!string.IsNullOrEmpty(searchParams.SortOrder))
             {
                 var sortOrder = searchParams.SortOrder;
@@ -310,6 +318,15 @@ namespace YTUsageViewer.Controllers
                 result = result.Where(x => (x.Title != null && x.Title.ToLower().Contains(searchParams.ChannelName.ToLower()))
                     || (x.Description != null && x.Description.ToLower().Contains(searchParams.ChannelName.ToLower())));
             }
+            if (searchParams.IsRemoved)
+            {
+                result = result.Where(x => x.IsDeleted == "Y");
+            }
+            if (searchParams.InsertedDateFrom.HasValue && searchParams.InsertedDateTo.HasValue)
+            {
+                result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value
+                    && x.InsertedDate <= searchParams.InsertedDateTo.Value);
+            }
 
             if (!string.IsNullOrEmpty(searchParams.SortOrder))
             {
@@ -359,11 +376,32 @@ namespace YTUsageViewer.Controllers
                 result = result.Where(x => x.IsDeleted != null && x.IsDeleted.Equals("Y"));
             }
 
+            if (searchParams.PublishedDateFrom.HasValue && searchParams.PublishedDateTo.HasValue)
+            {
+                result = result.Where(x => x.PublishedAt >= searchParams.PublishedDateFrom.Value && x.PublishedAt <= searchParams.PublishedDateTo.Value);
+            }
+
+            if (searchParams.InsertedDateFrom.HasValue && searchParams.InsertedDateTo.HasValue)
+            {
+                result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value && x.InsertedDate <= searchParams.InsertedDateTo.Value);
+            }
+
             foreach (var convertItm in result)
             {
                 convertItm.DurationSpan = HelperMethods.ConvertDuration2TimeSpan(convertItm.Duration);
             }
 
+            if (searchParams.DurationGE.HasValue && searchParams.DurationLE.HasValue)
+            {
+                result = result.Where(x => { 
+                    if (x.DurationSpan.HasValue)
+                    {
+                        var durationSpan = x.DurationSpan.Value.TotalMinutes;
+                        return (durationSpan >= searchParams.DurationGE.Value && durationSpan <= searchParams.DurationLE.Value);
+                    }                   
+                    return true;
+                });
+            }
             if (!string.IsNullOrEmpty(searchParams.SortOrder))
             {
                 string sortOrder = searchParams.SortOrder, sortDir = searchParams.SortDir;

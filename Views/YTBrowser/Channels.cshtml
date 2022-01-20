@@ -6,9 +6,11 @@
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Channels;
     var actionName = "Channels";
+    var insertedDateFrom = new DatePickerModel { InputName = "InsertedDateFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.InsertedDateFrom };
+    var insertedDateTo = new DatePickerModel { InputName = "InsertedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.InsertedDateTo };
 }
 
-@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Get))
+@using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Post))
 {
     <div class="panel panel-default">
         <div class="panel-body" style="padding:0 15px;">
@@ -17,9 +19,23 @@
                 <div class="col-sm-4">
                     @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string, new { @class = "form-control" })
                 </div>
+                <div class="col-sm-2">
+                    <div class="form-group checkbox">
+                        <label>@Html.CheckBox("IsRemoved", (bool)ViewBag.CurrentFilter.IsRemoved) Is Deleted</label>
+                    </div>
+                </div>
                 <div class="col-sm-1">
                     @Html.Partial("_SortNPageInputs")
                     <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                </div>
+            </div>
+            <div class="row form-row">
+                <span class="col-sm-2"><strong>Inserted Date</strong></span>
+                <div class="col-sm-3">
+                    @Html.Partial("_DatePicker", insertedDateFrom)
+                </div>
+                <div class="col-sm-3">
+                    @Html.Partial("_DatePicker", insertedDateTo)
                 </div>
             </div>
         </div>
@@ -48,6 +64,8 @@
                 <td>
                     @Html.ActionLink(@item.Title, "PlaylistItems", new { SearchMode = PlaylistItemSearchMode.ForChannel, ChannelId = item.CharId },
                         new { title = "Click to view Playlist Items for this channel" })
+                    <a href="https://www.youtube.com/channel/@item.CharId" target="_blank" class="pull-right"
+                       title="CLick to open YouTube Channel in separate tab"><span class="glyphicon glyphicon-link channel-link"></span></a>
                 </td>
                 <td>
                     @Html.TruncatedGridColumn(@item.Description)
@@ -91,11 +109,5 @@
             });
         });
 
-        $('[data-toggle="popover"]').on('shown.bs.popover', function () {
-            var popoverWindow = $(this);
-            $('.btn-popover-close').click(function () {
-                popoverWindow.popover('hide');
-            });
-        });
     </script>
 }
