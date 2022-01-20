@@ -486,11 +486,11 @@ namespace YTUsageViewer.Controllers
                     result = result.OrderBy(x => x.Title);
                 else if (sortOrder == "title" && sortDir == "DESC")
                     result = result.OrderByDescending(x => x.Title);
-                if (sortOrder == "publishedAt" && sortDir == "ASC")
+                else if (sortOrder == "publishedAt" && sortDir == "ASC")
                     result = result.OrderBy(x => x.PublishedAt);
                 else if (sortOrder == "publishedAt" && sortDir == "DESC")
                     result = result.OrderByDescending(x => x.PublishedAt);
-                if (sortOrder == "videoOwnerChannel" && sortDir == "ASC")
+                else if (sortOrder == "videoOwnerChannel" && sortDir == "ASC")
                     result = result.OrderBy(x => x.VideoOwnerChannelName);
                 else if (sortOrder == "videoOwnerChannel" && sortDir == "DESC")
                     result = result.OrderByDescending(x => x.VideoOwnerChannelName);

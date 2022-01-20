@@ -12,5 +12,8 @@ namespace YTUsageViewer.ViewModels
         public string CommentType { get; set; }
         public string VideoId { get; set; }
         public string ChannelId { get; set; }
+        public DateTime? CreatedWhenFrom { get; set; }
+        public DateTime? CreatedWhenTo { get; set; }
+        public bool IsUnavailable { get; set; }
     }
 }

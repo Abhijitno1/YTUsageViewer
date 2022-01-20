@@ -7,39 +7,62 @@
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Comments;
     var actionName = "Comments";
+    var publishedDateFrom = new DatePickerModel { InputName = "CreatedWhenFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.CreatedWhenFrom };
+    var publishedDateTo = new DatePickerModel { InputName = "CreatedWhenTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.CreatedWhenTo };
 }
 
 @using (Html.BeginForm(actionName, "YTBrowser", FormMethod.Post))
 {
     <div class="panel panel-default">
-        <div class="panel-body" style="padding:0 15px;">
-            <div class="row form-row">
-                <label for="searchComment" class="col-sm-2 col-form-label">Find Comment Containing</label>
-                <div class="col-sm-5">
-                    @Html.TextBox("CommentText", ViewBag.CurrentFilter.CommentText as string, new { id = "searchComment", @class = "form-control" })
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                Search Criteria
+                <a class="pull-right" data-toggle="collapse" href="#criteriaItems"><span class="glyphicon glyphicon-resize-vertical"></span></a>
+            </h4>
+        </div>
+        <div id="criteriaItems" class="panel-collapse collapse in">
+            <div class="panel-body" style="padding:0 15px;">
+                <div class="row form-row">
+                    <label for="searchComment" class="col-sm-2 col-form-label">Find Comment Containing</label>
+                    <div class="col-sm-5">
+                        @Html.TextBox("CommentText", ViewBag.CurrentFilter.CommentText as string, new { id = "searchComment", @class = "form-control" })
+                    </div>
+                    <label for="searchCommentType" class="col-sm-2 col-form-label">Comment Type</label>
+                    <div class="col-sm-2">
+                        @Html.DropDownList("CommentType", ViewBag.CommentTypesList as SelectList, new { id = "searchCommentType", @class = "form-control" })
+                    </div>
+                    <div class="col-sm-1">
+                        <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                    </div>
                 </div>
-                <label for="searchCommentType" class="col-sm-2 col-form-label">Comment Type</label>
-                <div class="col-sm-3">
-                    @Html.DropDownList("CommentType", ViewBag.CommentTypesList as SelectList, new { id = "searchCommentType", @class = "form-control" })
+                <div class="row form-row">
+                    <label for="searchChannel" class="col-sm-2 col-form-label">Channel</label>
+                    <div class="col-sm-3">
+                        @Html.DropDownList("ChannelId", ViewBag.ChannelsList as SelectList, new { id = "searchChannel", @class = "form-control" })
+                    </div>
+                    <label for="searchVideo" class="col-sm-2 col-form-label">Video</label>
+                    <div class="col-sm-4">
+                        @Html.DropDownList("VideoId", ViewBag.VideosList as SelectList, new { id = "searchVideo", @class = "form-control" })
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.Partial("_SortNPageInputs")
+                    </div>
+                </div>
+                <div class="row form-row">
+                    <span class="col-sm-2"><strong>Created Date</strong></span>
+                    <div class="col-sm-3">
+                        @Html.Partial("_DatePicker", publishedDateFrom)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.Partial("_DatePicker", publishedDateTo)
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group checkbox">
+                            <label>@Html.CheckBox("IsUnavailable", (bool)ViewBag.CurrentFilter.IsUnavailable) Is Deleted</label>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row form-row">
-                <label for="searchChannel" class="col-sm-2 col-form-label">Channel</label>
-                <div class="col-sm-3">
-                    @Html.DropDownList("ChannelId", ViewBag.ChannelsList as SelectList, new { id = "searchChannel", @class = "form-control" })
-                </div>
-                <label for="searchVideo" class="col-sm-2 col-form-label">Video</label>
-                <div class="col-sm-4">
-                    @Html.DropDownList("VideoId", ViewBag.VideosList as SelectList, new { id = "searchVideo", @class = "form-control" })
-                </div>
-                <div class="col-sm-1">
-                    @Html.Partial("_SortNPageInputs")
-                    <input type="submit" name="Search" value="Search" class="btn btn-default" />
-                </div>
-            </div>
-            @*<div class="form-group checkbox">
-                    <label>@Html.CheckBox("chkIsRemoved") Is Removed</label>
-                </div>*@
         </div>
     </div>
 }
