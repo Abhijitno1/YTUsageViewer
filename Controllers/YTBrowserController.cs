@@ -534,6 +534,16 @@ namespace YTUsageViewer.Controllers
                 result = result.Where(x => x.VideoId != null && x.VideoId.Equals(searchParams.VideoId));
             }
 
+            if (searchParams.IsUnavailable)
+            {
+                result = result.Where(x => x.IsUnavailable != null && x.IsUnavailable.Equals("Y"));
+            }
+
+            if (searchParams.CreatedWhenFrom.HasValue && searchParams.CreatedWhenTo.HasValue)
+            {
+                result = result.Where(x => x.CreatedWhen >= searchParams.CreatedWhenFrom.Value && x.CreatedWhen <= searchParams.CreatedWhenTo.Value);
+            }
+
             if (!string.IsNullOrEmpty(searchParams.SortOrder))
             {
                 string sortOrder = searchParams.SortOrder, sortDir = searchParams.SortDir;

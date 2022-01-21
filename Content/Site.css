@@ -160,6 +160,14 @@ span.select2.select2-container {
     padding: 0 15px;
 }
 
+ul.pagination {
+    margin: 10px 0;
+}
+
+#resultItems.panel-body{
+    padding: 15px 5px;
+}
+
 .datepicker-label {
     float: left;
     margin-right: 10px;

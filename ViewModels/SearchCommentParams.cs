@@ -14,6 +14,8 @@ namespace YTUsageViewer.ViewModels
         public string ChannelId { get; set; }
         public DateTime? CreatedWhenFrom { get; set; }
         public DateTime? CreatedWhenTo { get; set; }
+        public DateTime? InsertedDateFrom { get; set; }
+        public DateTime? InsertedDateTo { get; set; }
         public bool IsUnavailable { get; set; }
     }
 }

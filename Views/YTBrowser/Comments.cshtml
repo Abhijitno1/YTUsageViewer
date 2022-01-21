@@ -66,74 +66,84 @@
         </div>
     </div>
 }
-<div id="resultItems">
-    <table class="table">
-        <tr>
-            <th>
-                @Html.GridColumnHeader("Comment Type", "commentType")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Video Name", "videoTitle")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Channel Name", "channelTitle")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Comment Text", "commentText")
-            </th>
-            <th>
-                @Html.GridColumnHeader("Published On", "createdWhen")
-            </th>
-            @*<th>
-                    @Html.GridColumnHeader("Inserted Date", actionName, "insertedDate", newSortDir)
-                </th>*@
-            <th>
-                @Html.GridColumnHeader("Is Deleted", "isUnavailable")
-            </th>
-        </tr>
-
-        @foreach (var item in Model)
-        {
-            <tr rowKey="@item.CommentId">
-                <td>
-                    <a href="@item.CommentUrl" target="_blank">@item.CommentType</a>
-                </td>
-                <td>
-                    <a href="https://www.youtube.com/watch?v=@item.VideoId" target="_blank">@item.VideoTitle</a>
-                </td>
-                <td>
-                    <a href="https://www.youtube.com/channel/@item.ChannelId" target="_blank">@item.ChannelTitle</a>
-                </td>
-                <td>
-                    @Html.TruncatedGridColumn(@item.CommentText)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreatedWhen)
-                </td>
-                @*<td>
-                        @Html.DisplayFor(modelItem => item.InsertedDate)
-                    </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsUnavailable)
-                </td>
+<div class="panel panel-default">
+    <div class="panel-heading" id="resultHeader">
+        <h4 class="panel-title">
+            Search Results
+        </h4>
+    </div>
+    <div id="resultItems" class="panel-body">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    @Html.GridColumnHeader("Comment Type", "commentType")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Video Name", "videoTitle")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Channel Name", "channelTitle")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Comment Text", "commentText")
+                </th>
+                <th>
+                    @Html.GridColumnHeader("Published On", "createdWhen")
+                </th>
+                @*<th>
+                        @Html.GridColumnHeader("Inserted Date", actionName, "insertedDate", newSortDir)
+                    </th>*@
+                <th>
+                    @Html.GridColumnHeader("Is Deleted", "isUnavailable")
+                </th>
             </tr>
-        }
 
-    </table>
+            @foreach (var item in Model)
+            {
+                <tr rowKey="@item.CommentId">
+                    <td>
+                        <a href="@item.CommentUrl" target="_blank">@item.CommentType</a>
+                    </td>
+                    <td>
+                        <a href="https://www.youtube.com/watch?v=@item.VideoId" target="_blank">@item.VideoTitle</a>
+                    </td>
+                    <td>
+                        <a href="https://www.youtube.com/channel/@item.ChannelId" target="_blank">@item.ChannelTitle</a>
+                    </td>
+                    <td>
+                        @Html.TruncatedGridColumn(@item.CommentText)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedWhen)
+                    </td>
+                    @*<td>
+                            @Html.DisplayFor(modelItem => item.InsertedDate)
+                        </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsUnavailable)
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+    <div class="panel-footer paged-footer">
+        @*PAGED LIST*@
+        <div class="pagedList">
+            @Html.JSPagedListPager(Model)
+        </div>
+    </div>
 </div>
-@*PAGED LIST*@
-<div class="pagedList">
-    @Html.JSPagedListPager(Model)
-</div>
-@section scripts {
-    <script>
-        $(function () {
-            //On view load tasks
-            $("[name='CommentType']").select2();
-            $("[name='ChannelId']").select2().css('width', '100%');
-            $("[name='VideoId']").select2();
-        });
 
-    </script>
+    @section scripts {
+        <script>
+            $(function () {
+                //On view load tasks
+                $("[name='CommentType']").select2();
+                $("[name='ChannelId']").select2().css('width', '100%');
+                $("[name='VideoId']").select2();
+            });
 
-}
+        </script>
+
+    }
