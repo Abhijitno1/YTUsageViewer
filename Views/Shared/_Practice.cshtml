@@ -1,0 +1,51 @@
+﻿@using YTUsageViewer.Helpers;
+@{
+    ViewBag.Title = "Practice";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="dropdown-toggle">@ViewBag.Title</h3>
+        </div>
+
+        <ul class="list-unstyled components">
+            <li class="nav-item @if (ViewBag.CurrentPractMenu == PracticePages.Contact) { <text>active</text> }">
+                <a class="nav-link" href="@Url.Action("Contact")">
+                    <i class="glyphicon glyphicon-headphones"></i>
+                    <span>Test Playground</span>
+                </a>
+            </li>
+            <li class="nav-item @if (ViewBag.CurrentPractMenu == PracticePages.InfiniteScroll) { <text>active</text> }">
+                <a class="nav-link" href="@Url.Action("InfiniteScroll")">
+                    <i class="glyphicon glyphicon-film"></i>
+                    <span>Infinite Scroll</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <!-- Page Content -->
+    <div id="content">
+        <nav class="navbar navbar-default navbar-dwarf">
+            <div style="width:100%">
+                <div style="float:left">
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class="glyphicon glyphicon-align-left" title="Toggle Sidebar"></i>
+                    </button>
+                </div>
+                <div class="page-title">
+                    @ViewBag.Title
+                </div>
+            </div>
+        </nav>
+        <div class="contentDetails">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@RenderSection("scripts", required: false)
+
+

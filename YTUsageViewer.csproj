@@ -236,6 +236,7 @@
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FTPProfile.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\InfiniteScroll.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -313,6 +314,8 @@
     <Content Include="Views\Shared\_SortNPageInputs.cshtml" />
     <Content Include="Views\YTBrowser\Playlists4VideoPopup.cshtml" />
     <Content Include="Views\Shared\_DatePicker.cshtml" />
+    <Content Include="Views\Shared\_Practice.cshtml" />
+    <Content Include="Views\Home\InfiniteScroll.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

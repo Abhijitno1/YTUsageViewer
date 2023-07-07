@@ -7,3 +7,13 @@ $(document).on({
         $("body").removeClass("loading");
     }
 });
+function showLoadingSign(container) {
+    if (!container) container = document.body;
+    $(container).append("<div class='overlay'></div>");
+    $(container).addClass("loading");
+}
+function hideLoadingSign(container) {
+    if (!container) container = document.body;
+    $(container).find(".overlay").remove();
+    $(container).removeClass("loading");
+}

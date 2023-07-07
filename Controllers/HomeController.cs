@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using YTUsageViewer.Helpers;
 using YTUsageViewer.Models;
 using YTUsageViewer.ViewModels;
 
@@ -24,7 +25,14 @@ namespace YTUsageViewer.Controllers
 
         public ActionResult Contact()
         {
+            ViewBag.CurrentPractMenu = PracticePages.Contact;
             return View(new CommentsSearch());
+        }
+
+        public ActionResult InfiniteScroll() 
+        {
+          ViewBag.CurrentPractMenu = PracticePages.InfiniteScroll;
+          return View();
         }
 
         public ActionResult SearchVideoDialog(SearchVideoParams srchParams)

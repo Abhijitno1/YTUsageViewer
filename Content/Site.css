@@ -1,12 +1,14 @@
 ﻿body {
     padding-top: 50px;
-    padding-bottom: 20px;
 }
 body-content {
     margin-left:0 !important;
     padding-right: 15px;
     margin-left:auto;
     margin-right:auto;
+}
+.navbar.navbar-dwarf {
+    margin-bottom: 0px !important;
 }
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
@@ -70,7 +72,7 @@ textarea {
 #sidebar {
     min-width: 220px;
     max-width: 220px;
-    min-height: 100vh;
+    min-height: 90vh;
 }
 #sidebar.active {
     margin-left: -220px;
@@ -177,4 +179,9 @@ ul.pagination {
     margin-left: auto;
     margin-right: auto;
     width: 95%;
+}
+
+.scrollable {
+    overflow-y: auto;
+    height: 90vh;
 }

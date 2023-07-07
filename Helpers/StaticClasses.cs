@@ -19,6 +19,12 @@ namespace YTUsageViewer.Helpers
         public const string Comments = "Comments";
     }
 
+  public class PracticePages
+  {
+    public const string Contact = "Contact";
+    public const string InfiniteScroll = "InfiniteScroll";
+  }
+
     public class PlaylistItemSearchMode
     {
         public const string ForPlaylist = "ForPlaylist";
