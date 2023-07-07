@@ -199,25 +199,28 @@ namespace YTUsageViewer.Controllers
         }
 
         // GET: Users/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string id)
         {
-            return View();
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
+          ActionResult result;
+          try
+          {
+            var user = UserManager.FindById(id);
+            var deleted = UserManager.Delete(user);
+            if (deleted.Succeeded)
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+              TempData["InfoMessage"] = "User deleted successfully";
             }
-            catch
+            else
             {
-                return View();
+              foreach (var error in deleted.Errors)
+                ModelState.AddModelError(null, error);
             }
+          }
+          finally
+          {
+            result = RedirectToAction("Index");
+          }
+          return result;
         }
 
         protected override void Dispose(bool disposing)
