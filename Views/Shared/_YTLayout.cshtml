@@ -14,7 +14,8 @@
             <li class="nav-item @if (ViewBag.CurrentYtMenu == YTBrowserMenu.Subscriptions) {
                 @:active
                 }">
-                <a class="nav-link" href="@Url.Action("Index")">
+                <a class="nav-link" href="@Url.Action("SubscriptionsScroll")">
+                    @*Earlier was pointing to Index action*@
                     <i class="glyphicon glyphicon-book"></i>
                     <span>Subscriptions</span>
                 </a>

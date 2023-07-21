@@ -205,6 +205,15 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList(searchParams.PageNumber.Value, PAGE_SIZE));
         }
 
+        public ActionResult SubscriptionsScroll(SearchSubscriptionParams searchParams)
+        {
+          if (!string.IsNullOrEmpty(Request.Params["Search"])) searchParams.PageNumber = 1;
+          ViewBag.CurrentFilter = searchParams;
+          searchParams.PageNumber = searchParams.PageNumber ?? 1;
+
+          return View();
+        }
+
         private IQueryable<Subscription> GetSubscriptionSearchResults(SearchSubscriptionParams searchParams)
         {
             var result = db.Subscriptions.AsQueryable();

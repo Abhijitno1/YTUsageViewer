@@ -250,6 +250,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\LayoutScripts.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\InfiniteScroller.js" />
     <Content Include="Scripts\select2.js" />
     <Content Include="Scripts\select2.min.js" />
     <Content Include="Scripts\UnusedBackup.js" />
@@ -316,6 +317,7 @@
     <Content Include="Views\Shared\_DatePicker.cshtml" />
     <Content Include="Views\Shared\_Practice.cshtml" />
     <Content Include="Views\Home\InfiniteScroll.cshtml" />
+    <Content Include="Views\YTBrowser\SubscriptionsScroll.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
