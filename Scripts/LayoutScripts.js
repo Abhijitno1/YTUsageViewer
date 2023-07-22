@@ -25,7 +25,7 @@ function extractDateFromJson(jsonDate, returnTime) {
         if (returnTime)
             return dtDate.toLocaleString();
         else
-            return dtDate.getMonth() + '/' + dtDate.getDate() + '/' + dtDate.getFullYear();
+            return (dtDate.getMonth() + 1) + '/' + dtDate.getDate() + '/' + dtDate.getFullYear();
     }
     catch {
         //console.log('Error occurred while parsing json date ' + jsonDate);

@@ -48,13 +48,16 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayName("Channel Title")
+                        <a data-column="channelTitle">Channel Title</a>
+                        <span class="glyphicon  pull-right"></span>
                     </th>
                     <th>
-                        @Html.DisplayName("Inserted Date")
+                        <a data-column="insertedDate">Inserted Date</a>
+                        <span class="glyphicon  pull-right"></span>
                     </th>
                     <th>
-                        @Html.DisplayName("Is Removed")
+                        <a data-column="isRemoved">Is Removed</a>
+                        <span class="glyphicon  pull-right"></span>
                     </th>
                 </tr>
             </thead>
@@ -66,19 +69,20 @@
 <script src="~/Scripts/InfiniteScroller.js"></script>
 @section scripts {
 <script>
+    let sortDir = "ASC"; //Default sort direction
+    let sortOrder; //Default sort order
+
     let containerEl = document.querySelector('#resultContainer');
     let scroller = InfiniteScroller(containerEl);
     scroller.apiCallUrl = '@Url.Action("SubscriptionsScroll")';
     scroller.setApiCallData = function () {
-        let ChannelName = document.querySelector('#ChannelName').value;
-        let IsRemoved = Boolean(document.querySelector('#IsRemoved').checked);
-        let InsertedDateFrom = document.querySelector('#InsertedDateFrom').value.trim();
-        let InsertedDateTo = document.querySelector('#InsertedDateTo').value.trim();
         return {
-            ChannelName,
-            IsRemoved,
-            InsertedDateFrom,
-            InsertedDateTo
+            ChannelName: document.querySelector('#ChannelName').value,
+            IsRemoved: Boolean(document.querySelector('#IsRemoved').checked),
+            InsertedDateFrom: document.querySelector('#InsertedDateFrom').value.trim(),
+            InsertedDateTo: document.querySelector('#InsertedDateTo').value.trim(),
+            SortOrder: sortOrder,
+            SortDir: sortDir
         };
     }
     scroller.showFetchedData = function (data, removeExistingData) {
@@ -96,12 +100,38 @@
         }
     };
     $(document).ready(function () {
-        scroller.loadInitialData();
+        scroller.loadGridData();
     });
     $('input[name=Search]').click(function () {
-        //alert('You clicked search');
-        scroller.loadInitialData();
+        scroller.loadGridData();
     });
+
+    $(containerEl).find('table a[data-column]').click(function () {
+        sortOrder = $(this).attr('data-column');
+       
+        let iconEl = $(this).next();
+        //If already sorted ASC
+        if (iconEl.hasClass('glyphicon-sort-by-attributes')) {
+            iconEl.removeClass('glyphicon-sort-by-attributes')
+                .addClass('glyphicon-sort-by-attributes-alt');
+            sortDir = "DESC";
+        }
+        //Else if already sorted DESC
+        else if (iconEl.hasClass('glyphicon-sort-by-attributes-alt')) {
+            iconEl.removeClass('glyphicon-sort-by-attributes-alt')
+                .addClass('glyphicon-sort-by-attributes');
+            sortDir = "ASC";
+        }
+        //If not sorted till now
+        else {
+            iconEl.addClass('glyphicon-sort-by-attributes');
+            sortDir = "ASC";
+        }
+
+        //alert('Sorting ' + sortDir + ' on ' + dataColumn);
+        scroller.loadGridData();
+    });
+
     </script>
 
 }

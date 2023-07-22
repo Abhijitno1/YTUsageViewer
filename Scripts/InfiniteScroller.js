@@ -12,10 +12,10 @@
             return { currentPage: 1 };
         },
         showFetchedData: function (data, removeExistingData) { },
-        loadInitialData: loadInitialData
+        loadGridData: loadGridData
     };
 
-    function loadInitialData() {
+    function loadGridData() {
         currentPage = 1;
         total = -1;
         loadAdditionalData();

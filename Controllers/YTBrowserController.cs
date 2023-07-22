@@ -288,68 +288,92 @@ namespace YTUsageViewer.Controllers
             result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value
                 && x.InsertedDate <= searchParams.InsertedDateTo.Value);
           }
-          result = result.OrderBy(x => x.ChannelId);
+          if (!string.IsNullOrEmpty(searchParams.SortOrder))
+          {
+            var sortOrder = searchParams.SortOrder;
+            var sortDir = searchParams.SortDir;
+
+            if (sortOrder == "channelTitle" && sortDir == "ASC")
+              result = result.OrderBy(x => x.ChannelTitle);
+            else if (sortOrder == "channelTitle" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.ChannelTitle);
+            else if (sortOrder == "channelId" && sortDir == "ASC")
+              result = result.OrderBy(x => x.ChannelId);
+            else if (sortOrder == "channelId" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.ChannelId);
+            else if (sortOrder == "insertedDate" && sortDir == "ASC")
+              result = result.OrderBy(x => x.InsertedDate);
+            else if (sortOrder == "insertedDate" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.InsertedDate);
+            else if (sortOrder == "isRemoved" && sortDir == "ASC")
+              result = result.OrderBy(x => x.IsRemoved);
+            else if (sortOrder == "isRemoved" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.IsRemoved);
+          }
+          else
+            result = result.OrderBy(x => x.ID);
+
           resultVM.total = result.Count();
           resultVM.data = result.Skip(pageSize * (searchParams.PageNumber.Value - 1)).Take(pageSize).ToList();
           return resultVM;
         }
         private IQueryable<Playlist> GetPlaylistSearchResults(SearchPlaylistParams searchParams)
         {
-            var result = db.Playlists.AsQueryable();
+          var result = db.Playlists.AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchParams.PlaylistName))
-            {
-                result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchParams.PlaylistName.ToLower()));
-            }
-            if (!string.IsNullOrEmpty(searchParams.PrivacyStatus))
-            {
-                result = result.Where(x => x.PrivacyStatus.Equals(searchParams.PrivacyStatus));
-            }
-            if (searchParams.IsRemoved)
-            {
-                result = result.Where(x => x.IsRemoved.Equals("Y"));
-            }
-            if (searchParams.PublishedDateFrom.HasValue && searchParams.PublishedDateTo.HasValue)
-            {
-                result = result.Where(x => x.PublishedAt >= searchParams.PublishedDateFrom.Value 
-                    && x.PublishedAt <= searchParams.PublishedDateTo.Value);
-            }
-            if (searchParams.InsertedDateFrom.HasValue && searchParams.InsertedDateTo.HasValue)
-            {
-                result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value
-                    && x.InsertedDate <= searchParams.InsertedDateTo.Value);
-            }
+          if (!string.IsNullOrEmpty(searchParams.PlaylistName))
+          {
+            result = result.Where(x => x.Title != null && x.Title.ToLower().Contains(searchParams.PlaylistName.ToLower()));
+          }
+          if (!string.IsNullOrEmpty(searchParams.PrivacyStatus))
+          {
+            result = result.Where(x => x.PrivacyStatus.Equals(searchParams.PrivacyStatus));
+          }
+          if (searchParams.IsRemoved)
+          {
+            result = result.Where(x => x.IsRemoved.Equals("Y"));
+          }
+          if (searchParams.PublishedDateFrom.HasValue && searchParams.PublishedDateTo.HasValue)
+          {
+            result = result.Where(x => x.PublishedAt >= searchParams.PublishedDateFrom.Value
+                && x.PublishedAt <= searchParams.PublishedDateTo.Value);
+          }
+          if (searchParams.InsertedDateFrom.HasValue && searchParams.InsertedDateTo.HasValue)
+          {
+            result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value
+                && x.InsertedDate <= searchParams.InsertedDateTo.Value);
+          }
 
-            if (!string.IsNullOrEmpty(searchParams.SortOrder))
-            {
-                var sortOrder = searchParams.SortOrder;
-                var sortDir = searchParams.SortDir;
+          if (!string.IsNullOrEmpty(searchParams.SortOrder))
+          {
+            var sortOrder = searchParams.SortOrder;
+            var sortDir = searchParams.SortDir;
 
-                if (sortOrder == "title" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.Title);
-                else if (sortOrder == "title" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.Title);
-                else if (sortOrder == "publishedAt" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.PublishedAt);
-                else if (sortOrder == "publishedAt" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.PublishedAt);
-                else if (sortOrder == "privacyStatus" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.PrivacyStatus);
-                else if (sortOrder == "privacyStatus" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.PrivacyStatus);
-                else if (sortOrder == "insertedDate" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.InsertedDate);
-                else if (sortOrder == "insertedDate" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.InsertedDate);
-                else if (sortOrder == "isRemoved" && sortDir == "ASC")
-                    result = result.OrderBy(x => x.IsRemoved);
-                else if (sortOrder == "isRemoved" && sortDir == "DESC")
-                    result = result.OrderByDescending(x => x.IsRemoved);
-            }
-            else
-                result = result.OrderBy(x => x.ID);
+            if (sortOrder == "title" && sortDir == "ASC")
+              result = result.OrderBy(x => x.Title);
+            else if (sortOrder == "title" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.Title);
+            else if (sortOrder == "publishedAt" && sortDir == "ASC")
+              result = result.OrderBy(x => x.PublishedAt);
+            else if (sortOrder == "publishedAt" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.PublishedAt);
+            else if (sortOrder == "privacyStatus" && sortDir == "ASC")
+              result = result.OrderBy(x => x.PrivacyStatus);
+            else if (sortOrder == "privacyStatus" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.PrivacyStatus);
+            else if (sortOrder == "insertedDate" && sortDir == "ASC")
+              result = result.OrderBy(x => x.InsertedDate);
+            else if (sortOrder == "insertedDate" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.InsertedDate);
+            else if (sortOrder == "isRemoved" && sortDir == "ASC")
+              result = result.OrderBy(x => x.IsRemoved);
+            else if (sortOrder == "isRemoved" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.IsRemoved);
+          }
+          else
+            result = result.OrderBy(x => x.ID);
 
-            return result;
+          return result;
         }
 
         private IQueryable<Channel> GetChannelSearchResults(SearchSubscriptionParams searchParams)
