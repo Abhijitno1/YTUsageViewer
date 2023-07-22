@@ -6,7 +6,6 @@
     ViewBag.Title = "Subscriptions List";
     Layout = "~/Views/Shared/_YTLayout.cshtml";
     ViewBag.CurrentYtMenu = YTBrowserMenu.Subscriptions;
-    var newSortDir = ViewBag.CurrentFilter.SortDir == "ASC" ? "DESC" : "ASC";
     var insertedDateFrom = new DatePickerModel { InputName = "InsertedDateFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.InsertedDateFrom };
     var insertedDateTo = new DatePickerModel { InputName = "InsertedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.InsertedDateTo };
 }
@@ -27,8 +26,7 @@
                     </div>
                 </div>
                 <div class="col-sm-1">
-                    @Html.Partial("_SortNPageInputs")
-                    <input type="submit" name="Search" value="Search" class="btn btn-default" />
+                    <input type="button" name="Search" value="Search" class="btn btn-default" />
                 </div>
             </div>
             <div class="row form-row">
@@ -44,39 +42,66 @@
     </div>
 }
 
-<div id="resultItems">
-    <div class="scrollable quotes">
+<div id="resultContainer" class="scrollable">
+    <div class="resultItems">
         <table class="table table-striped">
-            <tr>
-                <th>
-                    @Html.DisplayName("Channel Title")
-                </th>
-                <th>
-                    @Html.DisplayName("Inserted Date")
-                </th>
-                <th>
-                    @Html.DisplayName("Is Removed")
-                </th>
-            </tr>
-
-            <tr></tr>
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayName("Channel Title")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Inserted Date")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Is Removed")
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
         </table>
     </div>
 </div>
 
 <script src="~/Scripts/InfiniteScroller.js"></script>
+@section scripts {
 <script>
-    let quotesEl = document.querySelector('.quotes');
-    let scroller = InfiniteScroller(quotesEl);
-    scroller.getDataApiUrl = 'https://api.javascripttutorial.net/v1/quotes/';
-    scroller.showFetchedData = function (quotes) {
-        quotes.forEach(qt => {
-            let blockquoteEl = document.createElement("blockquote");
-            blockquoteEl.classList.add("quote");
-            blockquoteEl.innerHTML = `<span>[${qt.id}] </span> ${qt.quote} <footer>${qt.author}</footer>`;
-            quotesEl.appendChild(blockquoteEl);
-        });
-    };
-    scroller.loadAdditionalData();
-</script>
+    let containerEl = document.querySelector('#resultContainer');
+    let scroller = InfiniteScroller(containerEl);
+    scroller.apiCallUrl = '@Url.Action("SubscriptionsScroll")';
+    scroller.setApiCallData = function () {
+        let ChannelName = document.querySelector('#ChannelName').value;
+        let IsRemoved = Boolean(document.querySelector('#IsRemoved').checked);
+        let InsertedDateFrom = document.querySelector('#InsertedDateFrom').value.trim();
+        let InsertedDateTo = document.querySelector('#InsertedDateTo').value.trim();
+        return {
+            ChannelName,
+            IsRemoved,
+            InsertedDateFrom,
+            InsertedDateTo
+        };
+    }
+    scroller.showFetchedData = function (data, removeExistingData) {
+        let tableBody = $(".resultItems table tbody");
+        if (removeExistingData) tableBody.empty();
 
+        for (let i = 0; i < data.length; i++) {
+            let channel = data[i];
+            let tr = $("<tr></tr>");
+            tr.attr("data-rowKey", channel.CharId);
+            tr.append(`<td><a href="https://www.youtube.com/channel/${channel.ChannelId}" target="_blank">${channel.ChannelTitle}</a></td>`);
+            tr.append(`<td>${extractDateFromJson(channel.InsertedDate)}</td>`);
+            tr.append(`<td>${channel.IsRemoved == "Y" ? "Yes" : "No"}</td>`);
+            tableBody.append(tr);
+        }
+    };
+    $(document).ready(function () {
+        scroller.loadInitialData();
+    });
+    $('input[name=Search]').click(function () {
+        //alert('You clicked search');
+        scroller.loadInitialData();
+    });
+    </script>
+
+}

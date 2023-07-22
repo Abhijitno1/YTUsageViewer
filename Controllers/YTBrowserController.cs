@@ -205,16 +205,26 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList(searchParams.PageNumber.Value, PAGE_SIZE));
         }
 
+        public ActionResult SubscriptionsScroll()
+        {
+          var searchParams = new SearchSubscriptionParams();
+          if (!string.IsNullOrEmpty(Request.Params["Search"])) searchParams.PageNumber = 1;
+          ViewBag.CurrentFilter = searchParams;
+          searchParams.PageNumber = searchParams.PageNumber ?? 1;
+          return View();
+        }
+
+        [HttpPost]
         public ActionResult SubscriptionsScroll(SearchSubscriptionParams searchParams)
         {
           if (!string.IsNullOrEmpty(Request.Params["Search"])) searchParams.PageNumber = 1;
           ViewBag.CurrentFilter = searchParams;
           searchParams.PageNumber = searchParams.PageNumber ?? 1;
-
-          return View();
+          var result = GetSubscriptionSearchPagedResults(searchParams);
+          return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        private IQueryable<Subscription> GetSubscriptionSearchResults(SearchSubscriptionParams searchParams)
+    private IQueryable<Subscription> GetSubscriptionSearchResults(SearchSubscriptionParams searchParams)
         {
             var result = db.Subscriptions.AsQueryable();
 
@@ -259,6 +269,30 @@ namespace YTUsageViewer.Controllers
             return result;
         }
 
+        private SearchResultViewModel<Subscription> GetSubscriptionSearchPagedResults(SearchSubscriptionParams searchParams)
+        {
+          var resultVM = new SearchResultViewModel<Subscription>();
+          var pageSize = 10;
+          var result = db.Subscriptions.AsQueryable();
+
+          if (!string.IsNullOrEmpty(searchParams.ChannelName))
+          {
+            result = result.Where(x => x.ChannelTitle != null && x.ChannelTitle.ToLower().Contains(searchParams.ChannelName.ToLower()));
+          }
+          if (searchParams.IsRemoved)
+          {
+            result = result.Where(x => x.IsRemoved == "Y");
+          }
+          if (searchParams.InsertedDateFrom.HasValue && searchParams.InsertedDateTo.HasValue)
+          {
+            result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value
+                && x.InsertedDate <= searchParams.InsertedDateTo.Value);
+          }
+          result = result.OrderBy(x => x.ChannelId);
+          resultVM.total = result.Count();
+          resultVM.data = result.Skip(pageSize * (searchParams.PageNumber.Value - 1)).Take(pageSize).ToList();
+          return resultVM;
+        }
         private IQueryable<Playlist> GetPlaylistSearchResults(SearchPlaylistParams searchParams)
         {
             var result = db.Playlists.AsQueryable();

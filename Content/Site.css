@@ -183,5 +183,8 @@ ul.pagination {
 
 .scrollable {
     overflow-y: auto;
-    height: 90vh;
+    height: 58vh;
+}
+.scrollable .resultItems {
+    height: 102%;
 }

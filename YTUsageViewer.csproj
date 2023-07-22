@@ -204,6 +204,7 @@
     <Compile Include="ViewModels\PlayList4VideoViewModel.cs" />
     <Compile Include="ViewModels\SearchCommentParams.cs" />
     <Compile Include="ViewModels\SearchPlaylistParams.cs" />
+    <Compile Include="ViewModels\SearchResultViewModel.cs" />
     <Compile Include="ViewModels\SearchSubscriptionParams.cs" />
     <Compile Include="ViewModels\SearchVideoParams.cs" />
     <Compile Include="Models\Subscription.cs" />
