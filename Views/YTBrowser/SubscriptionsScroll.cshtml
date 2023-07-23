@@ -68,7 +68,7 @@
 
 <script src="~/Scripts/InfiniteScroller.js"></script>
 @section scripts {
-<script>
+    <script>
     let sortDir = "ASC"; //Default sort direction
     let sortOrder; //Default sort order
 
@@ -77,7 +77,7 @@
     scroller.apiCallUrl = '@Url.Action("SubscriptionsScroll")';
     scroller.setApiCallData = function () {
         return {
-            ChannelName: document.querySelector('#ChannelName').value,
+            ChannelName: document.querySelector('#ChannelName').value.trim(),
             IsRemoved: Boolean(document.querySelector('#IsRemoved').checked),
             InsertedDateFrom: document.querySelector('#InsertedDateFrom').value.trim(),
             InsertedDateTo: document.querySelector('#InsertedDateTo').value.trim(),
@@ -108,7 +108,7 @@
 
     $(containerEl).find('table a[data-column]').click(function () {
         sortOrder = $(this).attr('data-column');
-       
+
         let iconEl = $(this).next();
         //If already sorted ASC
         if (iconEl.hasClass('glyphicon-sort-by-attributes')) {
@@ -128,8 +128,20 @@
             sortDir = "ASC";
         }
 
-        //alert('Sorting ' + sortDir + ' on ' + dataColumn);
+        //alert('Sorting ' + sortDir + ' on ' + sortOrder);
         scroller.loadGridData();
+    });
+
+    $('#btnExport').click(function () {
+        //alert("Exporting Playlists (WIP)");
+        let apiCallUrl = '@Url.Action("ExportSubscriptions2SpreadsheetML")';
+        let apiCallData = {
+            searchString: document.querySelector('#ChannelName').value.trim(),
+            sortOrder: sortOrder,
+            sortDir: sortDir
+        };
+
+        downloadFile(apiCallUrl, apiCallData, 'Subscriptions.xlsx')
     });
 
     </script>

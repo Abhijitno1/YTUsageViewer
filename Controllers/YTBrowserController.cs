@@ -205,6 +205,7 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList(searchParams.PageNumber.Value, PAGE_SIZE));
         }
 
+        [Route]
         public ActionResult SubscriptionsScroll()
         {
           var searchParams = new SearchSubscriptionParams();
@@ -214,6 +215,7 @@ namespace YTUsageViewer.Controllers
           return View();
         }
 
+        [Route]
         [HttpPost]
         public ActionResult SubscriptionsScroll(SearchSubscriptionParams searchParams)
         {
