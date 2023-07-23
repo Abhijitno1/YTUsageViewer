@@ -41,9 +41,9 @@ namespace YTUsageViewer.Controllers
                     SortDir = sortDir
                 };
                 var result = GetSubscriptionSearchResults(searchParams);
-                ExcelExporter xlXporter = new ExcelExporter();
+                IExcelExporter xlXporter = new ExcelExporterWithCXml();
                 var outputStream = xlXporter.ExportDataAsSpreadsheet(result);
-                string attachmentName = "Subscriptions-xls.xml";
+                string attachmentName = "Subscriptions.xlsx";
                 return File(outputStream, EXPORT_CONTENT_TYPE, attachmentName);
             }
             catch (Exception ex)

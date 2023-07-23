@@ -70,7 +70,7 @@ namespace YTUsageViewer.Controllers
             try
             {
                 var result = GetSearchResults(searchString, sortOrder, sortDir);
-                ExcelExporter xlXporter = new ExcelExporter();
+                IExcelExporter xlXporter = new ExcelExporterWithXsl();
                 var outputStream = xlXporter.ExportDataAsSpreadsheet(result);
                 string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                 string attachmentName = "Contacts-xls.xml";
@@ -85,7 +85,7 @@ namespace YTUsageViewer.Controllers
         public ActionResult ExportTabDelimted(string searchString, string sortOrder, string sortDir)
         {
             var result = GetSearchResults(searchString, sortOrder, sortDir);
-            ExcelExporter xlXporter = new ExcelExporter();
+            ExcelExporterWithXsl xlXporter = new ExcelExporterWithXsl();
             var outputStream = xlXporter.ExportContactsTabDelimited(result);
 
             string contentType = "application/vnd.ms-excel";
