@@ -27,7 +27,8 @@
                 </a>
             </li>
             <li class="nav-item @if (ViewBag.CurrentYtMenu == YTBrowserMenu.Channels) { <text>active</text> }">
-                <a class="nav-link" href="@Url.Action("Channels")">
+                @*Earlier was pointing to Playlists action*@
+                <a class="nav-link" href="@Url.Action("ChannelsScroll")">
                     <i class="glyphicon glyphicon-film"></i>
                     <span>Channels</span>
                 </a>
@@ -101,41 +102,43 @@
     @RenderSection("scripts", required: false)
     <script>
         //Sorting code for ScrollPagerGrid
-        $(containerEl).find('table a[data-column]').click(function () {
-            //If sort order is earlier set for different column then clear it
-            if (sortOrder && sortOrder != $(this).attr('data-column')) {
-                oldSortedColumnLink = $(containerEl).find('table a[data-column=' + sortOrder + ' ]');
-                oldIconEl = oldSortedColumnLink.next();
-                if (oldIconEl.hasClass('glyphicon-sort-by-attributes'))
-                    oldIconEl.removeClass('glyphicon-sort-by-attributes');
-                if (oldIconEl.hasClass('glyphicon-sort-by-attributes-alt'))
-                    oldIconEl.removeClass('glyphicon-sort-by-attributes-alt');
-            }
+        if (typeof(containerEl) !== "undefined") {
+            $(containerEl).find('table a[data-column]').click(function () {
+                //If sort order is earlier set for different column then clear it
+                if (sortOrder && sortOrder != $(this).attr('data-column')) {
+                    oldSortedColumnLink = $(containerEl).find('table a[data-column=' + sortOrder + ' ]');
+                    oldIconEl = oldSortedColumnLink.next();
+                    if (oldIconEl.hasClass('glyphicon-sort-by-attributes'))
+                        oldIconEl.removeClass('glyphicon-sort-by-attributes');
+                    if (oldIconEl.hasClass('glyphicon-sort-by-attributes-alt'))
+                        oldIconEl.removeClass('glyphicon-sort-by-attributes-alt');
+                }
 
-            sortOrder = $(this).attr('data-column');
+                sortOrder = $(this).attr('data-column');
 
-            let iconEl = $(this).next();
-            //If already sorted ASC
-            if (iconEl.hasClass('glyphicon-sort-by-attributes')) {
-                iconEl.removeClass('glyphicon-sort-by-attributes')
-                    .addClass('glyphicon-sort-by-attributes-alt');
-                sortDir = "DESC";
-            }
-            //Else if already sorted DESC
-            else if (iconEl.hasClass('glyphicon-sort-by-attributes-alt')) {
-                iconEl.removeClass('glyphicon-sort-by-attributes-alt')
-                    .addClass('glyphicon-sort-by-attributes');
-                sortDir = "ASC";
-            }
-            //If not sorted till now
-            else {
-                iconEl.addClass('glyphicon-sort-by-attributes');
-                sortDir = "ASC";
-            }
+                let iconEl = $(this).next();
+                //If already sorted ASC
+                if (iconEl.hasClass('glyphicon-sort-by-attributes')) {
+                    iconEl.removeClass('glyphicon-sort-by-attributes')
+                        .addClass('glyphicon-sort-by-attributes-alt');
+                    sortDir = "DESC";
+                }
+                //Else if already sorted DESC
+                else if (iconEl.hasClass('glyphicon-sort-by-attributes-alt')) {
+                    iconEl.removeClass('glyphicon-sort-by-attributes-alt')
+                        .addClass('glyphicon-sort-by-attributes');
+                    sortDir = "ASC";
+                }
+                //If not sorted till now
+                else {
+                    iconEl.addClass('glyphicon-sort-by-attributes');
+                    sortDir = "ASC";
+                }
 
-            //alert('Sorting ' + sortDir + ' on ' + sortOrder);
-            scroller.loadGridData();
-        });
+                //alert('Sorting ' + sortDir + ' on ' + sortOrder);
+                scroller.loadGridData();
+            });
+        }
 
     </script>
 }

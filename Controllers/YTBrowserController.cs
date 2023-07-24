@@ -81,7 +81,8 @@ namespace YTUsageViewer.Controllers
                 var playListName = db.Playlists.Where(x => x.CharId == searchCriteria.PlaylistId).FirstOrDefault()?.Title;
                 ViewBag.MainFilter = playListName;
             }
-            else if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForChannel)
+            else if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForChannel
+              || searchCriteria.SearchMode == PlaylistItemSearchMode.ForChannelScroll)
             {
                 var playlistsList = result.Select(x => new { CharId = x.PlaylistId, Title = x.PlaylistName })
                         .Distinct().OrderBy(x => x.Title).ToList();
@@ -207,9 +208,8 @@ namespace YTUsageViewer.Controllers
         public ActionResult SubscriptionsScroll()
         {
           var searchParams = new SearchSubscriptionParams();
-          if (!string.IsNullOrEmpty(Request.Params["Search"])) searchParams.PageNumber = 1;
+          searchParams.PageNumber = 1;
           ViewBag.CurrentFilter = searchParams;
-          searchParams.PageNumber = searchParams.PageNumber ?? 1;
           return View();
         }
 
@@ -217,11 +217,26 @@ namespace YTUsageViewer.Controllers
         [HttpPost]
         public ActionResult SubscriptionsScroll(SearchSubscriptionParams searchParams)
         {
-          if (!string.IsNullOrEmpty(Request.Params["Search"])) searchParams.PageNumber = 1;
-          ViewBag.CurrentFilter = searchParams;
+          ViewBag.CurrentFilter = searchParams; //This line is preserved only to maintain backward compatibility
           searchParams.PageNumber = searchParams.PageNumber ?? 1;
           var result = GetSubscriptionSearchPagedResults(searchParams);
           return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult ChannelsScroll()
+        {
+          var searchParams = new SearchSubscriptionParams();
+          ViewBag.CurrentFilter = searchParams;
+
+          return View();
+        }
+
+        [HttpPost]
+        public ActionResult ChannelsScroll(SearchSubscriptionParams searchParams)
+        {
+          ViewBag.CurrentFilter = searchParams;
+          var result = GetChannelSearchPagedResults(searchParams);
+          return Json(result);
         }
 
     private IQueryable<Subscription> GetSubscriptionSearchResults(SearchSubscriptionParams searchParams)
@@ -423,6 +438,56 @@ namespace YTUsageViewer.Controllers
             return result;
         }
 
+        private SearchResultViewModel<Channel> GetChannelSearchPagedResults(SearchSubscriptionParams searchParams)
+        {
+          var resultVM = new SearchResultViewModel<Channel>();
+          var pageSize = 10;
+          var result = db.Channels.AsQueryable();
+
+          if (!string.IsNullOrEmpty(searchParams.ChannelName))
+          {
+            result = result.Where(x => (x.Title != null && x.Title.ToLower().Contains(searchParams.ChannelName.ToLower()))
+                || (x.Description != null && x.Description.ToLower().Contains(searchParams.ChannelName.ToLower())));
+          }
+          if (searchParams.IsRemoved)
+          {
+            result = result.Where(x => x.IsDeleted == "Y");
+          }
+          if (searchParams.InsertedDateFrom.HasValue && searchParams.InsertedDateTo.HasValue)
+          {
+            result = result.Where(x => x.InsertedDate >= searchParams.InsertedDateFrom.Value
+                && x.InsertedDate <= searchParams.InsertedDateTo.Value);
+          }
+
+          if (!string.IsNullOrEmpty(searchParams.SortOrder))
+          {
+            var sortOrder = searchParams.SortOrder;
+            var sortDir = searchParams.SortDir;
+
+            if (sortOrder == "title" && sortDir == "ASC")
+              result = result.OrderBy(x => x.Title);
+            else if (sortOrder == "title" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.Title);
+            else if (sortOrder == "description" && sortDir == "ASC")
+              result = result.OrderBy(x => x.Description);
+            else if (sortOrder == "description" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.Description);
+            else if (sortOrder == "isDeleted" && sortDir == "ASC")
+              result = result.OrderBy(x => x.IsDeleted);
+            else if (sortOrder == "isDeleted" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.IsDeleted);
+            else if (sortOrder == "insertedDate" && sortDir == "ASC")
+              result = result.OrderBy(x => x.InsertedDate);
+            else if (sortOrder == "insertedDate" && sortDir == "DESC")
+              result = result.OrderByDescending(x => x.InsertedDate);
+          }
+          else
+            result = result.OrderBy(x => x.ID);
+
+          resultVM.total = result.Count();
+          resultVM.data = result.Skip(pageSize * (searchParams.PageNumber.Value - 1)).Take(pageSize).ToList();
+          return resultVM;
+        }
         private IEnumerable<Video> GetVideoSearchResults(SearchVideoParams searchParams)
         {
             IEnumerable<Video> result = db.Videos.AsQueryable();
@@ -510,34 +575,34 @@ namespace YTUsageViewer.Controllers
         private IEnumerable<PlaylistItem> GetPlaylistItemsSearchResults(PlaylistItemSearchCriteria searchCriteria)
         {
             IEnumerable<PlaylistItem> result = new List<PlaylistItem>();
-
+        
             if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForPlaylist)
             {
-                var joinResult = from pli in db.PlaylistItems
-                                 join ch in db.Channels on pli.VideoOwnerChannelId equals ch.CharId
-                                 select new { pli, ch };
-                joinResult = joinResult.Where(x => x.pli.PlaylistId == searchCriteria.PlaylistId);
-                if (!string.IsNullOrEmpty(searchCriteria.ChannelId))
-                {
-                    joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId != null && x.pli.VideoOwnerChannelId.Equals(searchCriteria.ChannelId));
-                }
-                joinResult.ToList().ForEach(x => x.pli.VideoOwnerChannelName = x.ch.Title);
-                result = joinResult.Select(x => x.pli);
+              var joinResult = from pli in db.PlaylistItems
+                               join ch in db.Channels on pli.VideoOwnerChannelId equals ch.CharId
+                               select new { pli, ch };
+              joinResult = joinResult.Where(x => x.pli.PlaylistId == searchCriteria.PlaylistId);
+              if (!string.IsNullOrEmpty(searchCriteria.ChannelId))
+              {
+                joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId != null && x.pli.VideoOwnerChannelId.Equals(searchCriteria.ChannelId));
+              }
+              joinResult.ToList().ForEach(x => x.pli.VideoOwnerChannelName = x.ch.Title);
+              result = joinResult.Select(x => x.pli);
             }
-            else if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForChannel)
+            else if (searchCriteria.SearchMode == PlaylistItemSearchMode.ForChannel
+              || searchCriteria.SearchMode == PlaylistItemSearchMode.ForChannelScroll)
             {
-                var joinResult = from pli in db.PlaylistItems
-                                 join pl in db.Playlists on pli.PlaylistId equals pl.CharId
-                                 select new { pli, pl };
-                joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId == searchCriteria.ChannelId);
-                if (!string.IsNullOrEmpty(searchCriteria.PlaylistId))
-                {
-                    joinResult = joinResult.Where(x => x.pli.PlaylistId != null && x.pli.PlaylistId.Equals(searchCriteria.PlaylistId));
-                }
-                joinResult.ToList().ForEach(x => x.pli.PlaylistName = x.pl.Title);
-                result = joinResult.Select(x => x.pli);
+              var joinResult = from pli in db.PlaylistItems
+                           join pl in db.Playlists on pli.PlaylistId equals pl.CharId
+                           select new { pli, pl };
+              joinResult = joinResult.Where(x => x.pli.VideoOwnerChannelId == searchCriteria.ChannelId);
+              if (!string.IsNullOrEmpty(searchCriteria.PlaylistId))
+              {
+                joinResult = joinResult.Where(x => x.pli.PlaylistId != null && x.pli.PlaylistId.Equals(searchCriteria.PlaylistId));
+              }
+              joinResult.ToList().ForEach(x => x.pli.PlaylistName = x.pl.Title);
+              result = joinResult.Select(x => x.pli);
             }
-
 
             if (!string.IsNullOrEmpty(searchCriteria.ItemName))
             {

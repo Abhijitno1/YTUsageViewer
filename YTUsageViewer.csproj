@@ -414,6 +414,7 @@
     <Content Include="Views\Home\InfiniteScroll.cshtml" />
     <Content Include="Views\YTBrowser\SubscriptionsScroll.cshtml" />
     <Content Include="Views\Shared\_ScrollGridFooter.cshtml" />
+    <Content Include="Views\YTBrowser\ChannelsScroll.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

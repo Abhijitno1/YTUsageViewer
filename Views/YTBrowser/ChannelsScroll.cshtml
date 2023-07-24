@@ -1,0 +1,141 @@
+﻿@using YTUsageViewer.Helpers
+
+@{
+    ViewBag.Title = "Channels List";
+    Layout = "~/Views/Shared/_YTLayout.cshtml";
+    ViewBag.CurrentYtMenu = YTBrowserMenu.Channels;
+    var insertedDateFrom = new DatePickerModel { InputName = "InsertedDateFrom", DisplayName = "From", SelectedDate = ViewBag.CurrentFilter.InsertedDateFrom };
+    var insertedDateTo = new DatePickerModel { InputName = "InsertedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.InsertedDateTo };
+}
+
+<div class="panel panel-default">
+    <div class="panel-body" style="padding:0 15px;">
+        <div class="row form-row">
+            <label for="Title" class="col-sm-2">Find by name</label>
+            <div class="col-sm-4">
+                @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group checkbox">
+                    <label>@Html.CheckBox("IsRemoved", (bool)ViewBag.CurrentFilter.IsRemoved) Is Removed</label>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <input type="button" name="Search" value="Search" class="btn btn-default" />
+            </div>
+        </div>
+        <div class="row form-row">
+            <span class="col-sm-2"><strong>Inserted Date</strong></span>
+            <div class="col-sm-3">
+                @Html.Partial("_DatePicker", insertedDateFrom)
+            </div>
+            <div class="col-sm-3">
+                @Html.Partial("_DatePicker", insertedDateTo)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="resultContainer" class="scrollable">
+    <div class="resultItems">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <a href="javascript:void(0)" data-column="title">Title</a>
+                        <span class="glyphicon  pull-right"></span>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" data-column="description">Description</a>
+                        <span class="glyphicon  pull-right"></span>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" data-column="insertedDate">Inserted Date</a>
+                        <span class="glyphicon  pull-right"></span>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" data-column="isDeleted">Is Deleted</a>
+                        <span class="glyphicon  pull-right"></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+@Html.Partial("_ScrollGridFooter")
+
+<div style="display:none;">
+    <div class="btn-row-popup-menu-head">
+        Description
+        <a class="btn-popover-close pull-right" href="#">
+            &times;
+        </a>
+    </div>
+</div>
+
+<script src="~/Scripts/InfiniteScroller.js"></script>
+@section scripts {
+    <script>
+        let sortDir = "ASC"; //Default sort direction
+        let sortOrder; //Default sort order
+
+        let containerEl = document.querySelector('#resultContainer');
+        let scroller = InfiniteScroller(containerEl);
+        scroller.apiCallUrl = '@Url.Action("ChannelsScroll")';
+        scroller.setApiCallData = function () {
+            return {
+                ChannelName: document.querySelector('#ChannelName').value.trim(),
+                IsRemoved: Boolean(document.querySelector('#IsRemoved').checked),
+                InsertedDateFrom: document.querySelector('#InsertedDateFrom').value.trim(),
+                InsertedDateTo: document.querySelector('#InsertedDateTo').value.trim(),
+                sortOrder,
+                sortDir,
+                Search: 'Search' //ToDo: Check how and whether this is used
+            };
+        }
+        scroller.showFetchedData = function (data, removeExistingData, totalRecords) {
+            let tableBody = $(".resultItems table tbody");
+            if (removeExistingData) tableBody.empty();
+
+            for (let i = 0; i < data.length; i++) {
+                let channel = data[i];
+                let tr = $("<tr></tr>");
+                tr.attr("data-rowKey", channel.CharId);
+
+                let colData = $('<td>');
+                let plItemsLink = $('<a>');
+                //plItemsLink.prop('href', `/YTBrowser/PlaylistItems?SearchMode=ForChannel&ChannelId=${channel.CharId}`);
+                plItemsLink.prop('href', `@Url.Action("PlaylistItems")?SearchMode=@PlaylistItemSearchMode.ForChannelScroll&ChannelId=${channel.CharId}`);
+                plItemsLink.prop('title', 'Click to view Playlist Items for this channel');
+                plItemsLink.text(channel.Title);
+                colData.append(plItemsLink);
+
+                let channelLink = $('<a>');
+                channelLink.prop('href', `https://www.youtube.com/channel/${channel.CharId}`)
+                channelLink.prop('target', '_blank');
+                channelLink.prop('class', 'pull-right');
+                channelLink.prop('title', 'Click to open YouTube Channel in separate tab');
+                channelLink.html('<span class="glyphicon glyphicon-link channel-link"></span>');
+                colData.append(channelLink);
+
+                tr.append(colData);
+
+                tr.append(`<td>${truncatedGridColumn(channel.Description)}</td>`);
+                tr.append(`<td>${extractDateFromJson(channel.InsertedDate)}</td>`);
+                tr.append(`<td>${channel.isDeleted == "Y" ? "Yes" : "No"}</td>`);
+
+                tableBody.append(tr);
+            }
+            displayScrollGridFooter(totalRecords)
+        }
+
+        $(document).ready(function () {
+            scroller.loadGridData();
+        });
+        $('input[name=Search]').click(function () {
+            scroller.loadGridData();
+        });
+
+    </script>
+}

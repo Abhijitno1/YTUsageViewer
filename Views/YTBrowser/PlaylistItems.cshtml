@@ -110,46 +110,51 @@
 </div>
 
 @section scripts {
-    @if (searchMode.Equals(PlaylistItemSearchMode.ForPlaylist))
-    {
-<script>
+    <script>
+    @{
+        string prevPageTitle = "";
+        if (searchMode.Equals(PlaylistItemSearchMode.ForPlaylist))
+        {
+            @:var playlistViewUrl = '@Url.Action("Playlists")';
+            prevPageTitle = "Playlists";
+        }
+        else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel))
+        {
+            @:var playlistViewUrl = '@Url.Action("Channels")';
+            prevPageTitle = "Channels";
+        }
+        else if (searchMode.Equals(PlaylistItemSearchMode.ForChannelScroll))
+        {
+            @:var playlistViewUrl = '@Url.Action("ChannelsScroll")';
+            prevPageTitle = "Channels";
+        }
+        <text>
         $(function () {
-            var btnBack = $('<button type="button" class="btn btn-info" id="btnBack" title="Back to Channels">\
+            var btnBack = $('<button type="button" class="btn btn-info" id="btnBack" title="Back to @prevPageTitle">\
                                     <i class="glyphicon glyphicon-backward"></i>\
-                           </button>');
+                            </button>');
             $('#pageToolbar').append(btnBack);
             btnBack.click(function () {
-                var playlistViewUrl = '@Url.Action("Playlists")';
-                $(location).attr('href', playlistViewUrl);
-            });
-            $("[name='ChannelId']").select2();
-        });
-
-        $('#btnExport').click(function () {
-            alert("Exporting Playlists (WIP)");
-        });
-</script>
-    }
-    else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel))
-    {
-        <script>
-        $(function () {
-            var btnBack = $('<button type="button" class="btn btn-info" id="btnBack" title="Back to Channels">\
-                                    <i class="glyphicon glyphicon-backward"></i>\
-                           </button>');
-            $('#pageToolbar').append(btnBack);
-            btnBack.click(function () {
-                var playlistViewUrl = '@Url.Action("Channels")';
                 $(location).attr('href', playlistViewUrl);
             });
 
-            $("[name='PlaylistId']").select2();
+            @if (searchMode.Equals(PlaylistItemSearchMode.ForPlaylist))
+            {
+                @:$("[name='ChannelId']").select2();
+            }
+            else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel)
+                || searchMode.Equals(PlaylistItemSearchMode.ForChannelScroll))
+            {
+                @:$("[name='PlaylistId']").select2();
+            }
+
         });
 
         $('#btnExport').click(function () {
-            alert("Exporting Playlists (WIP)");
+            alert("Exporting Playlist Items (WIP)");
         });
-        </script>
+        </text>
     }
-
+    </script>
 }
+

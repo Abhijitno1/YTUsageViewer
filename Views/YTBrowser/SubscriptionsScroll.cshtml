@@ -1,6 +1,4 @@
 ﻿@using YTUsageViewer.Helpers
-@using YTUsageViewer.Models
-@model List<Subscription>
 
 @{
     ViewBag.Title = "Subscriptions List";
@@ -10,37 +8,33 @@
     var insertedDateTo = new DatePickerModel { InputName = "InsertedDateTo", DisplayName = "To", SelectedDate = ViewBag.CurrentFilter.InsertedDateTo };
 }
 
-
-@using (Html.BeginForm("Index", "YTBrowser", FormMethod.Get))
-{
-    <div class="panel panel-default">
-        <div class="panel-body" style="padding:0 15px;">
-            <div class="row form-row">
-                <label for="Title" class="col-sm-2">Find by name</label>
-                <div class="col-sm-4">
-                    @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string, new { @class = "form-control" })
-                </div>
-                <div class="col-sm-2">
-                    <div class="form-group checkbox">
-                        <label>@Html.CheckBox("IsRemoved", (bool)ViewBag.CurrentFilter.IsRemoved) Is Removed</label>
-                    </div>
-                </div>
-                <div class="col-sm-1">
-                    <input type="button" name="Search" value="Search" class="btn btn-default" />
+<div class="panel panel-default">
+    <div class="panel-body" style="padding:0 15px;">
+        <div class="row form-row">
+            <label for="Title" class="col-sm-2">Find by name</label>
+            <div class="col-sm-4">
+                @Html.TextBox("ChannelName", ViewBag.CurrentFilter.ChannelName as string, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group checkbox">
+                    <label>@Html.CheckBox("IsRemoved", (bool)ViewBag.CurrentFilter.IsRemoved) Is Removed</label>
                 </div>
             </div>
-            <div class="row form-row">
-                <span class="col-sm-2"><strong>Inserted Date</strong></span>
-                <div class="col-sm-3">
-                    @Html.Partial("_DatePicker", insertedDateFrom)
-                </div>
-                <div class="col-sm-3">
-                    @Html.Partial("_DatePicker", insertedDateTo)
-                </div>
+            <div class="col-sm-1">
+                <input type="button" name="Search" value="Search" class="btn btn-default" />
+            </div>
+        </div>
+        <div class="row form-row">
+            <span class="col-sm-2"><strong>Inserted Date</strong></span>
+            <div class="col-sm-3">
+                @Html.Partial("_DatePicker", insertedDateFrom)
+            </div>
+            <div class="col-sm-3">
+                @Html.Partial("_DatePicker", insertedDateTo)
             </div>
         </div>
     </div>
-}
+</div>
 
 <div id="resultContainer" class="scrollable">
     <div class="resultItems">

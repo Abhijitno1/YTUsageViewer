@@ -7,6 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
+using DocumentFormat.OpenXml.Wordprocessing;
+using YTUsageViewer.ViewModels;
 
 namespace YTUsageViewer.Helpers
 {
@@ -29,7 +31,8 @@ namespace YTUsageViewer.Helpers
     {
         public const string ForPlaylist = "ForPlaylist";
         public const string ForChannel = "ForChannel";
-    }
+        public const string ForChannelScroll = "ForChannelScroll";
+  }
 
     public static class CustomHelpers
     {
@@ -139,6 +142,5 @@ namespace YTUsageViewer.Helpers
             return result;
         }
 
-
-    }
+  }
 }
