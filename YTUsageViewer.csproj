@@ -413,6 +413,7 @@
     <Content Include="Views\Shared\_Practice.cshtml" />
     <Content Include="Views\Home\InfiniteScroll.cshtml" />
     <Content Include="Views\YTBrowser\SubscriptionsScroll.cshtml" />
+    <Content Include="Views\Shared\_ScrollGridFooter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

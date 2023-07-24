@@ -29,7 +29,6 @@ namespace YTUsageViewer.Controllers
             return View("Subscriptions", result.ToPagedList((int)ViewBag.CurrentFilter.PageNumber, PAGE_SIZE));
         }
 
-
         public ActionResult ExportSubscriptions2SpreadsheetML(string searchString, string sortOrder, string sortDir)
         {
             try
@@ -51,7 +50,6 @@ namespace YTUsageViewer.Controllers
                 return Json(new { Success = false, Message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-
 
         public ActionResult Playlists(SearchPlaylistParams searchParams)
         {
@@ -205,7 +203,7 @@ namespace YTUsageViewer.Controllers
             return View(result.ToPagedList(searchParams.PageNumber.Value, PAGE_SIZE));
         }
 
-        [Route]
+        [Route("YTBrowser")]
         public ActionResult SubscriptionsScroll()
         {
           var searchParams = new SearchSubscriptionParams();
@@ -215,7 +213,7 @@ namespace YTUsageViewer.Controllers
           return View();
         }
 
-        [Route]
+        [Route("YTBrowser")]
         [HttpPost]
         public ActionResult SubscriptionsScroll(SearchSubscriptionParams searchParams)
         {

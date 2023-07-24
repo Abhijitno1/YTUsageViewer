@@ -11,7 +11,7 @@
         setApiCallData: function () {
             return { currentPage: 1 };
         },
-        showFetchedData: function (data, removeExistingData) { },
+        showFetchedData: function (data, removeExistingData, totalRecords) { },
         loadGridData: loadGridData
     };
 
@@ -27,7 +27,7 @@
             alreadyFetching = true;
             showLoadingSign(containerEl);
             let quotesBatch = await FetchNextPageData(currentPage);
-            exposed.showFetchedData(quotesBatch, currentPage == 1);
+            exposed.showFetchedData(quotesBatch, currentPage == 1, total);
 
         } catch (err) {
             console.log('Error occurred: ' + err.message);

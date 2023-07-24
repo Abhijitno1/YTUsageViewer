@@ -76,3 +76,8 @@ function downloadFile(apiCallUrl, apiCallData, fileName) {
         }
     });
 }
+
+function displayScrollGridFooter(totalRecords) {
+    $('.scroll-grid-footer .total-value').html(totalRecords);
+    $('.scroll-grid-footer').css('visibility', 'visible');
+}
