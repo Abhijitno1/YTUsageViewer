@@ -26,7 +26,7 @@
                         @Html.Hidden("PlaylistId", ViewBag.CurrentFilter.PlaylistId as string)
                     </div>
                 }
-                else if (searchMode == PlaylistItemSearchMode.ForChannel)
+                else if (searchMode == PlaylistItemSearchMode.ForChannel || searchMode == PlaylistItemSearchMode.ForChannelScroll)
                 {
                     <label for="PlaylistId" class="col-sm-1">Playlist</label>
                     <div class="col-sm-4">
@@ -62,7 +62,8 @@
                 {
                     @Html.GridColumnHeader("Video Owner Channel", "videoOwnerChannel")
                 }
-                else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel))
+                else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel) 
+                    || searchMode.Equals(PlaylistItemSearchMode.ForChannelScroll))
                 {
                     @Html.GridColumnHeader("Playlist", "playlist")
                 }
@@ -89,7 +90,8 @@
                     {
                         <a href="https://www.youtube.com/channel/@item.VideoOwnerChannelId" target="_blank">@item.VideoOwnerChannelName</a>
                     }
-                    else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel))
+                    else if (searchMode.Equals(PlaylistItemSearchMode.ForChannel)
+                        || searchMode.Equals(PlaylistItemSearchMode.ForChannelScroll))
                     {
                         @item.PlaylistName
                     }
