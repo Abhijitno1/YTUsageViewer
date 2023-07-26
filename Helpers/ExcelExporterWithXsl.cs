@@ -14,6 +14,8 @@ namespace YTUsageViewer.Helpers
 {
   public class ExcelExporterWithXsl : IExcelExporter
   {
+    public AddParametersDelegate AddParameters { get; set; }
+
     public Byte[] ExportDataAsSpreadsheet<T>(IEnumerable<T> enumerableData)
     {
       var dataSet = GetDataSet(enumerableData);

@@ -137,5 +137,13 @@
             scroller.loadGridData();
         });
 
+        $('#btnExport').click(function () {
+            //alert("Exporting Playlists (WIP)");
+            let apiCallUrl = '@Url.Action("ExportChannels2SpreadsheetML")';
+            let apiCallData = scroller.setApiCallData();
+
+            downloadFile(apiCallUrl, apiCallData, 'Channels.xlsx')
+        });
+
     </script>
 }

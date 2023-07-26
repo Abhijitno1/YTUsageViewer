@@ -1,4 +1,6 @@
-﻿using PagedList;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +43,14 @@ namespace YTUsageViewer.Controllers
                 };
                 var result = GetSubscriptionSearchResults(searchParams);
                 IExcelExporter xlXporter = new ExcelExporterWithCXml();
+                xlXporter.AddParameters = delegate (IXLWorksheet worksheet)
+                {
+                  worksheet.Row(1).InsertRowsAbove(3);
+                  worksheet.Cell(1, 1).Value = "Report Filters";
+                  worksheet.Cell(1, 1).Style.Font.SetBold(true);
+                  worksheet.Cell(2, 1).Value = "Channel Name Contains: " + searchString;
+                  worksheet.Rows(1, 3).CellsUsed().Style.Font.SetFontColor(XLColor.DarkBlue);
+                };
                 var outputStream = xlXporter.ExportDataAsSpreadsheet(result);
                 string attachmentName = "Subscriptions.xlsx";
                 return File(outputStream, EXPORT_CONTENT_TYPE, attachmentName);
@@ -239,7 +249,34 @@ namespace YTUsageViewer.Controllers
           return Json(result);
         }
 
-    private IQueryable<Subscription> GetSubscriptionSearchResults(SearchSubscriptionParams searchParams)
+        public ActionResult ExportChannels2SpreadsheetML(SearchSubscriptionParams searchParams)
+        {
+          try
+          {
+            var result = GetChannelSearchResults(searchParams);
+            IExcelExporter xlXporter = new ExcelExporterWithCXml();
+            xlXporter.AddParameters = delegate (IXLWorksheet worksheet)
+            {
+              worksheet.Row(1).InsertRowsAbove(4);
+              worksheet.Rows(1, 3).CellsUsed().Style.Font.SetFontColor(XLColor.DarkBlue);
+              worksheet.Cell(1, 1).Value = "Report Filters";
+              worksheet.Cell(1, 1).Style.Font.SetBold(true);
+              worksheet.Cell(2, 1).Value = "Channel Name Contains: " + searchParams.ChannelName;
+              worksheet.Cell(2, 4).Value = "Is Deleted: " + (searchParams.IsRemoved? "Yes": "No");
+              worksheet.Cell(3, 1).Value = "Inserted Date From: " + searchParams.InsertedDateFrom;
+              worksheet.Cell(3, 4).Value = "To: " + searchParams.InsertedDateTo;
+            };
+        var outputStream = xlXporter.ExportDataAsSpreadsheet(result);
+            string attachmentName = "Channels.xlsx";
+            return File(outputStream, EXPORT_CONTENT_TYPE, attachmentName);
+          }
+          catch (Exception ex)
+          {
+            return Json(new { Success = false, Message = ex.Message }, JsonRequestBehavior.AllowGet);
+          }
+        }
+
+        private IQueryable<Subscription> GetSubscriptionSearchResults(SearchSubscriptionParams searchParams)
         {
             var result = db.Subscriptions.AsQueryable();
 

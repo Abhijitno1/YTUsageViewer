@@ -35,6 +35,7 @@ function extractDateFromJson(jsonDate, returnTime) {
 
 //Ref: https://www.aspsnippets.com/Articles/Download-Excel-File-using-AJAX-in-jQuery.aspx
 function downloadFile(apiCallUrl, apiCallData, fileName) {
+    showLoadingSign();
 
     $.ajax({
         url: apiCallUrl,
@@ -73,6 +74,9 @@ function downloadFile(apiCallUrl, apiCallData, fileName) {
                 a[0].click();
                 $("body").remove(a);
             }
+        },
+        complete: function () {
+            hideLoadingSign();
         }
     });
 }
